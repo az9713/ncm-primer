@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Next-Concept Modeling Primer</title>
+<meta name="color-scheme" content="dark">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: one reading column (max 880px). Each section = short theory, then one figure or stepper that runs on source data. */
+:root{
+  color-scheme:dark;
+  --bg:#0f172a; --card:#1e293b; --card2:#162033; --fg:#e2e8f0; --fg2:#cbd5e1; --muted:#94a3b8;
+  --line:#334155; --ncm:#fb923c; --ncm-dim:#7c4a1e; --dlm:#2dd4bf; --ar:#a5b4fc; --bad:#f87171; --ok:#4ade80;
+  --display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+  --body:"Inter","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",Consolas,ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg2);font:16px/1.65 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 80px}
+main{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--display);color:var(--fg);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:clamp(1.9rem,5vw,2.7rem);font-weight:700}
+h2{font-size:1.5rem;margin-top:34px;padding-top:22px;border-top:1px solid var(--line)}
+h2 .n{color:var(--ncm);font-family:var(--mono);font-size:.95rem;margin-right:.6em}
+h3{font-size:1.08rem;margin-top:10px}
+p{margin:0;max-width:72ch}
+a{color:var(--dlm)}
+code,pre{font-family:var(--mono);font-size:.84em}
+code{background:var(--card);padding:.08em .35em;border-radius:4px;color:var(--fg)}
+pre{background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;margin:0;line-height:1.5;color:var(--fg2)}
+pre code{background:none;padding:0}
+.lede{font-size:1.1rem;color:var(--fg)}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.src{font-size:.82rem;color:var(--muted)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;font-size:.86rem}
+.toc a{border:1px solid var(--line);border-radius:999px;padding:3px 11px;text-decoration:none;color:var(--fg2)}
+.toc a:hover,.toc a:focus-visible{border-color:var(--ncm);color:var(--fg)}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.sum div{background:var(--card);border-radius:8px;padding:14px 16px;min-width:0}
+.sum b{color:var(--fg);font-family:var(--display)}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+figcaption{font-size:.88rem;color:var(--muted);max-width:78ch}
+figcaption b{color:var(--fg2)}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.86rem}
+button,select{font:500 .86rem var(--body);color:var(--fg);background:#0b1220;border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--ncm)}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--dlm);outline-offset:2px}
+button.on{background:var(--ncm);color:#1a1205;border-color:var(--ncm)}
+input[type=range]{accent-color:var(--ncm);flex:1;min-width:120px}
+.read{font-family:var(--mono);font-size:.8rem;color:var(--fg2);font-variant-numeric:tabular-nums}
+.read b{color:var(--fg)}
+canvas{display:block;width:100%;height:30px;border-radius:4px;background:#0b1220}
+.row{display:flex;flex-direction:column;gap:4px}
+.row .lab{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.85rem}
+.k-ar{color:var(--ar)}.k-dlm{color:var(--dlm)}.k-ncm{color:var(--ncm)}
+figure>svg,figure>div>svg{max-width:100%;height:auto;display:block}
+figure>svg text,figure>div>svg text{font-family:var(--body);fill:var(--fg2)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;font-size:.86rem;font-variant-numeric:tabular-nums;width:100%}
+th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:500}
+tr.us td{color:var(--ncm);font-weight:600}
+td.wrap,th.wrap{white-space:normal;text-align:left}
+.box{border-left:3px solid var(--ncm);background:var(--card);padding:12px 16px;border-radius:0 8px 8px 0;display:flex;flex-direction:column;gap:8px}
+.box.rx{border-color:var(--ar)}.box.rx .h{color:var(--ar);font-size:.92rem}.box.t{border-color:var(--dlm)}.box.w{border-color:var(--bad)}
+.box .h{font-family:var(--display);color:var(--fg);font-weight:700}
+.box p{max-width:none}
+ul,ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px;max-width:74ch}
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;margin:.4em 0 !important;padding:2px 0}
+mjx-container{color:var(--fg)}
+.out{background:#0b1220;border-radius:8px;padding:12px 14px;min-height:5.2em;font-size:1rem;color:var(--fg)}
+.out mark{background:rgba(45,212,191,.22);color:var(--fg);border-radius:3px;padding:0 2px}
+.codes{display:flex;flex-wrap:wrap;gap:2px}
+.codes i{width:9px;height:14px;background:var(--ncm);border-radius:2px;display:block}
+details{background:var(--card);border-radius:8px;padding:10px 14px}
+summary{cursor:pointer;color:var(--fg);font-weight:500}
+details p{margin-top:8px}
+img.fig{background:#fff;border-radius:6px;width:100%}
+img.fig.wide{min-width:1100px;max-width:none}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+
+<main>
+<header style="display:flex;flex-direction:column;gap:14px">
+  <div class="eyebrow">Onboarding note · arXiv:2610.14162 · Stanford Hazy Research + Together AI</div>
+  <h1>Next-Concept Modeling Primer</h1>
+  <p class="lede">A language model usually writes one token for each network pass. NCM writes the full sequence as a stack of drafts. Each draft is longer and more exact than the draft before it. One network pass writes one full draft.</p>
+  <p class="src">Sources, in order of authority: the paper (Kumbong, Khare et al., 9 Oct 2026) for claims and numbers; the released code <code>ncm-main/</code> for inference mechanics; the Turing Post video "Attention Span" for analogies and critique, each time with attribution. A cited <code>file:line</code> refers to the copy in <code>ncm-main/</code> of <a href="https://github.com/az9713/ncm-primer">this page's repository</a>, taken from <a href="https://github.com/HazyResearch/ncm">HazyResearch/ncm</a> (MIT license).</p>
+  <nav class="toc" aria-label="Sections">
+    <a href="#s0">0 Sheet stack</a><a href="#s1">1 Problem</a><a href="#s2">2 Notation</a><a href="#s3">3 Tokenizer</a><a href="#s4">4 Generator</a><a href="#s5">5 Attention</a><a href="#s6">6 Training</a><a href="#s7">7 Likelihood</a><a href="#s8">8 Cost</a><a href="#s9">9 Evidence</a><a href="#s10">10 Limits</a><a href="#s11">11 Code map</a><a href="#s12">12 Self-check</a>
+  </nav>
+  <div class="sum">
+    <div><b>Stage 1: tokenizer.</b> A multiscale residual VQ-VAE changes $L$ tokens into $K$ lists of discrete codes. List $k$ has $\ell_k$ codes, and $\ell_1 \lt \dots \lt \ell_K = L$.</div>
+    <div><b>Stage 2: generator.</b> A transformer predicts list $k$ in one pass, all $\ell_k$ codes in parallel. Its input is the sum of the earlier lists.</div>
+    <div><b>Result.</b> $K$ passes instead of $L$ (autoregressive) or $T$ full-length passes (diffusion). On LM1B, $K=12$, $L=128$.</div>
+  </div>
+</header>
+
+<h2 id="s0"><span class="n">0</span>A picture to keep: the sheet stack</h2>
+<p>One example runs through this page. It is a mental picture, not model output. Think of a text as a drawing made on a stack of transparent sheets. The bottom sheet has one large tile. Each sheet above it has more, smaller tiles. Each sheet adds only what the sheets below it do not show. Look through the full stack and you see the finished text.</p>
+<figure>
+  <div class="ctl" id="rxBtns"></div>
+  <div class="scroll"><div id="rxSvg" style="min-width:600px"></div></div>
+  <div class="out" id="rxOut"></div>
+  <figcaption><b>Fig. 0. The sheet stack for one eight-word text.</b> Four sheets with 1, 2, 4 and 8 tiles. The words on the coarse tiles are captions for the reader. A real code is an integer with no label, and a real sheet holds a correction vector, not a phrase. Each button is one stage of the tutorial; the boxes named "Sheet stack" in the sections below refer to these stages.</figcaption>
+</figure>
+
+<h2 id="s1"><span class="n">1</span>The problem: how many passes, and how long is each pass</h2>
+<p>Let $L$ be the number of output tokens. Three schedules are in use.</p>
+<ul>
+  <li><b class="k-ar">Next-token prediction (NTP).</b> $L$ sequential passes. Each pass adds one token. A key-value (KV) cache keeps the work of earlier passes.</li>
+  <li><b class="k-dlm">Masked diffusion (for example MDLM).</b> $T$ passes. Each pass processes all $L$ positions. The paper names three costs: many passes, full-length passes without AR-style KV-cache reuse, and large training budgets (MDLM and DUO used more than 500B training tokens on OpenWebText).</li>
+  <li><b class="k-ncm">Next-concept modeling (NCM).</b> $K$ passes, $K \ll L$. Pass $k$ processes only $\ell_k$ positions.</li>
+</ul>
+<figure>
+  <div class="ctl">
+    <button id="rcPlay">Play</button><button id="rcStep">Step</button><button id="rcReset">Reset</button>
+    <label for="rcT">Diffusion steps T</label>
+    <select id="rcT"><option>16</option><option selected>32</option><option>64</option><option>128</option></select>
+    <input type="range" id="rcF" min="0" max="128" value="12" aria-label="Network passes done">
+  </div>
+  <div class="row"><div class="lab"><b class="k-ar">NTP, L = 128</b><span class="read" id="rcA"></span></div><canvas id="cvA"></canvas></div>
+  <div class="row"><div class="lab"><b class="k-dlm">Masked diffusion, T steps</b><span class="read" id="rcD"></span></div><canvas id="cvD"></canvas></div>
+  <div class="row"><div class="lab"><b class="k-ncm">NCM, K = 12 levels</b><span class="read" id="rcN"></span></div><canvas id="cvN"></canvas></div>
+  <figcaption><b>Fig. 1. One frame is one network pass.</b> Level sizes are the released LM1B schedule (1, 8, 16, 24, 32, 40, 52, 64, 76, 92, 108, 128; sum 641). The diffusion row is a schematic: it reveals $L/T$ random positions for each step. Result at $T=32$: NTP needs 128 passes and 128 new positions, diffusion 32 passes and 4,096 positions, NCM 12 passes and 641 positions. NTP with a KV cache processes the fewest positions, but it has the most sequential passes.</figcaption>
+</figure>
+<p>The Turing Post video gives this analogy: NTP is a typewriter, diffusion is an editor who fills blanks, and NCM is an architect who draws the outline first. The paper's own term is coarse-to-fine generation.</p>
+<div class="box rx"><div class="h">Sheet stack · stage 0</div><p>The three schedules are three ways to fill the top sheet of eight word tiles. Next-token prediction fills one tile for each pass. Diffusion works on all eight tiles in each pass. NCM does not start on the top sheet: it starts on the one-tile bottom sheet.</p></div>
+<figure>
+  <div class="scroll"><img class="fig wide" src="coarse_to_fine.gif" alt="Authors' animation: TinyStories, XSum and WMT14 samples decoded after each level"></div>
+  <figcaption><b>Fig. 2. Authors' animation</b> (<code>ncm-main/assets/coarse_to_fine.gif</code>, MIT license). The decoded output after each level for three released models. Scroll sideways on a narrow screen.</figcaption>
+</figure>
+
+<h2 id="s2"><span class="n">2</span>Notation</h2>
+<p>The paper's text counts levels from 1. Its Fig. 16 and the code count from 0, so <code>level_idx = 0</code> is level 1 of the text. This page uses the text's numbers.</p>
+<div class="scroll"><table>
+<tr><th>Symbol</th><th class="wrap">Meaning</th><th>LM1B value</th></tr>
+<tr><td>$x \in \mathcal T^L$</td><td class="wrap">Text: $L$ tokens from text vocabulary $\mathcal T$</td><td>$L=128$, $|\mathcal T|=30{,}528$</td></tr>
+<tr><td>$z = E_\phi(x) \in \mathbb R^{L\times d}$</td><td class="wrap">Encoder latents, one vector of width $d$ for each token</td><td>$d=384$</td></tr>
+<tr><td>$K$, $\ell_k$</td><td class="wrap">Number of levels; number of codes at level $k$</td><td>$K=12$</td></tr>
+<tr><td>$\mathcal V_k=\{e_{k,1},\dots\}$</td><td class="wrap">Codebook of level $k$: a table of vectors in $\mathbb R^d$</td><td>$|\mathcal V_k|=8{,}192$</td></tr>
+<tr><td>$r_k \in \{1..|\mathcal V_k|\}^{\ell_k}$</td><td class="wrap">Codes of level $k$: $\ell_k$ integers. These are the "tokens" the generator predicts</td><td></td></tr>
+<tr><td>$\mathrm{Down}_k$, $R_k$</td><td class="wrap">Resize from $L$ to $\ell_k$ positions; resize from $\ell_k$ back to $L$</td><td></td></tr>
+<tr><td>$\hat z^{(k)} \in \mathbb R^{L\times d}$</td><td class="wrap">Cumulative reconstruction: the sum of the contributions of levels $1..k$</td><td></td></tr>
+<tr><td>$z^{(k)} = z-\hat z^{(k)}$</td><td class="wrap">Residual: the part of $z$ that levels $1..k$ did not capture</td><td></td></tr>
+<tr><td>$p_\theta$, $p_\psi$</td><td class="wrap">Generator (prior over codes); tokenizer decoder (codes to token distributions)</td><td>97M; tokenizer 111.4M</td></tr>
+<tr><td>NFE</td><td class="wrap">Number of function evaluations: generator passes for one output</td><td>12</td></tr>
+<tr><td>Prefix</td><td class="wrap">The prompt block at the start of the generator's input: source text (XSum, WMT14), puzzle clues (Sudoku) or one null token (unconditional)</td><td>null token</td></tr>
+<tr><td>Gen. PPL, $H$</td><td class="wrap">Generative perplexity: the perplexity that GPT-2 large gives to the samples; lower is better, but repeated text also lowers it. $H$: mean unigram entropy of each sample, a diversity check; a fair result has $H$ near the value of real data</td><td>data: 53.51, 4.31</td></tr>
+<tr><td>BLEU, ROUGE</td><td class="wrap">Overlap with a reference text: BLEU for translation (n-grams), ROUGE-1/2/L for summaries (unigrams, bigrams, longest common subsequence). Higher is better</td><td></td></tr>
+<tr><td>$M$</td><td class="wrap">Number of candidates in minimum Bayes risk (MBR) decoding: draw $M$ samples and keep the one with the highest mean similarity to the others. The paper writes $K$ for this too; this page writes $M$</td><td></td></tr>
+</table></div>
+<div class="box t"><div class="h">What "concept" means</div><p>The paper: "The term <i>concept</i> here refers to the information carried by the coarse levels of the hierarchy" (Section 3). A concept is not a word or a sentence vector. It is a code index at a coarse level.</p></div>
+
+<h2 id="s3"><span class="n">3</span>Stage 1: the multiscale residual tokenizer</h2>
+<h3>3.1 Three ideas, each adds one thing</h3>
+<p><b>Vector quantization (VQ).</b> Replace each latent vector with its nearest codebook entry (Eq. 1):</p>
+$$z_q^i=\arg\min_{e\in\mathcal V}\lVert z^i-e\rVert_2^2 .$$
+<p>The output is one integer for each position. One snap leaves an error.</p>
+<p><b>Residual quantization.</b> Quantize the error with a second codebook, then the new error with a third (Eq. 2). The reconstruction is a sum, $\hat z^{(K)}=\sum_k e_k(r_k)$. Each level corrects the levels before it.</p>
+<p><b>Multiscale.</b> Give early levels fewer positions. Level $k$ first shrinks the residual to $\ell_k$ vectors, snaps them, then stretches the result back to length $L$ (Eq. 7, 8):</p>
+$$u_k=\mathrm{Down}_k\big(z^{(k-1)}\big)\in\mathbb R^{\ell_k\times d},\qquad r_k^i=\arg\min_{j}\lVert u_k^i-e_{k,j}\rVert_2^2,$$
+$$\hat z^{(k)}=\hat z^{(k-1)}+R_k\big(e_k(r_k)\big),\qquad z^{(k)}=z-\hat z^{(k)},\qquad \hat z^{(0)}=0 .$$
+<p>On LM1B, level 1 has $\ell_1=1$: one index from 8,192 entries, at most 13 bits for the full sequence. A learned resize stretches that one entry to a length-$L$ pattern (<code>models/quant.py:406-407</code>), so the level can select one of 8,192 sequence-wide patterns but cannot describe any single token. A level with $\ell_k=L$ can correct each token. That is the source of the coarse-to-fine order.</p>
+<div class="box rx"><div class="h">Sheet stack · stage 1</div><p>The equations above are the rule for making the sheets. Shrink the part of the picture that is still missing to the tile count of the sheet ($\mathrm{Down}_k$). Replace each tile with the nearest stamp from that sheet's stamp box (the codebook). Stretch the stamped sheet back to full size ($R_k$) and put it on the stack. What is still missing ($z^{(k)}$) goes to the next sheet.</p></div>
+
+<figure>
+  <div class="ctl"><button id="tkPrev">Back</button><button id="tkNext">Next level</button><button id="tkPlay">Play</button><span class="read" id="tkRead"></span></div>
+  <div id="tkSvg"></div>
+  <figcaption><b>Fig. 3. A toy tokenizer, computed in the page.</b> $L=16$, $d=1$, level sizes 1, 2, 4, 8, 16, eight entries in each codebook. Top: the latent $z$ (white) and the cumulative reconstruction $\hat z^{(k)}$ (orange). Bottom: the residual before the level (grey bars), its pooled value $u_k$ (teal) and the snapped value (orange). The resize operators are the ones in the code: area pooling down, linear interpolation up (<code>models/quant.py:399</code>, <code>:408</code>). The codebooks are hand-set, not learned. The real model has $d=384$, a learned resize at level 1 and a small convolution after each upsample.</figcaption>
+</figure>
+
+<h3>3.2 The same loop in the released code</h3>
+<pre><code># condensed from MultiscaleResidualVectorQuantizer.z_to_idx, models/quant.py:573-609
+z_rest, z_hat, idx = z.clone(), torch.zeros_like(z), []
+for k, l_k in enumerate(levels):                  # e.g. [1, 8, 16, ..., 128]
+    u = down(z_rest, l_k) if k != K - 1 else z_rest      # area pooling, L -> l_k
+    r = torch.cdist(u, codebook[k].weight).argmin(-1)    # nearest entry (Eq. 7)
+    q = codebook[k](r)
+    q = up(q, L) if k != K - 1 else q                    # linear interp, l_k -> L
+    q = phi[k](q)                                 # 0.5*q + 0.5*Conv1d(q)
+    z_hat, z_rest = z_hat + q, z_rest - q         # Eq. 8
+    idx.append(r)</code></pre>
+<p>Two facts from the code that the equations do not show. First, the encoder $E_\phi$ in the released configurations is an embedding lookup with zero transformer blocks (<code>models/vqvae.py:41</code>; Table 5 "Encoder blocks 0"). The encoder adds no contextual mixing. Positions mix only through the normalization before quantization, the resize operators and the small convolutions. Second, the codebooks update by exponential moving average of the vectors assigned to each entry, not by gradient (<code>models/quant.py:497-498</code>; Table 5 "Codebook EMA decay").</p>
+
+<h3>3.3 Nested dropout: why coarse levels carry meaning</h3>
+<p>Without a constraint, the tokenizer can put all information in level $K$, which has one code for each token. Then levels $1..K-1$ are noise and the generator has nothing useful to predict first. The paper uses nested dropout: during training, sample a cutoff $k$, keep only levels $1..k$, and make the decoder reconstruct the text from $\hat z^{(k)}$. In the code, one cutoff is drawn for each forward call, with a set probability (<code>models/quant.py:457-462</code>, <code>:525-530</code>). Table 5 gives that probability as 0.5; LM1B trains on the full and a cut hierarchy with weights 0.7 and 0.3. The loss of the paper (Eq. 9), at the sampled cutoff $k$ (the code differs; see <a href="#s10">Section 10.3</a>):</p>
+$$\mathcal L_{\text{tok}}=-\frac1L\sum_{i=1}^{L}\log p_\psi\big(x^i\mid\hat z^{(k)}\big)+\beta\,\mathrm{MSE}\big(z,\mathrm{sg}[\hat z^{(k)}]\big)+\mathrm{MSE}\big(\mathrm{sg}[z],\hat z^{(k)}\big).$$
+<ul>
+  <li>Term 1 is the reconstruction cross-entropy. It makes each truncated stack of levels $1..k$ decodable.</li>
+  <li>Term 2 is the commitment loss with weight $\beta$ (0.25 in the configs). It pulls the encoder output toward the codes. $\mathrm{sg}$ is stop-gradient.</li>
+  <li>Term 3 trains the parameters between the codes and $\hat z$. The codebook entries get no gradient (<code>models/quant.py:300</code>), and the quantizer input is a detached copy of $z$ (<code>:451-453</code>). So Term 3 moves the small convolution after each upsample, the learned level-1 upsample, and, through a straight-through copy at level 1 only (<code>:503-505</code>), the learned level-1 downsample. It does not move the encoder; Terms 1 and 2 do that.</li>
+  <li>The arg-min has no gradient. A straight-through estimator copies the decoder's gradient from $\hat z$ to $z$ (<code>models/quant.py:531</code>: <code>z_hat = z + (z_hat - z).detach()</code>).</li>
+</ul>
+<div class="box rx"><div class="h">Sheet stack · stage 2</div><p>The teacher removes the top sheets at random. The picture seen through sheets 1 and 2 only ("an animal rests somewhere indoors") must still be a usable text. This rule puts the gist on the bottom sheets.</p></div>
+<p><b>Check against data.</b> Text needs exact reconstruction: one wrong digit makes a Sudoku solution invalid. Table 1 reports exact token recovery on held-out text with the full hierarchy.</p>
+<div class="scroll"><table>
+<tr><th></th><th>OWT</th><th>LM1B</th><th>TinyStories</th><th>XSum</th><th>WMT14</th><th>Sudoku (E/M/H)</th></tr>
+<tr><td>Reconstruction accuracy (%)</td><td>99.99</td><td>99.86</td><td>99.98</td><td>99.79</td><td>98.79</td><td>100 / 100 / 100</td></tr>
+<tr><td>Codebook utilization (%)</td><td>83.10</td><td>89.31</td><td>90.12</td><td>86.20</td><td>61.89</td><td>80.73 / 83.85 / 80.73</td></tr>
+</table></div>
+<p>On OWT, accuracy after level $k$ is about 15% after level 12 of 32 and about 60% after level 20 (read from the plot in paper Fig. 16), and reaches 99.99% only at level 32. The errors that remain are substitutions of related items, for example "1956" to "1957" and "Sydney" to "Melbourne" (Table 11).</p>
+
+<h2 id="s4"><span class="n">4</span>Stage 2: the next-concept transformer</h2>
+<h3>4.1 The model</h3>
+<p>Freeze the tokenizer. The generator is a distribution over code hierarchies. It has two factorizations (Eq. 4, 5):</p>
+$$p_\theta(r_{1:K})=\prod_{k=1}^{K}p_\theta\big(r_k\mid\hat z^{(k-1)}\big),\qquad p_\theta\big(r_k\mid\hat z^{(k-1)}\big)=\prod_{i=1}^{\ell_k}p_\theta\big(r_k^i\mid\hat z^{(k-1)}\big).$$
+<ul>
+  <li><b>Across levels: autoregressive.</b> Level $k$ depends on levels $1..k-1$. The dependence goes only through the sum $\hat z^{(k-1)}$, which is a fixed function of $r_{1:k-1}$.</li>
+  <li><b>Inside a level: conditionally independent.</b> Given $\hat z^{(k-1)}$, each code is sampled without knowledge of its neighbours' samples. This assumption permits one pass for each level. It is also the main modeling restriction (see <a href="#s7">Section 7</a>).</li>
+</ul>
+<figure>
+<svg viewBox="0 0 760 262" role="img" aria-label="NCM generation loop: resize the running draft, run the transformer, sample all codes of the level, look up and upsample, add to the draft, repeat K times, then decode">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#94a3b8"/></marker></defs>
+  <g fill="#0b1220" stroke="#334155" stroke-width="1.5">
+    <rect x="14" y="44" width="150" height="62" rx="8" stroke="#fb923c"/>
+    <rect x="214" y="44" width="120" height="62" rx="8"/>
+    <rect x="384" y="44" width="150" height="62" rx="8"/>
+    <rect x="584" y="44" width="162" height="62" rx="8"/>
+    <rect x="384" y="166" width="362" height="52" rx="8"/>
+    <rect x="14" y="166" width="150" height="52" rx="8"/>
+  </g>
+  <g font-size="12.5" text-anchor="middle">
+    <text x="89" y="70" fill="#fb923c" font-weight="600">running draft ẑ(k−1)</text><text x="89" y="90" font-size="11">L × d, starts at 0</text>
+    <text x="274" y="70">resize to ℓk</text><text x="274" y="90" font-size="11">area pooling</text>
+    <text x="459" y="70">transformer</text><text x="459" y="90" font-size="11">attends inside level k</text>
+    <text x="665" y="70">sample rk</text><text x="665" y="90" font-size="11">ℓk codes, in parallel</text>
+    <text x="565" y="188">look up ek(rk), upsample to length L</text><text x="565" y="206" font-size="11">operator Rk: linear interpolation + conv</text>
+    <text x="89" y="188">after level K:</text><text x="89" y="206" font-size="11">decoder → L tokens</text>
+  </g>
+  <g stroke="#94a3b8" stroke-width="1.5" fill="none" marker-end="url(#ah)">
+    <path d="M164 75H212"/><path d="M334 75H382"/><path d="M534 75H582"/>
+    <path d="M665 106V164"/><path d="M384 192H250Q200 192 190 150L172 108"/>
+    <path d="M60 106V164"/>
+  </g>
+  <g font-size="11" fill="#94a3b8">
+    <text x="548" y="66" text-anchor="middle">logits</text>
+    <text x="268" y="150" text-anchor="middle">add: ẑ(k) = ẑ(k−1) + Rk(…)</text>
+    <text x="14" y="26" text-anchor="start">One loop turn = one function evaluation. K turns in total.</text>
+    <text x="20" y="140" text-anchor="start">k = K</text>
+  </g>
+</svg>
+<figcaption><b>Fig. 4. One level of generation</b> (Algorithm 2; <code>models/next_concept.py:660-685</code>). The transformer never sees earlier code indices. It sees only the running draft, pooled to the length of the level it must predict. The pooling from $L$ to $\ell_k$ positions loses detail, so the input is a summary of the earlier levels.</figcaption>
+</figure>
+<pre><code># condensed from NextConceptTransformer.generate, models/next_concept.py:660-685
+z_hat = torch.zeros(B, L, d)
+r = first_level_codes                              # level 1: see Section 10
+for k in range(K - 1):
+    q = vq.embeddings[k](r)                        # look up codes of level k
+    z_hat, x = vq.get_next_autoregressive_input(k, z_hat, q)
+    #   z_hat += phi(up(q, L));  x = area_pool(z_hat, levels[k + 1])
+    h = wte(x) + level_embedding[k + 1]            # Linear d -> n_embd
+    logits = heads[k + 1](blocks(cat([prefix, h])))[:, P:]
+    r = sample(logits)                             # all l_{k+1} codes in parallel
+tokens = decoder(z_hat_final).argmax(-1)           # one tokenizer-decoder pass</code></pre>
+
+<div class="box rx"><div class="h">Sheet stack · stage 3</div><p>The generator is a painter who makes a new stack. It looks through the stack so far, paints all tiles of the next sheet in one pass, and puts the sheet on the stack. After the last sheet, the decoder reads the words through the full stack. Fig. 5 shows the same process with a real model: 11 sheets for one translation.</p></div>
+<h3>4.2 Watch one sample form</h3>
+<figure>
+  <div class="ctl">
+    <button id="trA" class="on">Translation (Table 12)</button><button id="trB">Hard Sudoku (Fig. 20)</button>
+    <button id="trPlay">Play</button><button id="trPrev">Back</button><button id="trNext">Next</button>
+    <span class="read" id="trRead"></span>
+  </div>
+  <div class="codes" id="trCodes" aria-hidden="true"></div>
+  <div class="out" id="trOut"></div>
+  <div id="trSvg"></div>
+  <figcaption id="trCap"></figcaption>
+</figure>
+<p>Three observations. (1) The first levels fix the frame ("However, …"). (2) Middle levels contain repeated words: "remain remain remain". (3) Quality is not monotonic: BLEU is 51.7 after level 8 and 38.9 after level 9. A later level can change an earlier decision, because each level writes a correction to the full draft. On Sudoku, 16 of 81 cells are correct after level 1 and 64 after level 11; the last level corrects 17 cells.</p>
+
+<h2 id="s5"><span class="n">5</span>Attention: why training is one pass</h2>
+<p>For training, put the inputs of all levels in one sequence: [prefix, level-1 block, level-2 block, …, level-$K$ block]. How level 1 enters depends on the config (<a href="#s10">Section 10.3</a>): in TinyStories and OWT, level 1 comes from a stored unigram table and the sequence starts at the level-2 block (<code>models/next_concept.py:91</code>); in LM1B, XSum and Sudoku, the level-1 block holds learned query vectors (<code>:239-242</code>); in WMT14, a head on the prefix predicts level 1.</p>
+<p>Block $k$ holds $\hat z^{(k-1)}$ pooled to $\ell_k$ positions, computed from the ground-truth codes. An attention mask keeps the blocks apart. One forward pass then gives the logits for all levels, and the loss is cross-entropy against the true codes (teacher forcing).</p>
+<p>NCM uses a <b>block-diagonal</b> mask: a position attends only to positions in its own level, in both directions, plus the prefix. Earlier blocks are not necessary, because the input of block $k$ already contains the sum of the earlier levels.</p>
+<figure>
+  <div class="ctl">
+    <button data-m="diag" class="on mk">Block-diagonal (NCM)</button><button data-m="win" class="mk">Sliding window, 2 levels</button><button data-m="bc" class="mk">Block-causal</button><button data-m="causal" class="mk">Token-causal (reference)</button>
+    <label><input type="checkbox" id="mkP"> prefix, P = 3</label>
+  </div>
+  <div id="mkSvg" class="scroll"></div>
+  <div class="read" id="mkRead"></div>
+  <figcaption><b>Fig. 6. Attention masks for a toy schedule 1, 2, 4, 8.</b> Row = query position, column = key position, filled = attention allowed, colour = level of the key. The rule for the two patterns in the code is one line each: <code>d == dT</code> and <code>d &gt;= dT</code> on the level index of each position (<code>models/next_concept.py:274</code>, <code>:276</code>). With a prefix: prefix rows see only the prefix; each target row sees the prefix and its own block (<code>:282-289</code>). The sliding-window pattern is from Fig. 11 of the paper and is not in the released code.</figcaption>
+</figure>
+<div class="box rx"><div class="h">Sheet stack · stage 6</div><p>The painter of a sheet gets one photograph of the stack, made to the size of the new sheet. The earlier sheets are in the photograph, so the painter does not need them as separate items. That is why the block-diagonal mask is sufficient. The photograph is blurred, so some detail of the earlier sheets is lost.</p></div>
+<div class="scroll"><table>
+<tr><th>Attention pattern (TinyStories, Table 9)</th><th>Gen. PPL ↓</th><th>Entropy H</th><th>Time for 1,024 samples (s) ↓</th></tr>
+<tr><td>Block-causal</td><td>19.63</td><td>4.01</td><td>7.90</td></tr>
+<tr><td>Sliding window (2 levels)</td><td>17.84</td><td>3.99</td><td>6.83</td></tr>
+<tr class="us"><td>Block-diagonal (NCM)</td><td>15.41</td><td>3.98</td><td>5.65</td></tr>
+</table></div>
+<p>At sampling time the mask is not necessary for the target: the model runs one level for each pass, so the sequence holds only the prefix and the current block (<code>models/next_concept.py:501-519</code>). Block-causal sampling costs 7.90 s against 5.65 s, a factor of 1.40 (Table 9). The paper gives no cause. A probable cause, not measured: a block-causal model must keep the earlier blocks in the sequence, so pass $k$ attends over $\sum_{j\le k}\ell_j$ positions instead of $\ell_k$.</p>
+
+<h2 id="s6"><span class="n">6</span>Training the generator</h2>
+<h3>6.1 Objective and level weights</h3>
+<p>The loss (Eq. 10) is a weighted cross-entropy over all codes. $\tilde z^{(k-1)}$ is the reconstruction built from corrupted input codes (Section 6.2):</p>
+$$\mathcal L_{\text{NCM}}=-\sum_{k=1}^{K}w_k\sum_{i=1}^{\ell_k}\log p_\theta\big(r_k^i\mid\tilde z^{(k-1)}\big),\qquad w_k=\frac{\ell_k^{-\alpha}}{\sum_{j=1}^{K}\ell_j^{1-\alpha}}.$$
+<p>Level $k$ has $\ell_k$ terms of weight $w_k$, so its share of the loss is proportional to $\ell_k^{1-\alpha}$. With $\alpha=0$ each code has equal weight and the long levels dominate. With $\alpha=1$ each level has equal weight.</p>
+<figure>
+  <div class="ctl"><label for="alR">α</label><input type="range" id="alR" min="0" max="1.5" step="0.25" value="0"><span class="read" id="alRead"></span></div>
+  <div id="alSvg"></div>
+  <figcaption><b>Fig. 7. Share of the loss for each predicted level,</b> TinyStories schedule, levels 2 to 12. Check: the paper states that a change of $\alpha$ from 0 to 1.5 moves the coarse levels' share from 19% to 63% (Appendix F.2.3). This chart gives 18.8% and 63.1% for levels 2 to 6 when the sum runs over levels 2 to 12. With level 1 in the sum the result at $\alpha=1.5$ is 40.7%, so the paper's figure excludes level 1. Measured effect: Gen. PPL after 10k steps stays at 18.9 to 19.0 for $\alpha\le1$ and is 19.4 at 1.5.</figcaption>
+</figure>
+<h3>6.2 Conditioning corruption</h3>
+<p>In training, the input of level $k$ comes from the true codes. In sampling, it comes from the model's own samples, which contain errors. All codes of a level are sampled in parallel, so more than one error can enter the draft in one step. This mismatch is exposure bias.</p>
+<p>The paper's remedy: during training, replace a fraction of the <i>input</i> codes with codes drawn uniformly from the same codebook. The <i>targets</i> stay clean. The model then learns to predict the correct next level from a damaged draft. The replacement rate decreases linearly across levels. On TinyStories, Gen. PPL after 10k steps falls from about 49 with no corruption to about 19 at the selected recipe with mean rate 0.5; a mean rate of 0.75 is worse again (paper Fig. 13; values read from the plot).</p>
+<div class="box rx"><div class="h">Sheet stack · stage 5</div><p>The teacher smudges some tiles on the lower sheets during practice. The correct next sheet stays the target. The painter learns to paint the correct sheet over a stack that has errors.</p></div>
+<h3>6.3 Algorithm 1 in five lines</h3>
+<ol>
+  <li>Encode text $x$ to target codes $r_{1:K}$ with the frozen tokenizer.</li>
+  <li>Replace some codes at random to get $\tilde r_{1:K}$.</li>
+  <li>For each level, build $\tilde z^{(k-1)}$, pool it to $\ell_k$ positions and project it to the hidden width.</li>
+  <li>Predict all levels in one forward pass with the block-diagonal mask.</li>
+  <li>Compute $\mathcal L_{\text{NCM}}$ against the clean $r_{1:K}$ and update $\theta$.</li>
+</ol>
+<p>For prompts (summarization, translation, Sudoku clues) the prompt tokens go through the tokenizer's embedding table and a projection, and they form the prefix. The repository contains evaluation code only. It has no training loop and no corruption code, so Sections 6.1 to 6.3 rest on the paper.</p>
+
+<h2 id="s7"><span class="n">7</span>What the model optimizes: an evidence lower bound</h2>
+<p>NCM is a latent-variable model. The latent is the code hierarchy $r_{1:K}$. The decoder gives a likelihood $p_\psi(x\mid r_{1:K})=\prod_{n=1}^{L}p_\psi(x^n\mid\hat z^{(K)}(r_{1:K}))$ and the generator gives a normalized prior $p_\theta(r_{1:K})$. The text likelihood sums over all hierarchies:</p>
+$$p_{\theta,\psi}(x)=\sum_{r_{1:K}}p_\psi(x\mid r_{1:K})\,p_\theta(r_{1:K}).$$
+<div class="box"><div class="h">Proposition (Appendix A, Eq. 16 to 18)</div>
+<p>Let $r^*_{1:K}(x)$ be the hierarchy that the tokenizer assigns to $x$, with nearest-neighbour ties broken by a fixed rule. Then</p>
+$$\log p_{\theta,\psi}(x)\;\ge\;\underbrace{\sum_{n=1}^{L}\log p_\psi\big(x^n\mid\hat z_*^{(K)}\big)}_{\text{reconstruction}}+\underbrace{\sum_{k=1}^{K}\sum_{i=1}^{\ell_k}\log p_\theta\big(r_k^{*i}\mid\hat z_*^{(k-1)}\big)}_{\text{generation}},$$
+<p>and the gap is exactly $-\log p_{\theta,\psi}\big(r^*_{1:K}\mid x\big)\ge0$.</p></div>
+<p><b>Proof.</b> A variational distribution $q(r_{1:K}\mid x)$ is any distribution over the latent that one selects to get a lower bound on $\log p(x)$. Use the point mass $q(r_{1:K}\mid x)=\mathbf 1\{r_{1:K}=r^*_{1:K}(x)\}$. Its entropy is zero, so the ELBO $\mathbb E_q[\log p_{\theta,\psi}(x,r_{1:K})-\log q]$ is $\log p_\psi(x\mid r^*_{1:K})+\log p_\theta(r^*_{1:K})$. The sum that defines $p_{\theta,\psi}(x)$ has only non-negative terms and contains the term for $r^*_{1:K}$, so the sum is at least that term. Substitute the two factorizations to get the right side. For the gap, $\log p(x)-\log p(x,r^*)=-\log p(r^*\mid x)$ by the definition of conditional probability. ∎</p>
+<p><b>Reading.</b></p>
+<ul>
+  <li>With a frozen tokenizer, only the generation term depends on $\theta$. With clean inputs and $\alpha=0$, $\mathcal L_{\text{NCM}}$ is that term divided by $-N$, $N=\sum_k\ell_k$. Minimizing the loss maximizes the bound.</li>
+  <li>Corruption and $\alpha\ne0$ change the objective. Then it is not this ELBO.</li>
+  <li>The bound is tight only if the model's posterior puts probability one on the tokenizer's hierarchy. The paper does not report the size of the gap, and it reports no likelihood or perplexity of NCM on held-out text. Quality is measured by generative perplexity under another model.</li>
+</ul>
+<div class="box rx"><div class="h">Sheet stack · stage 4</div><p>The painters of one sheet work at the same time and do not talk. Each one sees the same photograph of the stack. If the photograph permits two different continuations, two neighbours can each select a different one, or the same one twice: "the cat · the cat". A later sheet must correct this. The box below gives the same argument with probabilities.</p></div>
+<div class="box t"><div class="h">Consequence of independence inside a level</div>
+<p>Suppose that, given the draft, positions $i$ and $j$ must agree on one of two choices, each with probability 1/2. A factorized distribution gives each position 1/2 for each choice, so the two disagree in half of the samples. NCM must make such choices at a level where one code covers both positions, or correct the conflict at a later level. This is an interpretation, not a claim of the paper. It agrees with the repeated words in Fig. 5 and with the paper's statement that generations "exhibit occasional artifacts at coarse-level transitions" (Appendix I).</p></div>
+
+<h2 id="s8"><span class="n">8</span>Cost: a count of positions</h2>
+<p>This section is a derivation from the level schedules in <code>ncm-main/config/eval/*.yaml</code>. It is not a result of the paper. Assumptions: equal model size for the two methods; the feed-forward cost of a pass is proportional to the positions it processes; the attention cost is proportional to the square; prefix and tokenizer decoder are not counted.</p>
+$$\frac{\text{diffusion positions}}{\text{NCM positions}}=\frac{T\,L}{\sum_{k=1}^{K}\ell_k},\qquad\frac{\text{diffusion attention pairs}}{\text{NCM attention pairs}}=\frac{T\,L^2}{\sum_{k=1}^{K}\ell_k^2}.$$
+<figure>
+  <div class="ctl">
+    <label for="csD">Schedule</label>
+    <select id="csD"><option value="lm1b">LM1B / TinyStories (K=12, L=128)</option><option value="owt">OpenWebText (K=32, L=1024)</option><option value="xsum">XSum config (9 levels, L=48)</option><option value="wmt">WMT14 (K=11, L=64)</option><option value="sud">Sudoku (K=12, L=89)</option></select>
+    <label for="csT">Diffusion steps T</label><input type="range" id="csT" min="0" max="7" step="1" value="4"><span class="read" id="csTv"></span>
+  </div>
+  <div id="csSvg"></div>
+  <div class="read" id="csRead"></div>
+  <figcaption><b>Fig. 8. Level schedule and position counts.</b> Bars: $\ell_k$ for each level. The OpenWebText schedule is exactly $\ell_k=k^2$. In the paper's schedule ablation (TinyStories, $K=12$, 10k steps), the quadratic and exponential schedules gave the lowest Gen. PPL (59.6 and 57.7) and square-root the highest (196.7); linear gave 88.4 (paper Fig. 10).</figcaption>
+</figure>
+<p>For LM1B at $T=128$ the count gives 25.6 times fewer positions and 39.9 times fewer attention pairs. The paper measures 21 times less wall-clock time against DUO at 128 steps (1,024 sequences, batch size 16, one NVIDIA H100). A count is not a time: the measurement also contains the decoder pass, the sampler and GPU effects at short sequence lengths.</p>
+<p>Against NTP the picture is different. NTP with a KV cache processes $L$ new positions in total, fewer than $\sum_k\ell_k$ (128 against 641 on LM1B). NCM's advantage over NTP can only come from fewer sequential passes (12 against 128). The paper has no wall-clock comparison against an autoregressive model with a KV cache (see <a href="#s10">Section 10</a>).</p>
+
+<div class="box rx"><div class="h">Sheet stack · stage 7</div><p>Count tiles. This stack has 1 + 2 + 4 + 8 = 15 tiles and needs 4 passes. The formulas above are the same count for real level sizes: $\sum_k \ell_k$ tiles for NCM against $T\cdot L$ for diffusion.</p></div>
+<h2 id="s9"><span class="n">9</span>Evidence</h2>
+<p><b>Terms.</b> BLEU scores a translation by its n-gram overlap with a reference; ROUGE-1, ROUGE-2 and ROUGE-L score a summary by unigram, bigram and longest-common-subsequence overlap. Higher is better for both. Classifier-free guidance (CFG) runs the model with and without the prompt and moves the logits away from the no-prompt result; it costs two passes for each level. Baselines: MDLM, DUO and E2D2 are discrete diffusion models; ELF, AURORA-LM, FLM and FMLM+ are continuous flow or diffusion models; AR is a next-token transformer of similar size.</p>
+<p>Generator sizes differ by table: 97M on LM1B, 25M to 29M on Sudoku (Table 3), and 88M to 205M across the rows of Table 2 (NCM: 120M on WMT14, 88M on XSum). Each dataset has its own tokenizer and generator. <b>Gen. PPL</b> is the perplexity that GPT-2 large gives to the samples; lower is better, but repeated text also lowers it. <b>H</b> is the mean unigram entropy for each sample, a diversity check. A fair result has H near the value of real data.</p>
+<figure>
+  <div class="scroll"><img class="fig wide" src="quality_speed.png" alt="Authors' chart: generative perplexity against wall-clock time on LM1B, ROUGE-L against wall-clock time on XSum, solved hard Sudoku boards by method"></div>
+  <figcaption><b>Fig. 9. Authors' summary chart</b> (<code>ncm-main/assets/quality_speed.png</code>, MIT license). Left: LM1B, Gen. PPL against time. Centre: XSum, ROUGE-L against time. Right: hard Sudoku, solved boards, with NFE under each method.</figcaption>
+</figure>
+<h3>9.1 Unconditional generation (Table 8)</h3>
+<div class="scroll"><table>
+<tr><th>Method</th><th>TinyStories NFE</th><th>PPL</th><th>H</th><th>LM1B NFE</th><th>PPL</th><th>H</th><th>OWT NFE</th><th>PPL</th><th>H</th></tr>
+<tr><td>Real data</td><td>–</td><td>9.67</td><td>3.96</td><td>–</td><td>53.51</td><td>4.31</td><td>–</td><td>14.15</td><td>5.44</td></tr>
+<tr><td>AR, sampling</td><td>128</td><td>8.89</td><td>4.01</td><td>–</td><td>–</td><td>–</td><td>1024</td><td>35.45</td><td>5.58</td></tr>
+<tr><td>MDLM</td><td>128</td><td>17.89</td><td>4.03</td><td>128</td><td>115.45</td><td>4.33</td><td>1024</td><td>105.15</td><td>5.63</td></tr>
+<tr><td>DUO</td><td>128</td><td>19.63</td><td>4.01</td><td>128</td><td>97.30</td><td>4.30</td><td>1024</td><td>77.69</td><td>5.55</td></tr>
+<tr><td>FLM</td><td>128</td><td>57.50</td><td>4.17</td><td>128</td><td>112.33</td><td>4.33</td><td>1024</td><td>62.23</td><td>5.33</td></tr>
+<tr><td>FMLM+</td><td>128</td><td>15.43</td><td>3.90</td><td>–</td><td>–</td><td>–</td><td>128</td><td>66.60</td><td>5.21</td></tr>
+<tr class="us"><td>NCM</td><td>12</td><td>15.41</td><td>3.98</td><td>12</td><td>93.05</td><td>4.31</td><td>32</td><td>83.12</td><td>5.42</td></tr>
+</table></div>
+<p>Reading: the table shows 7 of the 13 rows of Table 8; AR greedy, SEDD, Eso-LM, RDLM, CANDI and S-FLM are omitted. NCM has the lowest Gen. PPL of the non-AR methods on LM1B (93.05, 12 passes against 128). On TinyStories NCM (15.41, 12 passes) and FMLM+ (15.43, 128 passes) are equal within 0.02. On OWT, NCM at 32 passes (83.12) is behind FLM (62.23, 1,024 passes), FMLM+ (66.60, 128 passes) and DUO (77.69, 1,024 passes). The caption of Table 8 adds a caveat: FLM and FMLM+ on OWT have $H$ below the data value of 5.44 (5.33 and 5.21), and "lower Gen. PPL at an entropy below that of the data […] partly reflects reduced diversity". The autoregressive baseline with sampling is better than all of them: 8.89 against 15.41 on TinyStories and 35.45 against 83.12 on OWT. The claim of the paper is about diffusion baselines.</p>
+<h3>9.2 Conditional generation (Table 2)</h3>
+<div class="scroll"><table>
+<tr><th>Method</th><th>WMT14 De–En BLEU</th><th>NFE</th><th>XSum R-1</th><th>R-2</th><th>R-L</th><th>NFE</th></tr>
+<tr><td>AR</td><td>25.2</td><td>64</td><td>30.5</td><td>10.2</td><td>24.4</td><td>64</td></tr>
+<tr><td>MDLM</td><td>18.4</td><td>64</td><td>33.4</td><td>11.6</td><td>25.8</td><td>64</td></tr>
+<tr><td>E2D2</td><td>24.8</td><td>64</td><td>28.4</td><td>8.3</td><td>22.0</td><td>64</td></tr>
+<tr><td>AURORA-LM</td><td>–</td><td>–</td><td>34.7</td><td>12.2</td><td>26.6</td><td>128</td></tr>
+<tr class="us"><td>NCM</td><td>22.6</td><td>11</td><td>35.0</td><td>12.8</td><td>28.0</td><td>8</td></tr>
+<tr><td>ELF + guidance</td><td>26.4</td><td>128</td><td>36.0</td><td>12.2</td><td>27.8</td><td>128</td></tr>
+<tr><td>AURORA-LM + guidance</td><td>–</td><td>–</td><td>36.3</td><td>13.4</td><td>28.6</td><td>184</td></tr>
+<tr class="us"><td>NCM + CFG</td><td>23.9</td><td>22</td><td>35.3</td><td>13.0</td><td>28.2</td><td>16</td></tr>
+<tr class="us"><td>NCM + MBR</td><td>25.2</td><td>132</td><td>37.3</td><td>14.0</td><td>29.6</td><td>128</td></tr>
+</table></div>
+<p>Reading: on XSum, unguided NCM has the highest ROUGE of the unguided rows with 8 passes against 64 to 128, and the paper measures 31 times less time than AURORA-LM. On WMT14, unguided NCM (22.6) is below E2D2 (24.8) and below AR (25.2). Because a sample is cheap, the paper draws $M$ candidates and keeps the one with the highest mean similarity to the others (minimum Bayes risk, MBR). With $M=12$ (132 passes) NCM reaches the AR score of 25.2.</p>
+<h3>9.3 Sudoku (Table 3)</h3>
+<div class="scroll"><table>
+<tr><th>Method</th><th>Size</th><th>NFE</th><th>Easy</th><th>Medium</th><th>Hard</th></tr>
+<tr><td>AR, greedy</td><td>25M</td><td>128</td><td>14.6</td><td>5.1</td><td>1.0</td></tr>
+<tr><td>MDLM</td><td>29M</td><td>128</td><td>92.0</td><td>77.1</td><td>30.2</td></tr>
+<tr><td>DUO</td><td>29M</td><td>128</td><td>96.3</td><td>84.7</td><td>58.4</td></tr>
+<tr><td>FMLM+</td><td>29M</td><td>16</td><td>97.7</td><td>92.8</td><td>81.3</td></tr>
+<tr class="us"><td>NCM</td><td>25M</td><td>12</td><td>99.5</td><td>96.5</td><td>86.1</td></tr>
+</table></div>
+<p>Values are the percentage of boards solved completely, with 40, 35 and 30 clues. The task needs each cell to agree with its row, column and box. A left-to-right model cannot change an earlier cell. NCM refines the full board at each level.</p>
+<h3>9.4 Training budget and scaling</h3>
+<ul>
+  <li>LM1B: tokenizer plus generator see 13.36B token positions (6.80B + 6.55B) against 66B for the baselines, a factor of 4.9. OWT: 127.22B against more than 500B, about a factor of 4. These count token exposure, not FLOPs.</li>
+  <li>The paper's suggested reason: one fixed coarse-to-fine order is simpler to learn than the many orders a diffusion model must learn. The paper calls this "one possible explanation".</li>
+  <li>Generators with 97M, 317M and 725M parameters on one frozen LM1B tokenizer: Gen. PPL falls as size increases at a fixed token budget (paper Fig. 6a). The paper calls these results preliminary.</li>
+  <li>More levels help with decreasing returns: on TinyStories, each doubling of $K$ from 4 to 32 lowers Gen. PPL by 52%, 32% and 20% (paper Fig. 9, no corruption, 10k steps).</li>
+</ul>
+
+<h2 id="s10"><span class="n">10</span>Limits and open questions</h2>
+<h3>10.1 Stated by the paper (Appendix I)</h3>
+<ul>
+  <li><b>Fixed shape.</b> $K$ and each $\ell_k$ are fixed for a dataset, "so even short continuations traverse the full hierarchy". The paper proposes an input-dependent schedule as future work. The Turing Post video adds that NCM has no variable-length output; in the released models a shorter text fills the remaining positions with padding.</li>
+  <li><b>Two separate stages.</b> The tokenizer is trained first and frozen. Representation learning is not aligned with the generative objective.</li>
+  <li><b>Scale.</b> Main experiments use about 100M parameters; the scaling study stops at 725M on LM1B.</li>
+  <li><b>Artifacts.</b> "Occasional artifacts at coarse-level transitions."</li>
+</ul>
+<div class="box rx"><div class="h">Sheet stack · stage 8</div><p>The stack has a fixed number of sheets with fixed tile counts. A two-token answer still goes through all sheets, and padding fills the unused tiles.</p></div>
+<h3>10.2 Added by the Turing Post video, checked against the paper</h3>
+<ul>
+  <li><b>One model for each task.</b> Correct: Appendix B states a separate tokenizer and generator for each of six datasets. The tokenizer adds parameters to the count (LM1B: 111.4M tokenizer beside the 97M generator).</li>
+  <li><b>The speed-ups are against diffusion and flow models.</b> Correct. The paper's timing panels (paper Fig. 1a and 1b, the OWT panel of paper Fig. 5, and paper Fig. 6) contain no autoregressive curve, and the text gives no AR time. Table 2 gives AR quality at 64 NFE but no AR time.</li>
+  <li><b>Hardware claim.</b> The video rejects the statement that NCM makes GPU memory unnecessary; its argument is that parallel prediction of a level increases arithmetic work for each weight load. The paper makes no hardware-market claim. This page does not examine that subject.</li>
+</ul>
+<h3>10.3 Paper against released code</h3>
+<div class="box w"><div class="h">Differences observed in this folder. No cause is assumed.</div>
+<p>The pass counts below come from a reading of <code>generate()</code> and <code>scripts/eval_shard.py</code>. No model was run.</p>
+<ul>
+  <li><b>Evaluation only.</b> The repository has no optimizer loop, no data pipeline, no generator loss and no corruption code. The tokenizer's training-mode forward pass, with the level cutoff, is present (<code>models/quant.py:448-531</code>).</li>
+  <li><b>First level.</b> Algorithm 2 predicts all $K$ levels with the generator, starting from the resized zero draft. The released configs use four mechanisms:
+    <ul>
+      <li><code>tinystories.yaml</code>, <code>owt.yaml</code>: <code>query_level0: false</code>, <code>level0_unigram</code> set. Level 1 is drawn from a stored unigram table (<code>scripts/eval_shard.py:71</code>, <code>:156</code>). The training sequence holds levels 2 to $K$ only (<code>models/next_concept.py:91</code>). <code>generate()</code> runs $K-1$ passes: 11 for TinyStories, 31 for OWT, against NFE 12 and 32 in the paper.</li>
+      <li><code>lm1b-*.yaml</code>: <code>query_level0: true</code> and <code>level0_unigram</code> set. The model has a block of learned level-1 queries (<code>models/next_concept.py:239-242</code>), but <code>scripts/eval_shard.py:156</code> supplies level 1 from the unigram table, so <code>generate()</code> runs 11 passes against NFE 12.</li>
+      <li><code>xsum.yaml</code>, <code>sudoku-*.yaml</code>: <code>query_level0: true</code>, no unigram table. One pass on the learned queries makes level 1 (<code>models/next_concept.py:581-626</code>), then $K-1$ passes. Total 9 for the XSum config and 12 for Sudoku.</li>
+      <li><code>wmt14.yaml</code>: <code>predict_level0: true</code>. A head on the prefix pass makes level 1 (<code>models/next_concept.py:629-640</code>), then 10 passes. Total 11, equal to the paper.</li>
+    </ul></li>
+  <li><b>XSum levels.</b> <code>config/eval/xsum.yaml</code> lists 9 levels (4, 6, 10, 14, 20, 26, 32, 40, 48) and <code>generate()</code> runs 9 passes. Table 5 gives $K=8$ and Table 2 gives NFE 8. The authors' animation in Fig. 2 also shows "level 1/9" for XSum.</li>
+  <li><b>OWT size.</b> <code>config/eval/owt.yaml</code> has 16 blocks, width 1,024, 16 heads and codebooks of 8,192. Tables 5 and 6 give 12 blocks, width 768, 12 heads, 94.65M parameters and codebooks of 4,096.</li>
+  <li><b>Where the tokenizer loss is evaluated.</b> Eq. 9 uses $\hat z^{(k)}$ at the sampled cutoff in all three terms. In <code>models/quant.py:519-523</code>, Terms 2 and 3 are added at every level and divided by $K$, before the cutoff is drawn (<code>:525-530</code>). Only the decoder input, and so Term 1, uses the cutoff.</li>
+  <li><b>Token selection.</b> Algorithm 2 selects tokens by argmax. For LM1B and XSum, <code>scripts/eval_shard.py:99-123</code> applies a frequency penalty and an adjacency penalty in a left-to-right loop over the decoder logits (LM1B: 11.5 and "10,4,0.5").</li>
+  <li><b>Guidance.</b> <code>models/next_concept.py:481-482</code> scales the guidance weight linearly with the level, from 0 at level 1 to the full value at level $K$.</li>
+</ul></div>
+<h3>10.4 Questions the sources do not answer</h3>
+<ul>
+  <li>What is the held-out likelihood, and how large is the ELBO gap?</li>
+  <li>How does wall-clock time compare with an optimized autoregressive model of equal quality?</li>
+  <li>Does exact reconstruction hold for code and for long documents at larger scale?</li>
+</ul>
+
+<h2 id="s11"><span class="n">11</span>Code map</h2>
+<div class="scroll"><table>
+<tr><th>Idea</th><th class="wrap">Where</th></tr>
+<tr><td>Encode text to codes (Eq. 6 to 8)</td><td class="wrap"><code>models/vqvae.py:98</code> → <code>models/quant.py:573</code> <code>z_to_idx</code></td></tr>
+<tr><td>Down / up resize</td><td class="wrap"><code>models/quant.py:395</code>, <code>:404</code></td></tr>
+<tr><td>Post-upsample conv blend $\phi$</td><td class="wrap"><code>models/quant.py:11</code>, <code>:380</code></td></tr>
+<tr><td>Tokenizer training pass, EMA, VQ losses, level cutoff</td><td class="wrap"><code>models/quant.py:448-531</code></td></tr>
+<tr><td>Teacher-forced generator inputs</td><td class="wrap"><code>models/quant.py:671</code> <code>idx_to_ncm_input</code></td></tr>
+<tr><td>Attention mask</td><td class="wrap"><code>models/next_concept.py:268-291</code></td></tr>
+<tr><td>Training-shape forward (all levels, one pass)</td><td class="wrap"><code>models/next_concept.py:376</code>, <code>:437</code></td></tr>
+<tr><td>Sampling loop (Algorithm 2)</td><td class="wrap"><code>models/next_concept.py:521</code>, loop at <code>:660</code></td></tr>
+<tr><td>Next-level input from the draft</td><td class="wrap"><code>models/quant.py:697</code></td></tr>
+<tr><td>Prefix KV cache (the prefix does not attend to targets)</td><td class="wrap"><code>models/next_concept.py:650-657</code></td></tr>
+<tr><td>Decode draft to tokens</td><td class="wrap"><code>scripts/eval_shard.py:140-146</code>, <code>models/vae.py:198</code></td></tr>
+</table></div>
+<pre><code>pip install -r requirements.txt
+hf download hazyresearch/ncm-checkpoints --local-dir artifacts
+hf download hazyresearch/ncm-datasets --repo-type dataset --local-dir data
+python evaluate.py --config config/eval/&lt;task&gt;.yaml \
+    --checkpoint-dir artifacts/&lt;task&gt; --data-dir data/&lt;task&gt;</code></pre>
+<p class="src">Commands from <code>ncm-main/README.md</code>. They were not run for this page, and the placeholders are the README's. The Hugging Face table in the README lists the Sudoku files under <code>sudoku/hard/</code>, so check the folder names after the download. The Sudoku model is the smallest (25M generator, 14.9M tokenizer), so it is the fastest first experiment.</p>
+<h3>A 30-minute path through the paper</h3>
+<ol>
+  <li>Fig. 2 and Fig. 3 (pages 2 and 4): the schedule and one trajectory.</li>
+  <li>Section 3.1 to 3.4 with Algorithms 1 and 2 (pages 5 to 7).</li>
+  <li>Fig. 11 and Table 9 (page 28): the attention choice.</li>
+  <li>Appendix F.3 (page 29): corruption. Appendix A (pages 21 to 22): the ELBO.</li>
+  <li>Tables 2, 3, 8 and Appendix I: results and limits.</li>
+</ol>
+
+<h3>What you can now do</h3>
+<ul>
+  <li>Trace one sample through the tokenizer: residual, pooling, nearest code, upsample, sum.</li>
+  <li>Count the passes and positions of NTP, masked diffusion and NCM for a given schedule (<a href="#s8">Section 8</a>).</li>
+  <li>Read Tables 2, 3 and 8 with their caveats: diffusion baselines only, $H$ against data, no AR time.</li>
+  <li>Find in the released code where the paper and the code differ (<a href="#s10">Section 10.3</a>).</li>
+</ul>
+
+<h2 id="s12"><span class="n">12</span>Self-check</h2>
+<details><summary>1. On LM1B, how many codes does the generator predict for one sample, and how many passes does that take?</summary><p>$\sum_k\ell_k=641$ codes in $K=12$ passes (the paper's count). An autoregressive model over the same codes would need 641 passes.</p></details>
+<details><summary>2. Why can the block-diagonal mask drop attention to earlier levels without losing all information about them?</summary><p>The input of block $k$ is $\hat z^{(k-1)}$, the sum of the upsampled embeddings of levels $1..k-1$, pooled to $\ell_k$ positions. The earlier levels are in the input values. The pooling loses detail, so the summary is not complete.</p></details>
+<details><summary>3. Remove nested dropout. What do you expect from the generator?</summary><p>The tokenizer is free to put most information in the fine levels. Coarse codes then say little about the text. The generator's early passes fix little, and the fine levels must be predicted from an uninformative draft with independent samples at each position.</p></details>
+<details><summary>4. Derive the share of the loss for level $k$ and give its value for level 12 of the TinyStories schedule at $\alpha=0$, levels 2 to 12.</summary><p>Share $=w_k\ell_k/\sum_jw_j\ell_j=\ell_k^{1-\alpha}/\sum_j\ell_j^{1-\alpha}$. At $\alpha=0$: $128/640=20\%$.</p></details>
+<details><summary>5. A colleague says: "NCM is 21 times faster than LLMs." Correct the sentence.</summary><p>The paper measures 21 times less wall-clock time than DUO, a diffusion language model, on LM1B at better generative perplexity, with models near 100M parameters. It gives no time comparison against an autoregressive model, and the autoregressive baselines in Table 8 have lower generative perplexity.</p></details>
+<details><summary>6. Why does corruption apply to the inputs and not to the targets?</summary><p>The aim is to copy the sampling condition: the draft contains wrong codes, and the model must still predict the correct next level. Corrupted targets would teach the model to output wrong codes.</p></details>
+</main>
+
+<script>
+window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},svg:{fontCache:'global'}};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" integrity="sha384-KFhJsitVMr6StsPEDVScB10yQrD5eLlCHdHfI/vSwuEOmxi09La07JzrX1MAGKqG" crossorigin="anonymous" async></script>
+
+<script>
+/* shared helpers */
+window.NCM={
+  C:{bg:'#0b1220',line:'#334155',fg:'#e2e8f0',mut:'#94a3b8',ncm:'#fb923c',dlm:'#2dd4bf',ar:'#a5b4fc',bad:'#f87171'},
+  S:{lm1b:[1,8,16,24,32,40,52,64,76,92,108,128],owt:Array.from({length:32},(_,i)=>(i+1)*(i+1)),xsum:[4,6,10,14,20,26,32,40,48],wmt:[1,4,8,14,20,26,32,40,48,56,64],sud:[1,2,4,6,9,13,18,26,37,50,67,89]},
+  q:id=>document.getElementById(id),
+  /* play helper: calls tick() every ms until it returns false */
+  player(btn,ms,tick){let t=null;const stop=()=>{clearInterval(t);t=null;btn.textContent='Play'};
+    btn.addEventListener('click',()=>{if(t){stop();return}btn.textContent='Pause';t=setInterval(()=>{if(tick()===false)stop()},ms)});return stop}
+};
+</script>
+
+<script>
+/* Fig. 1: pass race */
+(function(){const{C,S,q}=NCM,L=128,lv=S.lm1b,K=lv.length;
+let f=12,T=32;
+// fixed pseudo-random reveal order for the diffusion row
+const perm=[...Array(L).keys()];let s=7;for(let i=L-1;i>0;i--){s=(s*1103515245+12345)%2147483648;const j=s%(i+1);[perm[i],perm[j]]=[perm[j],perm[i]]}
+function prep(cv){const d=window.devicePixelRatio||1,w=cv.clientWidth||600;cv.width=w*d;cv.height=30*d;const g=cv.getContext('2d');g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,w,30);return[g,w]}
+function cells(g,w,n,fill,on){const cw=w/n;for(let i=0;i<n;i++){g.fillStyle=on(i)?fill:'#1e293b';g.fillRect(i*cw+.5,3,Math.max(cw-1,1),24)}}
+function draw(){
+  let[g,w]=prep(q('cvA'));const a=Math.min(f,L);cells(g,w,L,C.ar,i=>i<a);
+  q('rcA').innerHTML=`passes <b>${a}</b>/128 · positions <b>${a}</b>`;
+  [g,w]=prep(q('cvD'));const d=Math.min(f,T),n=Math.round(L*d/T),on=new Set(perm.slice(0,n));cells(g,w,L,C.dlm,i=>on.has(i));
+  q('rcD').innerHTML=`passes <b>${d}</b>/${T} · positions <b>${(d*L).toLocaleString()}</b>`;
+  [g,w]=prep(q('cvN'));const k=Math.min(f,K);
+  if(k===0)cells(g,w,L,C.ncm,()=>false);else{g.globalAlpha=.3+.7*k/K;cells(g,w,lv[k-1],C.ncm,()=>true);g.globalAlpha=1}
+  const pos=lv.slice(0,k).reduce((x,y)=>x+y,0);
+  q('rcN').innerHTML=`passes <b>${k}</b>/12 · level size <b>${k?lv[k-1]:0}</b> · positions <b>${pos}</b>`+(k===K?' · decode':'');
+  q('rcF').value=f}
+const stop=NCM.player(q('rcPlay'),90,()=>{if(f>=128)return false;f++;draw()});
+q('rcStep').onclick=()=>{stop();f=Math.min(128,f+1);draw()};
+q('rcReset').onclick=()=>{stop();f=0;draw()};
+q('rcF').oninput=e=>{stop();f=+e.target.value;draw()};
+q('rcT').onchange=e=>{T=+e.target.value;draw()};
+addEventListener('resize',draw);draw()})();
+</script>
+
+<script>
+/* Fig. 3: toy multiscale residual quantizer */
+(function(){const{C,q}=NCM,L=16,lv=[1,2,4,8,16],R=[1.5,1.2,0.9,0.6,0.4],V=8;
+const z=[0.9,1.1,1.4,1.2,0.7,0.2,-0.3,-0.2,0.3,0.8,0.6,-0.1,-0.9,-1.3,-1.0,-0.6];
+const book=k=>Array.from({length:V},(_,j)=>-R[k]+2*R[k]*j/(V-1));
+// F.interpolate(mode="area") == adaptive average pooling
+const area=(x,n)=>Array.from({length:n},(_,i)=>{const a=Math.floor(i*x.length/n),b=Math.ceil((i+1)*x.length/n);let s=0;for(let j=a;j<b;j++)s+=x[j];return s/(b-a)});
+// F.interpolate(mode="linear", align_corners=False)
+const lin=(x,n)=>Array.from({length:n},(_,i)=>{let p=(i+.5)*x.length/n-.5;if(p<0)p=0;const a=Math.floor(p),b=Math.min(a+1,x.length-1),t=p-a;return x[a]*(1-t)+x[b]*t});
+const st=[{zhat:Array(L).fill(0)}];let rest=z.slice(),zhat=Array(L).fill(0);
+lv.forEach((n,k)=>{const last=k===lv.length-1,u=last?rest.slice():area(rest,n),bk=book(k);
+  const idx=u.map(v=>{let b=0;bk.forEach((e,j)=>{if(Math.abs(v-e)<Math.abs(v-bk[b]))b=j});return b}),q=idx.map(j=>bk[j]),c=last?q:lin(q,L);
+  const before=rest.slice();zhat=zhat.map((v,i)=>v+c[i]);rest=rest.map((v,i)=>v-c[i]);
+  st.push({zhat:zhat.slice(),before,u,q,idx,n})});
+const mse=a=>a.reduce((s,v,i)=>s+(z[i]-v)**2,0)/L;
+let k=2;
+const W=720,X=i=>40+(i+.5)*(W-60)/L,Y1=v=>90-v*48,Y2=v=>262-v*48;
+function draw(){const s=st[k];let h=`<svg viewBox="0 0 ${W} 340" role="img" aria-label="Toy tokenizer after level ${k}">`;
+  h+=`<line x1="40" x2="${W-20}" y1="90" y2="90" stroke="${C.line}"/><line x1="40" x2="${W-20}" y1="262" y2="262" stroke="${C.line}"/>`;
+  h+=`<text x="4" y="16" font-size="12">z and ẑ(${k})</text><text x="4" y="188" font-size="12">residual z(${Math.max(k-1,0)}) → pooled → snapped</text>`;
+  const path=(a,Y)=>a.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join('');
+  if(k>1)h+=`<path d="${path(st[k-1].zhat,Y1)}" fill="none" stroke="${C.ncm}" stroke-opacity=".3" stroke-width="2"/>`;
+  h+=`<path d="${path(s.zhat,Y1)}" fill="none" stroke="${C.ncm}" stroke-width="2.5"/><path d="${path(z,Y1)}" fill="none" stroke="${C.fg}" stroke-width="1.5"/>`;
+  z.forEach((v,i)=>h+=`<circle cx="${X(i)}" cy="${Y1(v)}" r="2.5" fill="${C.fg}"/>`);
+  if(k>0){const bw=(W-60)/L;s.before.forEach((v,i)=>{const y=Y2(v);h+=`<rect x="${X(i)-bw*.3}" y="${Math.min(y,262)}" width="${bw*.6}" height="${Math.abs(y-262)}" fill="#475569"/>`});
+    const sw=(W-60)/s.n;for(let j=0;j<s.n;j++){const x0=40+j*sw+3,x1=40+(j+1)*sw-3;
+      h+=`<line x1="${x0}" x2="${x1}" y1="${Y2(s.u[j])}" y2="${Y2(s.u[j])}" stroke="${C.dlm}" stroke-width="2.5"/><line x1="${x0}" x2="${x1}" y1="${Y2(s.q[j])}" y2="${Y2(s.q[j])}" stroke="${C.ncm}" stroke-width="2.5" stroke-dasharray="5 3"/>`;
+      if(s.n<=8)h+=`<text x="${(x0+x1)/2}" y="334" font-size="11" text-anchor="middle" fill="${C.ncm}">${s.idx[j]+1}</text>`}
+    if(s.n<=8)h+=`<text x="4" y="334" font-size="11">code</text>`}
+  h+='</svg>';q('tkSvg').innerHTML=h;
+  q('tkRead').innerHTML=k?`level <b>${k}</b>/5 · ℓ = <b>${s.n}</b> · MSE(z, ẑ) = <b>${mse(s.zhat).toFixed(4)}</b> · codes so far <b>${lv.slice(0,k).reduce((a,b)=>a+b,0)}</b>`:`start · ẑ = 0 · MSE = <b>${mse(s.zhat).toFixed(4)}</b>`}
+const stop=NCM.player(q('tkPlay'),1100,()=>{k=k>=5?0:k+1;draw();if(k===5)return false});
+q('tkNext').onclick=()=>{stop();k=Math.min(5,k+1);draw()};q('tkPrev').onclick=()=>{stop();k=Math.max(0,k-1);draw()};
+window.NCM.toyMSE=st.map(s=>mse(s.zhat));draw()})();
+</script>
+
+<script>
+/* Section 4.2: trajectory (Table 12) and Sudoku counts (Fig. 20 headers) */
+(function(){const{C,S,q}=NCM;
+const ref='However, there is concern that small and medium-sized companies remain vulnerable to hacking and surveillance.';
+const D={tr:{lv:S.wmt,val:[6.0,7.2,6.3,16.0,17.5,17.7,24.2,51.7,38.9,56.3,77.8],max:100,unit:'BLEU',
+  txt:['However, it is a important to the the the and the.','However, it is a small to to small and and small, and small and and.','However, it is a concern for small small small medium-sized and-sized-sized and and and...','However, there is a medium of medium-sized enterprises remain remain remain remain to to to to.','However, there is a concern of medium medium-sized-sized enterprises remain remain remain and and orientation.','However, there is a concern that medium medium-sized enterprises will remain remain remain surveillance surveillance surveillance capabilities','However, there is that that and and medium-sized enterprises will remain remain vulnerable surveillance and surveillance.','However, there is that concern and and medium-sized enterprises will remain vulnerable to hacking and surveillance.','However, there is that that small and medium-sized enterprises will remain vulnerable to to and surveillance.','However, there is concern that small and medium-sized enterprises will remain vulnerable to to surveillance surveillance.','However, there is concern that small and medium-sized enterprises will remain vulnerable to hacking and surveillance.'],
+  cap:'<b>Fig. 5. One WMT14 German to English generation, level by level</b> (paper Table 12, text verbatim). Source: "Es besteht allerdings die Sorge, dass kleine und mittlere Unternehmen angreifbar gegenüber Hacking und Überwachung bleiben." Reference: "'+ref+'" Orange squares: the codes written at this level, with sizes from <code>config/eval/wmt14.yaml</code>. Highlight: words that occur in the reference, computed in this page by word match. Bars: BLEU of the decoded draft after each level.'},
+ sd:{lv:S.sud,val:[16,15,16,21,19,25,28,44,55,62,64,81],max:81,unit:'correct cells of 81',txt:null,
+  cap:'<b>Fig. 5. One hard Sudoku, level by level</b> (paper Fig. 20, panel headers). The puzzle has 30 clues and 51 cells to fill. Bars: cells of the decoded board that equal the solution after each level. The count falls at levels 2 and 5 and reaches 81 only at level 12.'}};
+let d='tr',k=6;const refSet=new Set(ref.toLowerCase().replace(/[.,]/g,'').split(' '));
+function draw(){const o=D[d],K=o.lv.length;k=Math.min(k,K);
+  q('trCodes').innerHTML='<i></i>'.repeat(o.lv[k-1]);
+  q('trOut').innerHTML=o.txt?o.txt[k-1].split(' ').map(w=>refSet.has(w.toLowerCase().replace(/[.,]/g,''))?`<mark>${w}</mark>`:w).join(' '):`After level ${k}: <b>${o.val[k-1]}</b> of 81 cells equal the solution. This level wrote ${o.lv[k-1]} codes in one pass.`;
+  q('trRead').innerHTML=`level <b>${k}</b>/${K} · ℓ = <b>${o.lv[k-1]}</b> · ${o.unit} <b>${o.val[k-1]}</b>`;
+  const W=720,bw=(W-50)/K;let h=`<svg viewBox="0 0 ${W} 150" role="img" aria-label="${o.unit} after each level">`;
+  o.val.forEach((v,i)=>{const bh=v/o.max*100,x=40+i*bw;
+    h+=`<rect x="${x+4}" y="${122-bh}" width="${bw-8}" height="${bh}" rx="2" fill="${i===k-1?C.ncm:(i<k?'#7c4a1e':'#334155')}"/><text x="${x+bw/2}" y="${116-bh}" font-size="11" text-anchor="middle" fill="${i===k-1?C.fg:C.mut}">${v}</text><text x="${x+bw/2}" y="138" font-size="11" text-anchor="middle" fill="${C.mut}">${i+1}</text>`});
+  h+=`<line x1="40" x2="${W-10}" y1="122" y2="122" stroke="${C.line}"/><text x="2" y="138" font-size="11" fill="${C.mut}">level</text></svg>`;
+  q('trSvg').innerHTML=h;q('trCap').innerHTML=o.cap;
+  q('trA').classList.toggle('on',d==='tr');q('trB').classList.toggle('on',d==='sd')}
+const stop=NCM.player(q('trPlay'),1300,()=>{const K=D[d].lv.length;k=k>=K?1:k+1;draw();if(k===K)return false});
+q('trNext').onclick=()=>{stop();k=Math.min(D[d].lv.length,k+1);draw()};q('trPrev').onclick=()=>{stop();k=Math.max(1,k-1);draw()};
+q('trA').onclick=()=>{stop();d='tr';k=6;draw()};q('trB').onclick=()=>{stop();d='sd';k=8;draw()};draw()})();
+</script>
+
+<script>
+/* Fig. 5: attention masks */
+(function(){const{C,q}=NCM,lv=[1,2,4,8],col=['#fed7aa','#fdba74','#fb923c','#c2410c'];let mode='diag';
+function draw(){const P=q('mkP').checked?3:0,lev=[];for(let i=0;i<P;i++)lev.push(-1);lv.forEach((n,j)=>{for(let i=0;i<n;i++)lev.push(j)});
+  const N=lev.length,c=Math.min(24,Math.floor(430/N)),o=46;let n=0,h=`<svg viewBox="0 0 ${o+N*c+10} ${o+N*c+10}" width="${o+N*c+10}" role="img" aria-label="Attention mask, ${mode}">`;
+  for(let q=0;q<N;q++)for(let key=0;key<N;key++){const a=lev[q],b=lev[key];let ok;
+    if(a<0)ok=b<0;else if(b<0)ok=true;else ok=mode==='diag'?a===b:mode==='bc'?b<=a:mode==='win'?(b===a||b===a-1):key<=q;
+    if(ok)n++;h+=`<rect x="${o+key*c}" y="${o+q*c}" width="${c-1}" height="${c-1}" fill="${ok?(b<0?C.dlm:col[b]):'#1e293b'}"/>`}
+  let p=0;const tick=(name,len)=>{const m=o+(p+len/2)*c;h+=`<text x="${m}" y="${o-8}" font-size="11" text-anchor="middle">${name}</text><text x="${o-8}" y="${m+4}" font-size="11" text-anchor="end">${name}</text>`;p+=len;
+    if(p<N)h+=`<line x1="${o+p*c-.5}" x2="${o+p*c-.5}" y1="${o}" y2="${o+N*c}" stroke="${C.mut}"/><line y1="${o+p*c-.5}" y2="${o+p*c-.5}" x1="${o}" x2="${o+N*c}" stroke="${C.mut}"/>`};
+  if(P)tick('pre',P);lv.forEach((len,j)=>tick('L'+(j+1),len));
+  h+=`<text x="${o}" y="12" font-size="11" fill="${C.mut}">key →</text></svg>`;q('mkSvg').innerHTML=h;
+  q('mkRead').innerHTML=`allowed query-key pairs: <b>${n}</b> of ${N*N} (${(100*n/(N*N)).toFixed(0)}%)`}
+document.querySelectorAll('.mk').forEach(b=>b.onclick=()=>{mode=b.dataset.m;document.querySelectorAll('.mk').forEach(x=>x.classList.toggle('on',x===b));draw()});
+q('mkP').onchange=draw;draw()})();
+</script>
+
+<script>
+/* Fig. 6: loss share per level */
+(function(){const{C,S,q}=NCM,lv=S.lm1b.slice(1);
+function draw(){const a=+q('alR').value,w=lv.map(l=>Math.pow(l,1-a)),t=w.reduce((x,y)=>x+y,0),sh=w.map(x=>100*x/t),W=720,bw=(W-50)/lv.length,mx=40;
+  let h=`<svg viewBox="0 0 ${W} 170" role="img" aria-label="Loss share per level at alpha ${a}">`;
+  sh.forEach((v,i)=>{const bh=v/mx*120,x=40+i*bw;h+=`<rect x="${x+5}" y="${140-bh}" width="${bw-10}" height="${bh}" rx="2" fill="${i<5?C.ncm:'#7c4a1e'}"/><text x="${x+bw/2}" y="${134-bh}" font-size="11" text-anchor="middle">${v.toFixed(1)}</text><text x="${x+bw/2}" y="156" font-size="11" text-anchor="middle" fill="${C.mut}">${i+2}</text><text x="${x+bw/2}" y="168" font-size="9.5" text-anchor="middle" fill="${C.mut}">ℓ=${lv[i]}</text>`});
+  h+=`<line x1="40" x2="${W-10}" y1="140" y2="140" stroke="${C.line}"/><text x="2" y="156" font-size="11" fill="${C.mut}">level</text><text x="2" y="14" font-size="11" fill="${C.mut}">share of loss (%)</text></svg>`;
+  q('alSvg').innerHTML=h;q('alRead').innerHTML=`α = <b>${a.toFixed(2)}</b> · levels 2 to 6 (bright): <b>${sh.slice(0,5).reduce((x,y)=>x+y,0).toFixed(1)}%</b>`}
+q('alR').oninput=draw;draw()})();
+</script>
+
+<script>
+/* Fig. 7: schedule and cost counts */
+(function(){const{C,S,q}=NCM,Ts=[8,16,32,64,128,256,512,1024];
+function draw(){const lv=S[q('csD').value],K=lv.length,L=lv[K-1],T=Ts[+q('csT').value],s1=lv.reduce((a,b)=>a+b,0),s2=lv.reduce((a,b)=>a+b*b,0);
+  q('csTv').innerHTML=`T = <b>${T}</b>`;const W=720,bw=(W-50)/K;let h=`<svg viewBox="0 0 ${W} 160" role="img" aria-label="Codes per level">`;
+  lv.forEach((v,i)=>{const bh=v/L*120,x=40+i*bw;h+=`<rect x="${x+1.5}" y="${134-bh}" width="${Math.max(bw-3,1)}" height="${bh}" rx="1.5" fill="${C.ncm}"/>`;
+    if(K<=12)h+=`<text x="${x+bw/2}" y="${128-bh}" font-size="11" text-anchor="middle">${v}</text>`;
+    if(K<=12||i%4===3||i===0)h+=`<text x="${x+bw/2}" y="150" font-size="11" text-anchor="middle" fill="${C.mut}">${i+1}</text>`});
+  h+=`<line x1="40" x2="${W-10}" y1="134" y2="134" stroke="${C.line}"/><text x="2" y="150" font-size="11" fill="${C.mut}">level</text><text x="2" y="14" font-size="11" fill="${C.mut}">codes per level; top = L = ${L}</text></svg>`;
+  q('csSvg').innerHTML=h;const f=n=>n.toLocaleString();
+  q('csRead').innerHTML=`NCM: <b>${K}</b> passes · positions Σℓ = <b>${f(s1)}</b> · pairs Σℓ² = <b>${f(s2)}</b><br>Diffusion: <b>${T}</b> passes · positions T·L = <b>${f(T*L)}</b> (<b>${(T*L/s1).toFixed(1)}×</b> NCM) · pairs T·L² = <b>${f(T*L*L)}</b> (<b>${(T*L*L/s2).toFixed(1)}×</b> NCM)<br>NTP with KV cache: <b>${L}</b> passes · new positions <b>${f(L)}</b> (${(s1/L).toFixed(1)}× fewer than NCM)`}
+q('csD').onchange=draw;q('csT').oninput=draw;draw()})();
+</script>
+
+<script>
+/* Fig. 0: running example, the sheet stack (conceptual) */
+(function(){const{C,q}=NCM;
+const base=[['a calm scene at home'],['an animal rests','somewhere indoors'],['the cat','sat on','the warm','kitchen floor'],['The','cat','sat','on','the','warm','kitchen','floor']];
+const ST=[
+ {b:'Text',show:[0,0,0,1],see:'The cat sat on the warm kitchen floor',t:'Start: the finished text. Eight tokens, one flat row. Next-token prediction writes this row from left to right, one tile for each pass.'},
+ {b:'Tokenizer',show:[1,1,1,1],see:'The cat sat on the warm kitchen floor',t:'Stage 1 (Section 3). The tokenizer splits the text into four sheets. Sheet 1 has one tile for the full text. Each later sheet has more tiles and holds only what the sheets below it lack.'},
+ {b:'Nested dropout',show:[1,1,2,2],see:'an animal rests somewhere indoors',t:'Section 3.3. In training, the teacher removes the top sheets at random and the decoder must still write a usable text from the sheets that stay. So the bottom sheets must hold the gist. Without this rule, sheet 4 would hold all of the text and sheets 1 to 3 would be empty.'},
+ {b:'Generate',anim:1,t:'Stage 2 (Section 4). The generator makes a new stack from nothing. Pass 1 paints sheet 1, pass 2 paints sheet 2, and so on. Four passes make eight words. Before each pass, the painter looks through the stack so far from a distance.'},
+ {b:'No talking',show:[1,1,1,2],over:{2:['the cat','the cat','the warm','kitchen floor']},bad:{2:[1]},see:'the cat the cat the warm kitchen floor',t:'Sections 4.1 and 7. All tiles of one sheet are painted at the same time by painters who do not talk. Two neighbours can paint the same thing. This is the "remain remain remain" effect in the real trajectory. Sheet 4 can correct it, because each sheet paints a correction on the full picture.'},
+ {b:'Smudges',show:[1,1,1,2],over:{1:['an animal rests','?!']},bad:{1:[1]},see:'target for sheet 3 stays: the cat · sat on · the warm · kitchen floor',t:'Section 6.2. In practice sessions the teacher smudges some tiles of the lower sheets on purpose. The painter must still paint the correct next sheet. Then the painter\'s own errors at sampling time do less damage.'},
+ {b:'What it sees',show:[1,1,3,2],see:'input for sheet 3: one blurred view of sheets 1 + 2, cut into 4 parts',t:'Section 5. The painter of sheet 3 does not get sheets 1 and 2 as separate items. The painter gets one photograph of the stack, made to the size of sheet 3. The four tile positions of sheet 3 see each other\'s part of the photograph and nothing else. That is the block-diagonal mask.'},
+ {b:'Cost',show:[1,1,1,1],count:1,see:'1 + 2 + 4 + 8 = 15 tiles in 4 passes',t:'Section 8. The bottom sheets are small, so the first passes are cheap. This stack: 15 tiles in 4 passes. Next-token prediction: 8 tiles in 8 passes. Diffusion with T steps: 8 tiles in each of T passes.'},
+ {b:'Limits',show:[1,1,1,1],over:{3:['Hi','.','(pad)','(pad)','(pad)','(pad)','(pad)','(pad)']},see:'Hi. + 6 pad tokens',t:'Section 10. The stack always has four sheets of fixed sizes. A two-token answer still uses all four passes and fills the remaining tiles with padding.'}];
+let i=1,g=4,timer=null;
+function draw(){const s=ST[i],W=720,rh=46;let show=s.show;if(s.anim)show=[0,1,2,3].map(r=>r<g?1:0);
+  let h=`<svg viewBox="0 0 ${W} ${4*rh+8}" role="img" aria-label="Sheet stack, stage ${s.b}">`;
+  base.forEach((row,r)=>{const m=show[r],words=(s.over&&s.over[r])||row,n=row.length,tw=(W-70)/n;
+    h+=`<text x="0" y="${r*rh+28}" font-size="11" fill="${C.mut}">sheet ${r+1}</text>`;
+    words.forEach((w,j)=>{const bad=s.bad&&s.bad[r]&&s.bad[r].includes(j),x=64+j*tw;
+      const fill=m===0?'none':m===2?'#1e293b':m===3?C.dlm:bad?C.bad:C.ncm,op=m===3?.25:m===1?(.35+.2*r):1;
+      h+=`<rect x="${x+2}" y="${r*rh+6}" width="${tw-4}" height="${rh-10}" rx="5" fill="${fill}" fill-opacity="${m===0?0:op}" stroke="${m===0?C.line:m===2?C.line:bad?C.bad:C.ncm}" stroke-dasharray="${m===1||m===3?'none':'4 3'}"/>`;
+      if(m===1||m===3)h+=`<text x="${x+tw/2}" y="${r*rh+31}" font-size="${n>4?11.5:12.5}" text-anchor="middle" fill="${C.fg}">${m===3?'?':w}</text>`;
+      if(s.count&&j===n-1)h+=`<text x="${W-2}" y="${r*rh+20}" font-size="10" text-anchor="end" fill="${C.mut}">${n}</text>`})});
+  h+='</svg>';q('rxSvg').innerHTML=h;
+  const see=s.anim?['(nothing yet)','a calm scene at home','an animal rests somewhere indoors','the cat sat on the warm kitchen floor (rough)','The cat sat on the warm kitchen floor'][g]+` · passes done: ${g}/4`:s.see;
+  q('rxOut').innerHTML=`<b>Seen through the stack:</b> ${see}<br><span style="font-size:.9rem;color:${C.mut}">${s.t}</span>`;
+  [...q('rxBtns').children].forEach((b,k)=>b.classList.toggle('on',k===i))}
+ST.forEach((s,k)=>{const b=document.createElement('button');b.textContent=k+' '+s.b;b.onclick=()=>{clearInterval(timer);i=k;
+  if(s.anim){g=0;draw();timer=setInterval(()=>{g++;draw();if(g>=4)clearInterval(timer)},1000)}else draw()};q('rxBtns').appendChild(b)});
+draw()})();
+</script>

@@ -1,0 +1,7 @@
+# Third-party text without a redistribution license
+*.pdf
+transcript.txt
+# Local session files
+.claude/
+.ignore/
+HANDOFF.md
