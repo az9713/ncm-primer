@@ -1,0 +1,42 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python leak_test.py
+### START: 2026-11-22T07:58:42-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+after load: 947 MiB allocated
+config sampler (T=1, top_k=0, top_p=1)   call  0: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call  1: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call  2: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call  3: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call  4: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call  5: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call  6: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call  7: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call  8: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call  9: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 10: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 11: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 12: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 13: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 14: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 15: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 16: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 17: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 18: allocated 956 MiB
+config sampler (T=1, top_k=0, top_p=1)   call 19: allocated 956 MiB
+argmax (T=0)                             call  0: allocated 956 MiB
+argmax (T=0)                             call  1: allocated 956 MiB
+argmax (T=0)                             call  2: allocated 956 MiB
+argmax (T=0)                             call  3: allocated 956 MiB
+argmax (T=0)                             call  4: allocated 956 MiB
+argmax (T=0)                             call  5: allocated 956 MiB
+argmax (T=0)                             call  6: allocated 956 MiB
+argmax (T=0)                             call  7: allocated 956 MiB
+argmax (T=0)                             call  8: allocated 956 MiB
+argmax (T=0)                             call  9: allocated 956 MiB
+### END: 2026-11-22T07:59:23-08:00 rc=0 duration_s=41
+QUEUE19-DONE

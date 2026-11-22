@@ -1,0 +1,43 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python timing.py
+### START: 2026-11-22T01:10:25-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+NCP Transformer, Total parameter count: 25.46M
+NCP Transformer, Non embedding parameter count: 25.32M
+sudoku-hard  B=  1 kv=False passes=12 generate 0.1947s +/- 0.0105 ms/token 2.1874 per-pass ms [12.4, 11.6, 17.53, 19.11, 14.93, 13.96, 12.13, 17.6, 11.88, 9.58, 12.44, 12.21]
+sudoku-hard  B= 16 kv=False passes=12 generate 0.5068s +/- 0.0012 ms/token 0.3559 per-pass ms [33.83, 34.06, 33.94, 35.13, 35.28, 36.34, 38.52, 40.67, 43.16, 50.55, 55.65, 62.8]
+sudoku-hard  B=128 kv=False passes=12 generate 3.6888s +/- 0.0043 ms/token 0.3238 per-pass ms [231.45, 234.37, 237.41, 245.08, 251.26, 260.35, 271.56, 293.21, 317.32, 366.7, 402.44, 469.62]
+sudoku-hard quality vs cumulative ms (B=128): [(1, 233.5, 0), (2, 470.0, 0), (3, 710.6, 0), (4, 958.7, 0), (5, 1212.2, 0), (6, 1475.0, 0), (7, 1750.1, 0), (8, 2045.2, 0), (9, 2365.6, 0), (10, 2734.7, 0), (11, 3140.4, 0), (12, 3614.5, 109)]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+NCP Transformer, Total parameter count: 119.96M
+NCP Transformer, Non embedding parameter count: 119.66M
+wmt14        B=  1 kv=False passes=11 generate 0.1800s +/- 0.0103 ms/token 2.8133 per-pass ms [17.52, 17.55, 19.88, 15.22, 15.52, 16.45, 19.36, 17.85, 17.47, 19.8, 17.81]
+wmt14        B=  1 kv=True  passes=11 generate 0.1923s +/- 0.0128 ms/token 3.0041 per-pass ms [10.64, 16.5, 21.08, 18.35, 13.38, 12.93, 11.55, 11.27, 14.47, 18.77, 15.62] kv-vs-eager code agreement 37.4% (padded rows 1/1)
+wmt14        B= 16 kv=False passes=11 generate 1.4223s +/- 0.0016 ms/token 1.3889 per-pass ms [92.88, 98.2, 102.16, 109.28, 114.66, 122.22, 125.03, 135.75, 145.18, 153.54, 162.94]
+wmt14 B=16 kv=True: CUDA OOM
+wmt14 B=128 kv=False: CUDA OOM
+wmt14 B=128 kv=True: CUDA OOM
+wmt14 UNPADDED B=1: eager 0.2312s kv 0.2666s speedup 0.87x code agreement 100.0% (sources with >=96 tokens: 26)
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p06_wallclock\timing.py", line 111, in <module>
+    te = full_time(net, l1, prefix, **kw); tkv = full_time(net, l1, prefix, use_kv_cache=True, **kw)
+                                                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\Downloads\stanford_ncm_turing\experiments\p06_wallclock\timing.py", line 71, in full_time
+    t = time.perf_counter(); net.generate(l1, prefix, **kw); torch.cuda.synchronize(); ts.append(time.perf_counter() - t)
+                             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\utils\_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 688, in generate
+    idx_next = self._sample_level(logits, temperature, top_k, top_p)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 485, in _sample_level
+    return self._sample_level_raw(logits, temperature, top_k, top_p)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 494, in _sample_level_raw
+    sorted_logits, sorted_idx = torch.sort(logits_flat, dim=-1, descending=True)
+                                ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.27 GiB is allocated by PyTorch, and 250.49 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+### END: 2026-11-22T01:14:12-08:00 rc=1 duration_s=226

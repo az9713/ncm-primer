@@ -1,0 +1,1809 @@
+{
+  "env": {
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "time": "2026-11-22T01:40:08",
+    "mem_fraction_cap": 0.92
+  },
+  "codes_top10": [
+    3479,
+    342,
+    1078,
+    72,
+    1048,
+    822,
+    3757,
+    2318,
+    141,
+    732
+  ],
+  "codes_random": [
+    292,
+    1559,
+    419,
+    473,
+    3566,
+    2899,
+    2172,
+    840,
+    1630,
+    448
+  ],
+  "samples_per_code": 96,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "sampler": {
+    "temperature": 1.0,
+    "top_k": 0,
+    "top_p": 1.0
+  },
+  "generate_seconds": 110.32753396034241,
+  "active_codes": 2558,
+  "top10_mass": 0.0571441650390625,
+  "tf_cosine_within": 0.4593815207481384,
+  "tf_cosine_between": 0.4425179362297058,
+  "perm_p": 0.000999000999000999,
+  "rougeL_within": 0.23583636129953864,
+  "rougeL_between": 0.2157249954376581,
+  "per_group_within_cosine": {
+    "3479": 0.4496515691280365,
+    "342": 0.4604652225971222,
+    "1078": 0.45577532052993774,
+    "72": 0.507377564907074,
+    "1048": 0.463871031999588,
+    "822": 0.4481028914451599,
+    "3757": 0.4590049386024475,
+    "2318": 0.4616645574569702,
+    "141": 0.4955498278141022,
+    "732": 0.44718852639198303,
+    "292": 0.43368807435035706,
+    "1559": 0.4386855959892273,
+    "419": 0.4464060068130493,
+    "473": 0.500573992729187,
+    "3566": 0.5640841722488403,
+    "2899": 0.4242451786994934,
+    "2172": 0.4297870695590973,
+    "840": 0.43741244077682495,
+    "1630": 0.41979485750198364,
+    "448": 0.4443017542362213
+  },
+  "modal_first_word_share": {
+    "3479": 1.0,
+    "342": 1.0,
+    "1078": 1.0,
+    "72": 0.9479166666666666,
+    "1048": 0.9791666666666666,
+    "822": 1.0,
+    "3757": 1.0,
+    "2318": 1.0,
+    "141": 0.9895833333333334,
+    "732": 0.9791666666666666,
+    "292": 0.71875,
+    "1559": 0.9791666666666666,
+    "419": 0.96875,
+    "473": 0.90625,
+    "3566": 0.9479166666666666,
+    "2899": 0.6354166666666666,
+    "2172": 0.625,
+    "840": 0.8333333333333334,
+    "1630": 0.6145833333333334,
+    "448": 0.6041666666666666
+  },
+  "groups": {
+    "3479": {
+      "first_word_top3": [
+        [
+          "once",
+          96
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          96
+        ]
+      ],
+      "mean_words": 105.69791666666667,
+      "std_words": 3.5856188205648527,
+      "names_top5": [
+        [
+          "Tim",
+          118
+        ],
+        [
+          "Lily",
+          92
+        ],
+        [
+          "Tom",
+          60
+        ],
+        [
+          "Lucy",
+          33
+        ],
+        [
+          "Max",
+          23
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          96
+        ],
+        [
+          "named",
+          94
+        ],
+        [
+          "little",
+          87
+        ],
+        [
+          "with",
+          73
+        ],
+        [
+          "that",
+          73
+        ],
+        [
+          "loved",
+          71
+        ],
+        [
+          "said",
+          58
+        ],
+        [
+          "very",
+          58
+        ]
+      ],
+      "p": 0.0069427490234375,
+      "kind": "top10",
+      "example": "\nOnce upon a time, there was a little boy named Tim. He had a special shirt. He liked to wear it every day. One day, his mom felt troubled. He could not find his shirt. Tim saw his mom sad.\nTim's mom "
+    },
+    "342": {
+      "first_word_top3": [
+        [
+          "once",
+          96
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          96
+        ]
+      ],
+      "mean_words": 103.67708333333333,
+      "std_words": 3.839202368512096,
+      "names_top5": [
+        [
+          "Tim",
+          90
+        ],
+        [
+          "Tom",
+          83
+        ],
+        [
+          "Lily",
+          83
+        ],
+        [
+          "Max",
+          46
+        ],
+        [
+          "Sue",
+          33
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          96
+        ],
+        [
+          "named",
+          95
+        ],
+        [
+          "little",
+          73
+        ],
+        [
+          "loved",
+          72
+        ],
+        [
+          "small",
+          70
+        ],
+        [
+          "said",
+          69
+        ],
+        [
+          "with",
+          68
+        ],
+        [
+          "play",
+          62
+        ]
+      ],
+      "p": 0.006622314453125,
+      "kind": "top10",
+      "example": "\nOnce upon a time, in a small town, there was a pink elephant named Ella. Ella loved to play with her friends in the park. One sunny day, Ella saw her friend, a little bird named Chirpy,. Chirpy was v"
+    },
+    "1078": {
+      "first_word_top3": [
+        [
+          "once",
+          96
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          96
+        ]
+      ],
+      "mean_words": 103.77083333333333,
+      "std_words": 3.241910337885502,
+      "names_top5": [
+        [
+          "Tim",
+          124
+        ],
+        [
+          "Tom",
+          48
+        ],
+        [
+          "Lily",
+          41
+        ],
+        [
+          "Sam",
+          35
+        ],
+        [
+          "Spot",
+          27
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "named",
+          96
+        ],
+        [
+          "time",
+          96
+        ],
+        [
+          "little",
+          83
+        ],
+        [
+          "loved",
+          76
+        ],
+        [
+          "with",
+          68
+        ],
+        [
+          "said",
+          65
+        ],
+        [
+          "play",
+          62
+        ],
+        [
+          "wanted",
+          60
+        ]
+      ],
+      "p": 0.0061492919921875,
+      "kind": "top10",
+      "example": "\nOnce upon a time, there was a busy ant named Andy. Andy loved to build things with her thread. One day, he met a big bear named Benny. Benny was sad because he could not find food.\nAndy went to Benny"
+    },
+    "72": {
+      "first_word_top3": [
+        [
+          "one",
+          91
+        ],
+        [
+          "once",
+          5
+        ]
+      ],
+      "first4_top3": [
+        [
+          "one day a little",
+          63
+        ],
+        [
+          "once upon a time",
+          5
+        ],
+        [
+          "one day a polite",
+          4
+        ]
+      ],
+      "mean_words": 103.51041666666667,
+      "std_words": 3.9581003220891486,
+      "names_top5": [
+        [
+          "Tim",
+          133
+        ],
+        [
+          "Tom",
+          112
+        ],
+        [
+          "Max",
+          46
+        ],
+        [
+          "Mia",
+          32
+        ],
+        [
+          "Sue",
+          31
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "named",
+          94
+        ],
+        [
+          "went",
+          88
+        ],
+        [
+          "said",
+          83
+        ],
+        [
+          "little",
+          77
+        ],
+        [
+          "wanted",
+          73
+        ],
+        [
+          "with",
+          57
+        ],
+        [
+          "very",
+          45
+        ],
+        [
+          "play",
+          44
+        ]
+      ],
+      "p": 0.006072998046875,
+      "kind": "top10",
+      "example": "\nOne day, a little boy named Tim found a new toy. It was a special rod. Tim was very ignorant about the rod. He did not know what it did, but only bought it. Tim felt happy to play.\n saw Tim's mom wan"
+    },
+    "1048": {
+      "first_word_top3": [
+        [
+          "once",
+          94
+        ],
+        [
+          "one",
+          2
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          94
+        ],
+        [
+          "one day a a",
+          1
+        ],
+        [
+          "one day a little",
+          1
+        ]
+      ],
+      "mean_words": 104.9375,
+      "std_words": 3.098428701239818,
+      "names_top5": [
+        [
+          "Tim",
+          90
+        ],
+        [
+          "Lily",
+          65
+        ],
+        [
+          "Sue",
+          40
+        ],
+        [
+          "Tom",
+          40
+        ],
+        [
+          "Spot",
+          35
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          94
+        ],
+        [
+          "named",
+          92
+        ],
+        [
+          "lived",
+          89
+        ],
+        [
+          "with",
+          87
+        ],
+        [
+          "little",
+          77
+        ],
+        [
+          "said",
+          70
+        ],
+        [
+          "small",
+          65
+        ],
+        [
+          "play",
+          63
+        ]
+      ],
+      "p": 0.0055389404296875,
+      "kind": "top10",
+      "example": "\nOnce upon a time, there was a little boy named Tim. He lived in a big house with his mom, dad, and his dog, Spot. Tim was a very happy dog, but sometimes they made a mess.\nOne day, Tim's mom said, \"T"
+    },
+    "822": {
+      "first_word_top3": [
+        [
+          "once",
+          96
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          96
+        ]
+      ],
+      "mean_words": 103.96875,
+      "std_words": 3.6981220600236187,
+      "names_top5": [
+        [
+          "Tim",
+          113
+        ],
+        [
+          "Tom",
+          41
+        ],
+        [
+          "Lily",
+          36
+        ],
+        [
+          "Spot",
+          34
+        ],
+        [
+          "Max",
+          33
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          96
+        ],
+        [
+          "named",
+          94
+        ],
+        [
+          "little",
+          74
+        ],
+        [
+          "said",
+          70
+        ],
+        [
+          "loved",
+          67
+        ],
+        [
+          "play",
+          67
+        ],
+        [
+          "with",
+          65
+        ],
+        [
+          "wanted",
+          55
+        ]
+      ],
+      "p": 0.0053253173828125,
+      "kind": "top10",
+      "example": "\nOnce upon a time, there was a busy ant named Andy. Andy was a very busy ant. He would use help for his friends. One day, Andy met a beautiful butterfly named Betty. Betty lost her way back home.\nAndy"
+    },
+    "3757": {
+      "first_word_top3": [
+        [
+          "once",
+          96
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          96
+        ]
+      ],
+      "mean_words": 104.39583333333333,
+      "std_words": 3.5545720753543435,
+      "names_top5": [
+        [
+          "Tim",
+          135
+        ],
+        [
+          "Spot",
+          40
+        ],
+        [
+          "Lily",
+          38
+        ],
+        [
+          "Sue",
+          28
+        ],
+        [
+          "Kitty",
+          25
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          96
+        ],
+        [
+          "named",
+          95
+        ],
+        [
+          "little",
+          78
+        ],
+        [
+          "loved",
+          70
+        ],
+        [
+          "with",
+          67
+        ],
+        [
+          "play",
+          63
+        ],
+        [
+          "said",
+          57
+        ],
+        [
+          "wanted",
+          53
+        ]
+      ],
+      "p": 0.0052947998046875,
+      "kind": "top10",
+      "example": "\nOnce upon a time, there was a thoughtful ant named Andy. Andy loved to find things. He would use big leaves for his friends. One day, he could not find his toy.\nAndy saw his friend, the bird named Be"
+    },
+    "2318": {
+      "first_word_top3": [
+        [
+          "once",
+          96
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          96
+        ]
+      ],
+      "mean_words": 104.86458333333333,
+      "std_words": 3.690132652501202,
+      "names_top5": [
+        [
+          "Tim",
+          82
+        ],
+        [
+          "Lily",
+          63
+        ],
+        [
+          "Max",
+          38
+        ],
+        [
+          "Spot",
+          34
+        ],
+        [
+          "Lucy",
+          28
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          96
+        ],
+        [
+          "named",
+          91
+        ],
+        [
+          "with",
+          90
+        ],
+        [
+          "lived",
+          87
+        ],
+        [
+          "play",
+          69
+        ],
+        [
+          "small",
+          66
+        ],
+        [
+          "little",
+          64
+        ],
+        [
+          "house",
+          63
+        ]
+      ],
+      "p": 0.005157470703125,
+      "kind": "top10",
+      "example": "\nOnce upon a time, there was a poor ant named Andy. Andy lived in a big ant with his ant family. They all worked hard and had many things with his friends, but sometimes he made slow make a mess.\nOne "
+    },
+    "141": {
+      "first_word_top3": [
+        [
+          "one",
+          95
+        ],
+        [
+          "once",
+          1
+        ]
+      ],
+      "first4_top3": [
+        [
+          "one day a little",
+          83
+        ],
+        [
+          "one day a small",
+          2
+        ],
+        [
+          "one day a big",
+          2
+        ]
+      ],
+      "mean_words": 103.05208333333333,
+      "std_words": 3.4471298195825986,
+      "names_top5": [
+        [
+          "Tim",
+          202
+        ],
+        [
+          "Mia",
+          52
+        ],
+        [
+          "Sue",
+          44
+        ],
+        [
+          "Lucy",
+          26
+        ],
+        [
+          "Yes",
+          24
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "named",
+          94
+        ],
+        [
+          "said",
+          86
+        ],
+        [
+          "little",
+          86
+        ],
+        [
+          "with",
+          81
+        ],
+        [
+          "went",
+          76
+        ],
+        [
+          "wanted",
+          61
+        ],
+        [
+          "very",
+          44
+        ],
+        [
+          "play",
+          43
+        ]
+      ],
+      "p": 0.0050506591796875,
+      "kind": "top10",
+      "example": "\nOne day, a little boy named Tim found a small stone in his backyard. He thought it was from a symbol his mom had not. He showed it to his friend, but did not understand. Tim felt sad and went to play"
+    },
+    "732": {
+      "first_word_top3": [
+        [
+          "once",
+          94
+        ],
+        [
+          "one",
+          1
+        ],
+        [
+          "lily",
+          1
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          94
+        ],
+        [
+          "one day a boy",
+          1
+        ],
+        [
+          "lily and ben are",
+          1
+        ]
+      ],
+      "mean_words": 104.47916666666667,
+      "std_words": 3.5764832781503246,
+      "names_top5": [
+        [
+          "Tim",
+          94
+        ],
+        [
+          "Lily",
+          44
+        ],
+        [
+          "Tom",
+          44
+        ],
+        [
+          "Spot",
+          34
+        ],
+        [
+          "Sue",
+          31
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          94
+        ],
+        [
+          "named",
+          92
+        ],
+        [
+          "little",
+          74
+        ],
+        [
+          "with",
+          67
+        ],
+        [
+          "play",
+          63
+        ],
+        [
+          "loved",
+          62
+        ],
+        [
+          "said",
+          61
+        ],
+        [
+          "wanted",
+          52
+        ]
+      ],
+      "p": 0.0049896240234375,
+      "kind": "top10",
+      "example": "\nOnce upon a time, there was a busy ant named Andy. Andy had a special sheet. He would use it for all his friends. One day, Andy could not find his sheet.\nAndy saw his friend, a butterfly named Betty."
+    },
+    "292": {
+      "first_word_top3": [
+        [
+          "once",
+          69
+        ],
+        [
+          "one",
+          21
+        ],
+        [
+          "lily",
+          4
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          69
+        ],
+        [
+          "one day a little",
+          11
+        ],
+        [
+          "one day a big",
+          2
+        ]
+      ],
+      "mean_words": 103.65625,
+      "std_words": 4.048734691748358,
+      "names_top5": [
+        [
+          "Tim",
+          80
+        ],
+        [
+          "Lily",
+          49
+        ],
+        [
+          "Spot",
+          38
+        ],
+        [
+          "Max",
+          30
+        ],
+        [
+          "Tom",
+          26
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "named",
+          76
+        ],
+        [
+          "time",
+          70
+        ],
+        [
+          "with",
+          65
+        ],
+        [
+          "said",
+          62
+        ],
+        [
+          "little",
+          62
+        ],
+        [
+          "play",
+          51
+        ],
+        [
+          "very",
+          48
+        ],
+        [
+          "loved",
+          48
+        ]
+      ],
+      "p": 0.00042724609375,
+      "kind": "random",
+      "example": "\nOne day, a little bug named Tim went to visit his friend, Doggy. Doggy lived in a big, green garden with many flowers. Tim was happy to see his friend, but he liked how Tim felt.\nOn the way home, Tim"
+    },
+    "1559": {
+      "first_word_top3": [
+        [
+          "once",
+          94
+        ],
+        [
+          "one",
+          1
+        ],
+        [
+          "lily",
+          1
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          94
+        ],
+        [
+          "one day a little",
+          1
+        ],
+        [
+          "lily and ben are",
+          1
+        ]
+      ],
+      "mean_words": 104.0,
+      "std_words": 3.944933459514875,
+      "names_top5": [
+        [
+          "Tim",
+          95
+        ],
+        [
+          "Lily",
+          58
+        ],
+        [
+          "Tom",
+          34
+        ],
+        [
+          "Max",
+          33
+        ],
+        [
+          "Sam",
+          32
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          94
+        ],
+        [
+          "named",
+          82
+        ],
+        [
+          "little",
+          68
+        ],
+        [
+          "with",
+          66
+        ],
+        [
+          "play",
+          62
+        ],
+        [
+          "loved",
+          60
+        ],
+        [
+          "said",
+          56
+        ],
+        [
+          "wanted",
+          56
+        ]
+      ],
+      "p": 0.0017852783203125,
+      "kind": "random",
+      "example": "\nOnce upon a time, there was a busy little ant named Andy. Andy lived in a big hill with his ant friends. One day, Andy and his friends went to find. They saw their friend, a ladybug named Betty.\nLily"
+    },
+    "419": {
+      "first_word_top3": [
+        [
+          "once",
+          93
+        ],
+        [
+          "upon",
+          1
+        ],
+        [
+          "one",
+          1
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          92
+        ],
+        [
+          "once a a time",
+          1
+        ],
+        [
+          "upon a a time",
+          1
+        ]
+      ],
+      "mean_words": 104.4375,
+      "std_words": 3.788173757454463,
+      "names_top5": [
+        [
+          "Tim",
+          119
+        ],
+        [
+          "Tom",
+          46
+        ],
+        [
+          "Spot",
+          40
+        ],
+        [
+          "Lucy",
+          37
+        ],
+        [
+          "Max",
+          36
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          94
+        ],
+        [
+          "named",
+          92
+        ],
+        [
+          "little",
+          76
+        ],
+        [
+          "said",
+          65
+        ],
+        [
+          "with",
+          65
+        ],
+        [
+          "loved",
+          65
+        ],
+        [
+          "play",
+          63
+        ],
+        [
+          "wanted",
+          47
+        ]
+      ],
+      "p": 0.0040435791015625,
+      "kind": "random",
+      "example": "\nOnce upon a time, there was a busy ant named Andy. Andy lived with his ant friends. They would do do for their home. One day, they needed a beautiful flower to their home.\nOn the way to the flower, A"
+    },
+    "473": {
+      "first_word_top3": [
+        [
+          "once",
+          87
+        ],
+        [
+          "one",
+          8
+        ],
+        [
+          "upon",
+          1
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          87
+        ],
+        [
+          "one day a little",
+          3
+        ],
+        [
+          "one day a big",
+          2
+        ]
+      ],
+      "mean_words": 105.34375,
+      "std_words": 3.381407882943632,
+      "names_top5": [
+        [
+          "Tim",
+          28
+        ],
+        [
+          "Lily",
+          25
+        ],
+        [
+          "Tom",
+          22
+        ],
+        [
+          "Spot",
+          21
+        ],
+        [
+          "Bob",
+          17
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          88
+        ],
+        [
+          "little",
+          64
+        ],
+        [
+          "said",
+          57
+        ],
+        [
+          "with",
+          56
+        ],
+        [
+          "very",
+          55
+        ],
+        [
+          "wanted",
+          51
+        ],
+        [
+          "play",
+          51
+        ],
+        [
+          "friends",
+          48
+        ]
+      ],
+      "p": 0.001434326171875,
+      "kind": "random",
+      "example": "\nOne day, a little ant named Tim was in space. Tim felt very tired. He lived in many to a big garden. The garden had many flowers that Tim wanted to do.\nTim saw a insect fly from one flower to another"
+    },
+    "3566": {
+      "first_word_top3": [
+        [
+          "once",
+          91
+        ],
+        [
+          "one",
+          5
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          91
+        ],
+        [
+          "one day a little",
+          2
+        ],
+        [
+          "one day a big",
+          1
+        ]
+      ],
+      "mean_words": 105.44791666666667,
+      "std_words": 3.6339538604283654,
+      "names_top5": [
+        [
+          "Tim",
+          19
+        ],
+        [
+          "Yes",
+          9
+        ],
+        [
+          "You",
+          9
+        ],
+        [
+          "Let",
+          9
+        ],
+        [
+          "Spot",
+          9
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          91
+        ],
+        [
+          "little",
+          61
+        ],
+        [
+          "wanted",
+          59
+        ],
+        [
+          "very",
+          52
+        ],
+        [
+          "with",
+          51
+        ],
+        [
+          "said",
+          50
+        ],
+        [
+          "play",
+          45
+        ],
+        [
+          "happy",
+          41
+        ]
+      ],
+      "p": 0.001678466796875,
+      "kind": "random",
+      "example": "\nOnce upon a time, there was a little bug. The bug was very adorable. It lived in a big green garden. The bug had many friends, like the little bee and the kind bee., they all played all day.\nOne day,"
+    },
+    "2899": {
+      "first_word_top3": [
+        [
+          "once",
+          61
+        ],
+        [
+          "one",
+          23
+        ],
+        [
+          "lily",
+          4
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          61
+        ],
+        [
+          "one day a little",
+          14
+        ],
+        [
+          "onceonce a time there",
+          2
+        ]
+      ],
+      "mean_words": 103.78125,
+      "std_words": 4.245593610340805,
+      "names_top5": [
+        [
+          "Tim",
+          57
+        ],
+        [
+          "Lily",
+          52
+        ],
+        [
+          "Tom",
+          40
+        ],
+        [
+          "Sue",
+          23
+        ],
+        [
+          "Spot",
+          19
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "with",
+          66
+        ],
+        [
+          "time",
+          65
+        ],
+        [
+          "said",
+          61
+        ],
+        [
+          "named",
+          60
+        ],
+        [
+          "little",
+          57
+        ],
+        [
+          "wanted",
+          50
+        ],
+        [
+          "play",
+          49
+        ],
+        [
+          "very",
+          48
+        ]
+      ],
+      "p": 0.0002593994140625,
+      "kind": "random",
+      "example": "\nOne day, a little girl named Lucy went to visit her friend, Tim. Tim lived in a house with big, pretty garden. Lucy had many other toys with Lucy, but her only only was Tim the letter.\nAfter lunch da"
+    },
+    "2172": {
+      "first_word_top3": [
+        [
+          "once",
+          60
+        ],
+        [
+          "one",
+          25
+        ],
+        [
+          "lily",
+          7
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          59
+        ],
+        [
+          "one day a little",
+          13
+        ],
+        [
+          "lily and ben are",
+          3
+        ]
+      ],
+      "mean_words": 103.79166666666667,
+      "std_words": 3.8592871391258545,
+      "names_top5": [
+        [
+          "Tim",
+          55
+        ],
+        [
+          "Lily",
+          46
+        ],
+        [
+          "Sue",
+          30
+        ],
+        [
+          "Tom",
+          28
+        ],
+        [
+          "Spot",
+          27
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "said",
+          67
+        ],
+        [
+          "named",
+          63
+        ],
+        [
+          "time",
+          62
+        ],
+        [
+          "with",
+          61
+        ],
+        [
+          "little",
+          61
+        ],
+        [
+          "very",
+          49
+        ],
+        [
+          "play",
+          48
+        ],
+        [
+          "wanted",
+          45
+        ]
+      ],
+      "p": 0.000335693359375,
+      "kind": "random",
+      "example": "\nOne day, a little bug named Tim went to visit his friend, Sam. Sam lived in a big, green garden with many flowers. Tim was happy to see his friend, but he liked being wet.\nOn his way to home, Tim's m"
+    },
+    "840": {
+      "first_word_top3": [
+        [
+          "once",
+          80
+        ],
+        [
+          "one",
+          11
+        ],
+        [
+          "lily",
+          3
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          79
+        ],
+        [
+          "one day a little",
+          7
+        ],
+        [
+          "one day a boy",
+          1
+        ]
+      ],
+      "mean_words": 104.42708333333333,
+      "std_words": 4.162693418095495,
+      "names_top5": [
+        [
+          "Tim",
+          75
+        ],
+        [
+          "Lily",
+          61
+        ],
+        [
+          "Sue",
+          44
+        ],
+        [
+          "Spot",
+          28
+        ],
+        [
+          "Max",
+          26
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "time",
+          81
+        ],
+        [
+          "named",
+          65
+        ],
+        [
+          "with",
+          62
+        ],
+        [
+          "little",
+          58
+        ],
+        [
+          "said",
+          55
+        ],
+        [
+          "wanted",
+          49
+        ],
+        [
+          "play",
+          49
+        ],
+        [
+          "loved",
+          49
+        ]
+      ],
+      "p": 0.0006256103515625,
+      "kind": "random",
+      "example": "\nOne day, a little girl named Lucy went to visit her friend, Tim. Tim lived in a house with a pretty garden. In the garden had many colorful flowers. Lucy and Tim played with the flowers all day.\nAfte"
+    },
+    "1630": {
+      "first_word_top3": [
+        [
+          "once",
+          59
+        ],
+        [
+          "one",
+          25
+        ],
+        [
+          "lily",
+          4
+        ]
+      ],
+      "first4_top3": [
+        [
+          "once upon a time",
+          59
+        ],
+        [
+          "one day a little",
+          14
+        ],
+        [
+          "one day a big",
+          2
+        ]
+      ],
+      "mean_words": 103.32291666666667,
+      "std_words": 4.248761563842915,
+      "names_top5": [
+        [
+          "Tim",
+          61
+        ],
+        [
+          "Tom",
+          39
+        ],
+        [
+          "Lily",
+          37
+        ],
+        [
+          "Sue",
+          31
+        ],
+        [
+          "Ben",
+          26
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "named",
+          67
+        ],
+        [
+          "with",
+          67
+        ],
+        [
+          "said",
+          64
+        ],
+        [
+          "time",
+          63
+        ],
+        [
+          "little",
+          59
+        ],
+        [
+          "play",
+          50
+        ],
+        [
+          "very",
+          48
+        ],
+        [
+          "wanted",
+          45
+        ]
+      ],
+      "p": 0.000213623046875,
+      "kind": "random",
+      "example": "\nOne day, a little ant named Andy went to visit his friend, Buzzy. They lived in a big, green garden again. Andy had many home in like his friend, but sometimes he was always busy working.\nOn their wa"
+    },
+    "448": {
+      "first_word_top3": [
+        [
+          "one",
+          58
+        ],
+        [
+          "once",
+          32
+        ],
+        [
+          "lily",
+          2
+        ]
+      ],
+      "first4_top3": [
+        [
+          "one day a little",
+          37
+        ],
+        [
+          "once upon a time",
+          32
+        ],
+        [
+          "one day a big",
+          5
+        ]
+      ],
+      "mean_words": 103.65625,
+      "std_words": 3.7854659692258052,
+      "names_top5": [
+        [
+          "Tim",
+          105
+        ],
+        [
+          "Spot",
+          38
+        ],
+        [
+          "Sue",
+          37
+        ],
+        [
+          "Sam",
+          36
+        ],
+        [
+          "Tom",
+          34
+        ]
+      ],
+      "content_words_top8": [
+        [
+          "named",
+          78
+        ],
+        [
+          "said",
+          76
+        ],
+        [
+          "little",
+          67
+        ],
+        [
+          "with",
+          66
+        ],
+        [
+          "wanted",
+          65
+        ],
+        [
+          "play",
+          53
+        ],
+        [
+          "very",
+          49
+        ],
+        [
+          "went",
+          41
+        ]
+      ],
+      "p": 0.0006103515625,
+      "kind": "random",
+      "example": "\nOne day, a little boy named Tim found a book. The book was called a dictionary. Tim was ignorant about words. He wanted to read it all. So, he asked his friend, Sam.\nTim went to Sam's house and said,"
+    }
+  }
+}

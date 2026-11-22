@@ -1,0 +1,8 @@
+### CMD: ../.venv/Scripts/python -B lc_bleu.py
+### START: 2026-11-22T05:57:09-08:00
+greedy      BLEU 21.72  BLEU(lc) 22.62
+one_sample  BLEU 18.19  BLEU(lc) 18.92
+mbr_M4      BLEU 21.29  BLEU(lc) 22.11
+mbr_M8      BLEU 23.19  BLEU(lc) 24.04
+mbr_M12     BLEU 23.81  BLEU(lc) 24.67
+### END: 2026-11-22T05:58:33-08:00 rc=0 duration_s=84

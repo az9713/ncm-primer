@@ -18,4 +18,4 @@ An interactive, single-page primer on **Next-Concept Modeling (NCM)** for a read
 - `docs/code/` — documentation for `ncm-main/` (Markdown sources with generated HTML).
 - `ncm-main/` — the released code, unchanged, with its `LICENSE`.
 
-No model was run for this page.
+No model was run for the primer page. The experiment report is the only place where models were run.

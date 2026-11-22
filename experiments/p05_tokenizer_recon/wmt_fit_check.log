@@ -1,0 +1,16 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python wmt_fit_check.py
+### START: 2026-11-22T07:51:37-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+wmt14  all        rows  3003  text+EOS acc 98.507%  rows exact 70.16%
+wmt14  fits_in_L  rows  2974  text+EOS acc 98.523%  rows exact 70.61%
+wmt14  truncated  rows    29  text+EOS acc 97.845%  rows exact 24.14%
+VQVAE, Total parameter count: 60.63M
+VQVAE, Non embedding parameter count: 41.30M
+xsum   all        rows 11334  text+EOS acc 99.771%  rows exact 94.27%
+xsum   fits_in_L  rows 11234  text+EOS acc 99.777%  rows exact 94.43%
+xsum   truncated  rows   100  text+EOS acc 99.354%  rows exact 76.00%
+### END: 2026-11-22T07:52:56-08:00 rc=0 duration_s=79

@@ -1,0 +1,22 @@
+# NCM experiment report: 10 projects on the released evaluation code
+
+Date of runs: 21–22 November 2026. Machine: Windows 11, NVIDIA GeForce RTX 3050 Laptop GPU (4,095 MiB). Code: `ncm-main/` (not modified). Paper: "Next-Concept Modeling: Fast, Parallel Coarse-to-Fine Text Generation" (arXiv 2610.14162v1). All numbers come from logs under `experiments/` or from the paper PDF (page cited).
+
+## 1. Summary
+
+| # | Project | Status | Key result (this work) | Paper value | Consistent with NCM? | Evidence |
+|---|---|---|---|---|---|---|
+| 1 | Decode-time penalties | Completed | LM1B default genPPL 94.06 ± 1.42, H 4.3138; penalties off 78.53, H 4.1176. XSum (1,000 docs) R-L 27.78 default, 27.71 off | Table 8: LM1B 93.05, H 4.31. Table 2: XSum R-L 28.0 | Yes | `p01_penalties/results.json` |
+| 2 | Guidance and sampler sweep | Completed (subsets stated) | WMT14 full test set, lowercased BLEU 22.62 (w 0) and 23.86 (w 1.0); cased 21.72 and 22.97; best w = 1.0. XSum (1,000 docs) R-L 27.78 → 28.02 at w 0.5. Sampling (T 0.6–1.0) lowers BLEU by 1.5–4.0 | Table 2: 22.6, 23.9 (casing not stated); XSum 28.0 → 28.2. Fig. 14: BLEU best at w 1.0, ROUGE at 0.5 | Yes | `p02_guidance_sweep/results.json` |
+| 3 | Level-1 probe | Completed | TinyStories genPPL 16.29 ± 0.22, H 3.9712. The level-1 code sets the opening ("Once" vs "One"); content effect +0.018 word-count cosine, 1/5.65 of the effect of the random seed (+0.101) | Table 8: 15.41, H 3.98. Probe: no paper value | Partly | `p03_level1_probe/results.json` |
+| 4 | Coarse-to-fine viewer | Completed | WMT14 Table 12 trajectory reproduced exactly (11/11 per-level BLEU). Sudoku puzzle 0: final board equal; bf16 equals Fig. 20 at levels 1–8 | Table 12 (p.36), Fig. 20 (p.40) | Yes (Table 12); Partly (Fig. 20) | `p04_coarse_to_fine/results.json`, `trajectory.html` |
+| 5 | Tokenizer reconstruction | Completed | Final non-pad accuracy: Sudoku 100.000/99.999/100.000, LM1B 99.858, TinyStories 99.980, XSum 99.771, WMT14 98.507 %. Sudoku utilization 80.73/83.85/80.73 % | Table 1 (p.8): 100/100/100, 99.86, 99.98, 99.79, 98.79; util 80.73/83.85/80.73 | Yes (accuracy); Partly (text utilization) | `p05_tokenizer_recon/results.json` |
+| 6 | Wall-clock vs passes | Completed within 4 GB | LM1B batch 16: 0.891 s per `generate()`; last pass costs 11.0× the first. XSum: prefix dominates (9 passes of 591–645 ms). WMT14 KV cache: 100 % code agreement and 2.35× faster at batch 16 with unpadded prefixes; 25.5–37.4 % agreement with padded prefixes | No absolute NCM time in the text; diffusion ratios (21×, 31×) not testable | No paper value | `p06_wallclock/results.json` |
+| 7 | Sudoku constraint trace | Completed | Solved 99.40 / 96.45 / 86.25 % (easy/medium/hard). Hard mean violations 34.29 at level 11, 0.47 at level 12 | Table 3 (p.10): 99.5 / 96.5 / 86.1 | Yes | `p07_sudoku_trace/results.json` |
+| 8 | MBR decoding (WMT14) | Completed (full test set) | M = 12: lowercased BLEU 24.67, cased 23.81 (greedy 22.62 / 21.72; M = 4: 22.11 / 21.29; M = 8: 24.04 / 23.19) | Table 2: 25.2 (greedy 22.6) | Partly | `p08_mbr/results_n3003_t0.8_p0.9.json` |
+| 9 | AR KV-cache baseline | Partial | GPT-2 (KV cache) / NCM LM1B time per 128-token sample: 8.15–8.81 at batch 1, 4.72 at batch 4, 2.82 at batch 8, 1.47 at batch 16 (NCM 61.69 s, GPT-2 90.59 s per 1,024; NCM excludes the 4.93 s penalty loop). NCM batch ≥ 64 does not fit. `generate()` leaves GPU tensors in reference cycles (needs `gc.collect()`) | No paper value (no AR timing in the paper) | No paper value | `p09_ar_baseline/results_all.json` |
+| 10 | Train a tiny tokenizer | Completed (2,500 of 10,000 updates) | Held-out level-12 accuracy 100.000 %; utilization 69.79 % (real boards), 72.40 % (augmented); released tokenizer on the same boards 100.0 %, 80.73 %. Level-12 accuracy is 100 % from step 500 and does not discriminate | Table 1: Sudoku 100 %, util 80.73 %; Table 5: 10,000 updates, batch 1,024 | Partly | `p10_train_tokenizer/results.json` |
+
+Command lines in the project sections use shortened paths ("…" or repository-relative). Section 5 lists every exact command line with its log, start time, exit code and duration.
+
+Main limits: OWT is not released. The repository has no diffusion baselines. The repository has no generator training code. A 4 GB GPU forced fp16 genPPL scoring (validated) and smaller batches (validated). It also forced subsets for XSum and for parts of the WMT14 sweep (stated in each section).

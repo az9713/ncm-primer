@@ -1,0 +1,9 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python bf16_hard_full.py
+### START: 2026-11-22T01:40:11-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+NCP Transformer, Total parameter count: 25.46M
+NCP Transformer, Non embedding parameter count: 25.32M
+default        solved 1725/2000 = 86.25%  (60.8s)   paper Table 3: 86.1%
+autocast_bf16  solved 1727/2000 = 86.35%  (31.9s)   paper Table 3: 86.1%
+### END: 2026-11-22T01:41:51-08:00 rc=0 duration_s=99

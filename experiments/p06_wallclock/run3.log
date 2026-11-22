@@ -1,0 +1,60 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python timing.py wmt14
+### START: 2026-11-22T05:07:40-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+NCP Transformer, Total parameter count: 119.96M
+NCP Transformer, Non embedding parameter count: 119.66M
+wmt14        B=  1 kv=False passes=11 generate 0.2342s +/- 0.0166 ms/token 3.6598 per-pass ms [13.71, 15.81, 13.47, 22.22, 16.56, 34.52, 30.5, 15.5, 25.29, 22.96, 24.07]
+wmt14        B=  1 kv=True  passes=11 generate 0.2879s +/- 0.0262 ms/token 4.4985 per-pass ms [29.63, 19.06, 13.28, 19.85, 17.8, 16.88, 25.59, 28.64, 26.54, 17.96, 25.86] kv-vs-eager code agreement 37.4% (padded rows 1/1)
+wmt14        B= 16 kv=False passes=11 generate 1.4052s +/- 0.0023 ms/token 1.3723 per-pass ms [91.76, 97.18, 101.27, 107.89, 113.54, 119.94, 122.04, 133.27, 143.52, 152.04, 160.72]
+wmt14 B=16 kv=True: CUDA OOM
+wmt14 B=128 kv=False: CUDA OOM
+wmt14 B=128 kv=True: CUDA OOM
+wmt14 UNPADDED B=1: eager 0.1651s kv 0.2094s speedup 0.79x code agreement 100.0% (sources with >=96 tokens: 26)
+wmt14 UNPADDED B=16: CUDA OOM
+wmt14 quality vs cumulative ms (B=32): [(1, 188.1, 0.39), (2, 387.0, 0.69), (3, 594.1, 1.05), (4, 815.5, 1.52), (5, 1045.0, 3.93), (6, 1283.6, 4.34), (7, 1532.6, 7.52), (8, 1809.1, 10.73), (9, 2099.6, 12.26), (10, 2409.8, 13.21), (11, 2729.5, 15.23)]
+### END: 2026-11-22T05:10:10-08:00 rc=0 duration_s=150
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python timing.py tinystories
+### START: 2026-11-22T05:10:11-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+VQVAE, Total parameter count: 36.43M
+VQVAE, Non embedding parameter count: 33.24M
+NCP Transformer, Total parameter count: 88.61M
+NCP Transformer, Non embedding parameter count: 88.30M
+tinystories  B=  1 kv=False passes=11 generate 0.2561s +/- 0.0126 ms/token 2.0005 per-pass ms [15.0, 20.79, 18.29, 20.09, 25.0, 19.26, 19.55, 26.41, 24.08, 21.29, 17.81]
+tinystories  B=  1 kv=True  passes=11 generate 0.2972s +/- 0.0242 ms/token 2.3219 per-pass ms [18.58, 26.21, 20.43, 22.81, 27.37, 42.53, 23.07, 29.49, 24.75, 24.87, 18.92]
+tinystories  B= 16 kv=False passes=11 generate 0.7988s +/- 0.0174 ms/token 0.3900 per-pass ms [16.64, 20.99, 29.42, 38.17, 46.03, 56.78, 72.54, 84.46, 100.0, 115.86, 142.69]
+tinystories  B= 16 kv=True  passes=11 generate 0.8344s +/- 0.0155 ms/token 0.4074 per-pass ms [27.24, 20.14, 28.9, 32.37, 42.27, 53.76, 65.57, 81.06, 96.06, 110.87, 133.76]
+tinystories B=128 kv=False: CUDA OOM
+tinystories B=128 kv=True: CUDA OOM
+### END: 2026-11-22T05:11:00-08:00 rc=0 duration_s=49
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python timing.py lm1b-small
+### START: 2026-11-22T05:11:01-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+lm1b-small   B=  1 kv=False passes=11 generate 0.2591s +/- 0.0069 ms/token 2.0240 per-pass ms [16.27, 14.7, 21.61, 37.68, 22.67, 21.05, 17.91, 26.07, 16.81, 19.98, 15.24]
+lm1b-small   B= 16 kv=False passes=11 generate 0.9170s +/- 0.0164 ms/token 0.4478 per-pass ms [14.93, 21.75, 29.05, 36.86, 45.86, 56.86, 73.41, 83.52, 98.46, 113.59, 141.35]
+lm1b-small B=128 kv=False: CUDA OOM
+### END: 2026-11-22T05:11:37-08:00 rc=0 duration_s=35
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python timing.py xsum
+### START: 2026-11-22T05:11:37-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 60.63M
+VQVAE, Non embedding parameter count: 41.30M
+NCP Transformer, Total parameter count: 88.02M
+NCP Transformer, Non embedding parameter count: 87.71M
+xsum         B=  1 kv=False passes= 9 generate 0.4185s +/- 0.0029 ms/token 8.7181 per-pass ms [44.61, 44.77, 44.94, 46.52, 46.78, 46.46, 45.54, 46.3, 46.12]
+xsum         B= 16 kv=False passes= 9 generate 5.6293s +/- 0.0093 ms/token 7.3298 per-pass ms [590.69, 606.22, 609.38, 612.75, 617.35, 622.97, 623.02, 637.35, 644.71]
+xsum         B= 32 kv=False passes= 9 generate 12.5047s +/- 0.1842 ms/token 8.1411 per-pass ms [1261.32, 1306.95, 1327.53, 1304.52, 1322.22, 1354.57, 1322.59, 1333.32, 1373.39]
+### END: 2026-11-22T05:14:45-08:00 rc=0 duration_s=188

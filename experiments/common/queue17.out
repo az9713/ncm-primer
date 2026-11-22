@@ -1,0 +1,100 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ar_vs_ncm_small.py
+### START: 2026-11-22T07:46:39-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+[mem] after NCM load: allocated 947 MiB
+  [mem B=16] before generate: allocated 947 MiB, peak 947 MiB, reserved 962 MiB
+  [mem B=16] after generate: allocated 1034 MiB, peak 1610 MiB, reserved 2046 MiB
+  [mem B=16] after idx_to_zhats: allocated 1050 MiB, peak 1610 MiB, reserved 2046 MiB
+  [mem B=16] after decode: allocated 1289 MiB, peak 1610 MiB, reserved 2286 MiB
+NCM B= 16: CUDA OOM under the memory cap 0.88: CUDA out of memory. Tried to allocate 194.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.01 GiB is allocated by PyTorch, and 430.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Me
+pick_tokens B=16: CUDA OOM
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 9862.99it/s]
+params: GPT-2 124.44M, NCM generator 97.07M (module incl. shared), tokenizer 111.40M
+AR  B= 16 rep 0 N=1024: 89.07s  per-1024 89.07s  peak reserved 778 MiB
+AR  B= 16 rep 1 N=1024: 89.66s  per-1024 89.66s  peak reserved 778 MiB
+AR  B= 16 rep 2 N=1024: 89.80s  per-1024 89.80s  peak reserved 778 MiB
+SUMMARY B= 16: incomplete (NCM runs 0, AR runs 3)
+### END: 2026-11-22T07:51:37-08:00 rc=0 duration_s=298
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python wmt_fit_check.py
+### START: 2026-11-22T07:51:37-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+wmt14  all        rows  3003  text+EOS acc 98.507%  rows exact 70.16%
+wmt14  fits_in_L  rows  2974  text+EOS acc 98.523%  rows exact 70.61%
+wmt14  truncated  rows    29  text+EOS acc 97.845%  rows exact 24.14%
+VQVAE, Total parameter count: 60.63M
+VQVAE, Non embedding parameter count: 41.30M
+xsum   all        rows 11334  text+EOS acc 99.771%  rows exact 94.27%
+xsum   fits_in_L  rows 11234  text+EOS acc 99.777%  rows exact 94.43%
+xsum   truncated  rows   100  text+EOS acc 99.354%  rows exact 76.00%
+### END: 2026-11-22T07:52:56-08:00 rc=0 duration_s=79
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python probe.py
+### START: 2026-11-22T07:52:56-08:00
+VQVAE, Total parameter count: 36.43M
+VQVAE, Non embedding parameter count: 33.24M
+NCP Transformer, Total parameter count: 88.61M
+NCP Transformer, Non embedding parameter count: 88.30M
+active codes in table: 2558 of 4096 ; top-10 mass 0.0571
+code 3479 (top10  p=0.0069) words 105.7+/-3.6 first [('once', 96)] names [('Tim', 118), ('Lily', 92), ('Tom', 60)]
+      content ['time', 'named', 'little', 'with', 'that', 'loved', 'said', 'very']  ex: '\nOnce upon a time, there was a little boy named Tim. He had a special shirt. He liked to wear it every day. One day, his'
+code  342 (top10  p=0.0066) words 103.7+/-3.8 first [('once', 96)] names [('Tim', 90), ('Tom', 83), ('Lily', 83)]
+      content ['time', 'named', 'little', 'loved', 'small', 'said', 'with', 'play']  ex: '\nOnce upon a time, in a small town, there was a pink elephant named Ella. Ella loved to play with her friends in the par'
+code 1078 (top10  p=0.0061) words 103.8+/-3.2 first [('once', 96)] names [('Tim', 124), ('Tom', 48), ('Lily', 41)]
+      content ['named', 'time', 'little', 'loved', 'with', 'said', 'play', 'wanted']  ex: '\nOnce upon a time, there was a busy ant named Andy. Andy loved to build things with her thread. One day, he met a big be'
+code   72 (top10  p=0.0061) words 103.5+/-4.0 first [('one', 91), ('once', 5)] names [('Tim', 133), ('Tom', 112), ('Max', 46)]
+      content ['named', 'went', 'said', 'little', 'wanted', 'with', 'very', 'play']  ex: '\nOne day, a little boy named Tim found a new toy. It was a special rod. Tim was very ignorant about the rod. He did not '
+code 1048 (top10  p=0.0055) words 104.9+/-3.1 first [('once', 94), ('one', 2)] names [('Tim', 90), ('Lily', 65), ('Sue', 40)]
+      content ['time', 'named', 'lived', 'with', 'little', 'said', 'small', 'play']  ex: '\nOnce upon a time, there was a little boy named Tim. He lived in a big house with his mom, dad, and his dog, Spot. Tim w'
+code  822 (top10  p=0.0053) words 104.0+/-3.7 first [('once', 96)] names [('Tim', 113), ('Tom', 41), ('Lily', 36)]
+      content ['time', 'named', 'little', 'said', 'loved', 'play', 'with', 'wanted']  ex: '\nOnce upon a time, there was a busy ant named Andy. Andy was a very busy ant. He would use help for his friends. One day'
+code 3757 (top10  p=0.0053) words 104.4+/-3.6 first [('once', 96)] names [('Tim', 135), ('Spot', 40), ('Lily', 38)]
+      content ['time', 'named', 'little', 'loved', 'with', 'play', 'said', 'wanted']  ex: '\nOnce upon a time, there was a thoughtful ant named Andy. Andy loved to find things. He would use big leaves for his fri'
+code 2318 (top10  p=0.0052) words 104.9+/-3.7 first [('once', 96)] names [('Tim', 82), ('Lily', 63), ('Max', 38)]
+      content ['time', 'named', 'with', 'lived', 'play', 'small', 'little', 'house']  ex: '\nOnce upon a time, there was a poor ant named Andy. Andy lived in a big ant with his ant family. They all worked hard an'
+code  141 (top10  p=0.0051) words 103.1+/-3.4 first [('one', 95), ('once', 1)] names [('Tim', 202), ('Mia', 52), ('Sue', 44)]
+      content ['named', 'little', 'said', 'with', 'went', 'wanted', 'very', 'play']  ex: '\nOne day, a little boy named Tim found a small stone in his backyard. He thought it was from a symbol his mom had not. H'
+code  732 (top10  p=0.0050) words 104.5+/-3.6 first [('once', 94), ('one', 1), ('lily', 1)] names [('Tim', 94), ('Lily', 44), ('Tom', 44)]
+      content ['time', 'named', 'little', 'with', 'play', 'loved', 'said', 'wanted']  ex: '\nOnce upon a time, there was a busy ant named Andy. Andy had a special sheet. He would use it for all his friends. One d'
+code  292 (random p=0.0004) words 103.7+/-4.0 first [('once', 69), ('one', 21), ('lily', 4)] names [('Tim', 80), ('Lily', 49), ('Spot', 38)]
+      content ['named', 'time', 'with', 'little', 'said', 'play', 'very', 'loved']  ex: '\nOne day, a little bug named Tim went to visit his friend, Doggy. Doggy lived in a big, green garden with many flowers. '
+code 1559 (random p=0.0018) words 104.0+/-3.9 first [('once', 94), ('one', 1), ('lily', 1)] names [('Tim', 95), ('Lily', 58), ('Tom', 34)]
+      content ['time', 'named', 'little', 'with', 'play', 'loved', 'said', 'wanted']  ex: '\nOnce upon a time, there was a busy little ant named Andy. Andy lived in a big hill with his ant friends. One day, Andy '
+code  419 (random p=0.0040) words 104.4+/-3.8 first [('once', 93), ('upon', 1), ('one', 1)] names [('Tim', 119), ('Tom', 46), ('Spot', 40)]
+      content ['time', 'named', 'little', 'said', 'with', 'loved', 'play', 'wanted']  ex: '\nOnce upon a time, there was a busy ant named Andy. Andy lived with his ant friends. They would do do for their home. On'
+code  473 (random p=0.0014) words 105.3+/-3.4 first [('once', 87), ('one', 8), ('upon', 1)] names [('Tim', 28), ('Lily', 25), ('Tom', 22)]
+      content ['time', 'little', 'said', 'with', 'very', 'wanted', 'play', 'friends']  ex: '\nOne day, a little ant named Tim was in space. Tim felt very tired. He lived in many to a big garden. The garden had man'
+code 3566 (random p=0.0017) words 105.4+/-3.6 first [('once', 91), ('one', 5)] names [('Tim', 19), ('Yes', 9), ('You', 9)]
+      content ['time', 'little', 'wanted', 'very', 'with', 'said', 'play', 'happy']  ex: '\nOnce upon a time, there was a little bug. The bug was very adorable. It lived in a big green garden. The bug had many f'
+code 2899 (random p=0.0003) words 103.8+/-4.2 first [('once', 61), ('one', 23), ('lily', 4)] names [('Tim', 57), ('Lily', 52), ('Tom', 40)]
+      content ['with', 'time', 'said', 'named', 'little', 'wanted', 'play', 'very']  ex: '\nOne day, a little girl named Lucy went to visit her friend, Tim. Tim lived in a house with big, pretty garden. Lucy had'
+code 2172 (random p=0.0003) words 103.8+/-3.9 first [('once', 60), ('one', 25), ('lily', 7)] names [('Tim', 55), ('Lily', 46), ('Sue', 30)]
+      content ['said', 'named', 'time', 'little', 'with', 'very', 'play', 'wanted']  ex: '\nOne day, a little bug named Tim went to visit his friend, Sam. Sam lived in a big, green garden with many flowers. Tim '
+code  840 (random p=0.0006) words 104.4+/-4.2 first [('once', 80), ('one', 11), ('lily', 3)] names [('Tim', 75), ('Lily', 61), ('Sue', 44)]
+      content ['time', 'named', 'with', 'little', 'said', 'play', 'wanted', 'loved']  ex: '\nOne day, a little girl named Lucy went to visit her friend, Tim. Tim lived in a house with a pretty garden. In the gard'
+code 1630 (random p=0.0002) words 103.3+/-4.2 first [('once', 59), ('one', 25), ('lily', 4)] names [('Tim', 61), ('Tom', 39), ('Lily', 37)]
+      content ['named', 'with', 'said', 'time', 'little', 'play', 'very', 'wanted']  ex: '\nOne day, a little ant named Andy went to visit his friend, Buzzy. They lived in a big, green garden again. Andy had man'
+code  448 (random p=0.0006) words 103.7+/-3.8 first [('one', 58), ('once', 32), ('lily', 2)] names [('Tim', 105), ('Spot', 38), ('Sue', 37)]
+      content ['named', 'said', 'little', 'with', 'wanted', 'play', 'very', 'went']  ex: '\nOne day, a little boy named Tim found a book. The book was called a dictionary. Tim was ignorant about words. He wanted'
+
+TF-cosine within 0.4594 between 0.4425 diff 0.0169 permutation p=0.0010 (1000 perms)
+ROUGE-L (3000 sampled pairs each) within 0.2358 between 0.2157
+mean modal-first-word share: 0.886
+### END: 2026-11-22T07:55:31-08:00 rc=0 duration_s=155
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python seed_effect.py
+### START: 2026-11-22T07:55:31-08:00
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p03_level1_probe\seed_effect.py", line 34, in <module>
+    res = {"source": "samples_all.json (96 per code)" if os.path.exists(_all) else "samples.txt (8 per code)", "codes": [c for c, _ in groups], "samples_per_code": n_s,
+                                                                        ^^^^
+NameError: name '_all' is not defined. Did you mean: 'all'?
+### END: 2026-11-22T07:55:33-08:00 rc=1 duration_s=2
+QUEUE17-DONE

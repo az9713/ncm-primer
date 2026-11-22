@@ -1,0 +1,545 @@
+old queues drained 2026-11-22T01:10:25-08:00
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python timing.py
+### START: 2026-11-22T01:10:25-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+NCP Transformer, Total parameter count: 25.46M
+NCP Transformer, Non embedding parameter count: 25.32M
+sudoku-hard  B=  1 kv=False passes=12 generate 0.1947s +/- 0.0105 ms/token 2.1874 per-pass ms [12.4, 11.6, 17.53, 19.11, 14.93, 13.96, 12.13, 17.6, 11.88, 9.58, 12.44, 12.21]
+sudoku-hard  B= 16 kv=False passes=12 generate 0.5068s +/- 0.0012 ms/token 0.3559 per-pass ms [33.83, 34.06, 33.94, 35.13, 35.28, 36.34, 38.52, 40.67, 43.16, 50.55, 55.65, 62.8]
+sudoku-hard  B=128 kv=False passes=12 generate 3.6888s +/- 0.0043 ms/token 0.3238 per-pass ms [231.45, 234.37, 237.41, 245.08, 251.26, 260.35, 271.56, 293.21, 317.32, 366.7, 402.44, 469.62]
+sudoku-hard quality vs cumulative ms (B=128): [(1, 233.5, 0), (2, 470.0, 0), (3, 710.6, 0), (4, 958.7, 0), (5, 1212.2, 0), (6, 1475.0, 0), (7, 1750.1, 0), (8, 2045.2, 0), (9, 2365.6, 0), (10, 2734.7, 0), (11, 3140.4, 0), (12, 3614.5, 109)]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+NCP Transformer, Total parameter count: 119.96M
+NCP Transformer, Non embedding parameter count: 119.66M
+wmt14        B=  1 kv=False passes=11 generate 0.1800s +/- 0.0103 ms/token 2.8133 per-pass ms [17.52, 17.55, 19.88, 15.22, 15.52, 16.45, 19.36, 17.85, 17.47, 19.8, 17.81]
+wmt14        B=  1 kv=True  passes=11 generate 0.1923s +/- 0.0128 ms/token 3.0041 per-pass ms [10.64, 16.5, 21.08, 18.35, 13.38, 12.93, 11.55, 11.27, 14.47, 18.77, 15.62] kv-vs-eager code agreement 37.4% (padded rows 1/1)
+wmt14        B= 16 kv=False passes=11 generate 1.4223s +/- 0.0016 ms/token 1.3889 per-pass ms [92.88, 98.2, 102.16, 109.28, 114.66, 122.22, 125.03, 135.75, 145.18, 153.54, 162.94]
+wmt14 B=16 kv=True: CUDA OOM
+wmt14 B=128 kv=False: CUDA OOM
+wmt14 B=128 kv=True: CUDA OOM
+wmt14 UNPADDED B=1: eager 0.2312s kv 0.2666s speedup 0.87x code agreement 100.0% (sources with >=96 tokens: 26)
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p06_wallclock\timing.py", line 111, in <module>
+    te = full_time(net, l1, prefix, **kw); tkv = full_time(net, l1, prefix, use_kv_cache=True, **kw)
+                                                 ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\Downloads\stanford_ncm_turing\experiments\p06_wallclock\timing.py", line 71, in full_time
+    t = time.perf_counter(); net.generate(l1, prefix, **kw); torch.cuda.synchronize(); ts.append(time.perf_counter() - t)
+                             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\utils\_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 688, in generate
+    idx_next = self._sample_level(logits, temperature, top_k, top_p)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 485, in _sample_level
+    return self._sample_level_raw(logits, temperature, top_k, top_p)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 494, in _sample_level_raw
+    sorted_logits, sorted_idx = torch.sort(logits_flat, dim=-1, descending=True)
+                                ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 24.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.27 GiB is allocated by PyTorch, and 250.49 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+### END: 2026-11-22T01:14:12-08:00 rc=1 duration_s=226
+P6-RERUN-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ar_vs_ncm.py
+### START: 2026-11-22T01:14:13-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+NCM B=  1 rep 0 N=64: 13.79s  per-1024 220.59s  peak reserved 1772 MiB
+NCM B=  1 rep 1 N=64: 16.15s  per-1024 258.46s  peak reserved 1772 MiB
+NCM B=  1 rep 2 N=64: 16.96s  per-1024 271.32s  peak reserved 1772 MiB
+NCM B= 16: CUDA OOM under the memory cap 0.88
+NCM B= 64: CUDA OOM under the memory cap 0.88
+NCM B=256: CUDA OOM under the memory cap 0.88
+pick_tokens B=16: CUDA OOM
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 5547.43it/s]
+params: GPT-2 124.44M, NCM generator 97.07M (module incl. shared), tokenizer 111.40M
+AR  B=  1 rep 0 N=64: 145.82s  per-1024 2333.13s  peak reserved 544 MiB
+AR  B=  1 rep 1 N=64: 128.90s  per-1024 2062.39s  peak reserved 544 MiB
+AR  B=  1 rep 2 N=64: 134.21s  per-1024 2147.43s  peak reserved 544 MiB
+AR  B= 16 rep 0 N=1024: 116.90s  per-1024 116.90s  peak reserved 778 MiB
+AR  B= 16 rep 1 N=1024: 120.39s  per-1024 120.39s  peak reserved 778 MiB
+AR  B= 16 rep 2 N=1024: 128.12s  per-1024 128.12s  peak reserved 778 MiB
+AR  B= 64 rep 0 N=1024: 51.53s  per-1024 51.53s  peak reserved 3302 MiB
+AR  B= 64 rep 1 N=1024: 52.01s  per-1024 52.01s  peak reserved 3302 MiB
+AR  B= 64 rep 2 N=1024: 52.05s  per-1024 52.05s  peak reserved 3302 MiB
+AR  B=256 rep 0 N=1024: 108.14s  per-1024 108.14s  peak reserved 3604 MiB
+AR  B=256 rep 1 N=1024: 105.77s  per-1024 105.77s  peak reserved 3604 MiB
+AR  B=256 rep 2 N=1024: 107.40s  per-1024 107.40s  peak reserved 3604 MiB
+SUMMARY B=  1: NCM 250.12+/-26.37s  AR 2180.98+/-138.46s per 1024 seqs  AR/NCM 8.72
+SUMMARY B= 16: incomplete (NCM runs 0, AR runs 3)
+SUMMARY B= 64: incomplete (NCM runs 0, AR runs 3)
+SUMMARY B=256: incomplete (NCM runs 0, AR runs 3)
+### END: 2026-11-22T01:37:04-08:00 rc=0 duration_s=1371
+P9-RERUN-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python probe.py
+### START: 2026-11-22T01:37:05-08:00
+VQVAE, Total parameter count: 36.43M
+VQVAE, Non embedding parameter count: 33.24M
+NCP Transformer, Total parameter count: 88.61M
+NCP Transformer, Non embedding parameter count: 88.30M
+active codes in table: 2558 of 4096 ; top-10 mass 0.0571
+code 3479 (top10  p=0.0069) words 105.7+/-3.6 first [('once', 96)] names [('Tim', 118), ('Lily', 92), ('Tom', 60)]
+      content ['time', 'named', 'little', 'with', 'that', 'loved', 'said', 'very']  ex: '\nOnce upon a time, there was a little boy named Tim. He had a special shirt. He liked to wear it every day. One day, his'
+code  342 (top10  p=0.0066) words 103.7+/-3.8 first [('once', 96)] names [('Tim', 90), ('Tom', 83), ('Lily', 83)]
+      content ['time', 'named', 'little', 'loved', 'small', 'said', 'with', 'play']  ex: '\nOnce upon a time, in a small town, there was a pink elephant named Ella. Ella loved to play with her friends in the par'
+code 1078 (top10  p=0.0061) words 103.8+/-3.2 first [('once', 96)] names [('Tim', 124), ('Tom', 48), ('Lily', 41)]
+      content ['named', 'time', 'little', 'loved', 'with', 'said', 'play', 'wanted']  ex: '\nOnce upon a time, there was a busy ant named Andy. Andy loved to build things with her thread. One day, he met a big be'
+code   72 (top10  p=0.0061) words 103.5+/-4.0 first [('one', 91), ('once', 5)] names [('Tim', 133), ('Tom', 112), ('Max', 46)]
+      content ['named', 'went', 'said', 'little', 'wanted', 'with', 'very', 'play']  ex: '\nOne day, a little boy named Tim found a new toy. It was a special rod. Tim was very ignorant about the rod. He did not '
+code 1048 (top10  p=0.0055) words 104.9+/-3.1 first [('once', 94), ('one', 2)] names [('Tim', 90), ('Lily', 65), ('Sue', 40)]
+      content ['time', 'named', 'lived', 'with', 'little', 'said', 'small', 'play']  ex: '\nOnce upon a time, there was a little boy named Tim. He lived in a big house with his mom, dad, and his dog, Spot. Tim w'
+code  822 (top10  p=0.0053) words 104.0+/-3.7 first [('once', 96)] names [('Tim', 113), ('Tom', 41), ('Lily', 36)]
+      content ['time', 'named', 'little', 'said', 'loved', 'play', 'with', 'wanted']  ex: '\nOnce upon a time, there was a busy ant named Andy. Andy was a very busy ant. He would use help for his friends. One day'
+code 3757 (top10  p=0.0053) words 104.4+/-3.6 first [('once', 96)] names [('Tim', 135), ('Spot', 40), ('Lily', 38)]
+      content ['time', 'named', 'little', 'loved', 'with', 'play', 'said', 'wanted']  ex: '\nOnce upon a time, there was a thoughtful ant named Andy. Andy loved to find things. He would use big leaves for his fri'
+code 2318 (top10  p=0.0052) words 104.9+/-3.7 first [('once', 96)] names [('Tim', 82), ('Lily', 63), ('Max', 38)]
+      content ['time', 'named', 'with', 'lived', 'play', 'small', 'little', 'house']  ex: '\nOnce upon a time, there was a poor ant named Andy. Andy lived in a big ant with his ant family. They all worked hard an'
+code  141 (top10  p=0.0051) words 103.1+/-3.4 first [('one', 95), ('once', 1)] names [('Tim', 202), ('Mia', 52), ('Sue', 44)]
+      content ['named', 'said', 'little', 'with', 'went', 'wanted', 'very', 'play']  ex: '\nOne day, a little boy named Tim found a small stone in his backyard. He thought it was from a symbol his mom had not. H'
+code  732 (top10  p=0.0050) words 104.5+/-3.6 first [('once', 94), ('one', 1), ('lily', 1)] names [('Tim', 94), ('Lily', 44), ('Tom', 44)]
+      content ['time', 'named', 'little', 'with', 'play', 'loved', 'said', 'wanted']  ex: '\nOnce upon a time, there was a busy ant named Andy. Andy had a special sheet. He would use it for all his friends. One d'
+code  292 (random p=0.0004) words 103.7+/-4.0 first [('once', 69), ('one', 21), ('lily', 4)] names [('Tim', 80), ('Lily', 49), ('Spot', 38)]
+      content ['named', 'time', 'with', 'said', 'little', 'play', 'very', 'loved']  ex: '\nOne day, a little bug named Tim went to visit his friend, Doggy. Doggy lived in a big, green garden with many flowers. '
+code 1559 (random p=0.0018) words 104.0+/-3.9 first [('once', 94), ('one', 1), ('lily', 1)] names [('Tim', 95), ('Lily', 58), ('Tom', 34)]
+      content ['time', 'named', 'little', 'with', 'play', 'loved', 'said', 'wanted']  ex: '\nOnce upon a time, there was a busy little ant named Andy. Andy lived in a big hill with his ant friends. One day, Andy '
+code  419 (random p=0.0040) words 104.4+/-3.8 first [('once', 93), ('upon', 1), ('one', 1)] names [('Tim', 119), ('Tom', 46), ('Spot', 40)]
+      content ['time', 'named', 'little', 'said', 'with', 'loved', 'play', 'wanted']  ex: '\nOnce upon a time, there was a busy ant named Andy. Andy lived with his ant friends. They would do do for their home. On'
+code  473 (random p=0.0014) words 105.3+/-3.4 first [('once', 87), ('one', 8), ('upon', 1)] names [('Tim', 28), ('Lily', 25), ('Tom', 22)]
+      content ['time', 'little', 'said', 'with', 'very', 'wanted', 'play', 'friends']  ex: '\nOne day, a little ant named Tim was in space. Tim felt very tired. He lived in many to a big garden. The garden had man'
+code 3566 (random p=0.0017) words 105.4+/-3.6 first [('once', 91), ('one', 5)] names [('Tim', 19), ('Yes', 9), ('You', 9)]
+      content ['time', 'little', 'wanted', 'very', 'with', 'said', 'play', 'happy']  ex: '\nOnce upon a time, there was a little bug. The bug was very adorable. It lived in a big green garden. The bug had many f'
+code 2899 (random p=0.0003) words 103.8+/-4.2 first [('once', 61), ('one', 23), ('lily', 4)] names [('Tim', 57), ('Lily', 52), ('Tom', 40)]
+      content ['with', 'time', 'said', 'named', 'little', 'wanted', 'play', 'very']  ex: '\nOne day, a little girl named Lucy went to visit her friend, Tim. Tim lived in a house with big, pretty garden. Lucy had'
+code 2172 (random p=0.0003) words 103.8+/-3.9 first [('once', 60), ('one', 25), ('lily', 7)] names [('Tim', 55), ('Lily', 46), ('Sue', 30)]
+      content ['said', 'named', 'time', 'with', 'little', 'very', 'play', 'wanted']  ex: '\nOne day, a little bug named Tim went to visit his friend, Sam. Sam lived in a big, green garden with many flowers. Tim '
+code  840 (random p=0.0006) words 104.4+/-4.2 first [('once', 80), ('one', 11), ('lily', 3)] names [('Tim', 75), ('Lily', 61), ('Sue', 44)]
+      content ['time', 'named', 'with', 'little', 'said', 'wanted', 'play', 'loved']  ex: '\nOne day, a little girl named Lucy went to visit her friend, Tim. Tim lived in a house with a pretty garden. In the gard'
+code 1630 (random p=0.0002) words 103.3+/-4.2 first [('once', 59), ('one', 25), ('lily', 4)] names [('Tim', 61), ('Tom', 39), ('Lily', 37)]
+      content ['named', 'with', 'said', 'time', 'little', 'play', 'very', 'wanted']  ex: '\nOne day, a little ant named Andy went to visit his friend, Buzzy. They lived in a big, green garden again. Andy had man'
+code  448 (random p=0.0006) words 103.7+/-3.8 first [('one', 58), ('once', 32), ('lily', 2)] names [('Tim', 105), ('Spot', 38), ('Sue', 37)]
+      content ['named', 'said', 'little', 'with', 'wanted', 'play', 'very', 'went']  ex: '\nOne day, a little boy named Tim found a book. The book was called a dictionary. Tim was ignorant about words. He wanted'
+
+TF-cosine within 0.4594 between 0.4425 diff 0.0169 permutation p=0.0010 (1000 perms)
+ROUGE-L (3000 sampled pairs each) within 0.2358 between 0.2157
+mean modal-first-word share: 0.886
+### END: 2026-11-22T01:40:11-08:00 rc=0 duration_s=185
+P3-PROBE-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python bf16_hard_full.py
+### START: 2026-11-22T01:40:11-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+NCP Transformer, Total parameter count: 25.46M
+NCP Transformer, Non embedding parameter count: 25.32M
+default        solved 1725/2000 = 86.25%  (60.8s)   paper Table 3: 86.1%
+autocast_bf16  solved 1727/2000 = 86.35%  (31.9s)   paper Table 3: 86.1%
+### END: 2026-11-22T01:41:51-08:00 rc=0 duration_s=99
+BF16-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python train.py --steps 10000 --bs 1024 --tag real --eval_every 1000
+### START: 2026-11-22T01:41:52-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+train 5000 boards, test 1000 boards, params 14.90M, fine_drop 0.5, aug False
+[eval] step 0 3s held-out acc final 7.788% exact 0.0% util 25.52% train-acc 7.807% per-level acc [10.0, 0.0, 0.1, 10.0, 10.1, 10.1, 10.1, 10.2, 10.6, 8.9, 8.2, 7.8]
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p10_train_tokenizer\train.py", line 104, in <module>
+    logits, vq_loss, util, gutil, _ = vq(x)
+                                      ~~^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vqvae.py", line 94, in forward
+    x = self.decoder(z_q)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vae.py", line 253, in forward
+    x = self.middle_block(z)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vae.py", line 98, in forward
+    x = x + self.attn(self.ln_1(x))
+            ~~~~~~~~~^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vae.py", line 65, in forward
+    y = torch.nn.functional.scaled_dot_product_attention(
+        q, k, v, attn_mask=attn_mask, dropout_p=self.dropout if self.training else 0
+    )
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 90.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.25 GiB is allocated by PyTorch, and 264.64 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+### END: 2026-11-22T01:42:07-08:00 rc=1 duration_s=15
+P10-REAL-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_default
+### START: 2026-11-22T01:42:08-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_default/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2948.73it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.63   12.84   27.78    82.43    20.9
+### END: 2026-11-22T01:49:45-08:00 rc=0 duration_s=456
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --freq 0 --mu 0 --adj  --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_argmax
+### START: 2026-11-22T01:49:48-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_argmax/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2121.59it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.49   12.86   27.71    82.82    21.0
+### END: 2026-11-22T01:57:31-08:00 rc=0 duration_s=463
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --freq 0 --mu 0 --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_adjonly
+### START: 2026-11-22T01:57:32-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_adjonly/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 5989.49it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.56   12.85   27.73    82.02    21.0
+### END: 2026-11-22T02:05:08-08:00 rc=0 duration_s=456
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --adj  --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_freqonly
+### START: 2026-11-22T02:05:09-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_freqonly/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 6622.47it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.59   12.88   27.74    81.95    20.9
+### END: 2026-11-22T02:12:44-08:00 rc=0 duration_s=455
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --cfg 0 --bs 8 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/xsum1k_cfg0
+### START: 2026-11-22T02:12:45-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/xsum1k_cfg0/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 7366.37it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.63   12.84   27.78    82.43    20.9
+### END: 2026-11-22T02:20:24-08:00 rc=0 duration_s=459
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --cfg 0.5 --bs 8 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/xsum1k_cfg0.5
+### START: 2026-11-22T02:20:25-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/xsum1k_cfg0.5/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 4879.70it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.89   12.97   28.02    94.90    20.9
+### END: 2026-11-22T02:52:39-08:00 rc=0 duration_s=1934
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --cfg 1.0 --bs 8 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/xsum1k_cfg1.0
+### START: 2026-11-22T02:52:40-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/xsum1k_cfg1.0/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 6227.37it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.76   12.70   27.78   110.39    20.8
+### END: 2026-11-22T03:24:49-08:00 rc=0 duration_s=1927
+XSUM-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python mbr.py --n 3003 --bs 16 --temp 0.8 --top_p 0.9
+### START: 2026-11-22T03:24:50-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+NCP Transformer, Total parameter count: 119.96M
+NCP Transformer, Non embedding parameter count: 119.66M
+greedy done 313.5s
+greedy vs evaluate.py shard (wmt_bs16_cfg0): 3003/3003 strings equal
+  candidates batch 0 (0/3003) 21s
+  candidates batch 5 (80/3003) 125s
+  candidates batch 10 (160/3003) 229s
+  candidates batch 15 (240/3003) 336s
+  candidates batch 20 (320/3003) 446s
+  candidates batch 25 (400/3003) 553s
+  candidates batch 30 (480/3003) 665s
+  candidates batch 35 (560/3003) 777s
+  candidates batch 40 (640/3003) 884s
+  candidates batch 45 (720/3003) 994s
+  candidates batch 50 (800/3003) 1104s
+  candidates batch 55 (880/3003) 1216s
+  candidates batch 60 (960/3003) 1320s
+  candidates batch 65 (1040/3003) 1427s
+  candidates batch 70 (1120/3003) 1534s
+  candidates batch 75 (1200/3003) 1644s
+  candidates batch 80 (1280/3003) 1753s
+  candidates batch 85 (1360/3003) 1865s
+  candidates batch 90 (1440/3003) 1972s
+  candidates batch 95 (1520/3003) 2082s
+  candidates batch 100 (1600/3003) 2194s
+  candidates batch 105 (1680/3003) 2296s
+  candidates batch 110 (1760/3003) 2411s
+  candidates batch 115 (1840/3003) 2520s
+  candidates batch 120 (1920/3003) 2627s
+  candidates batch 125 (2000/3003) 2737s
+  candidates batch 130 (2080/3003) 2847s
+  candidates batch 135 (2160/3003) 2956s
+  candidates batch 140 (2240/3003) 3068s
+  candidates batch 145 (2320/3003) 3183s
+  candidates batch 150 (2400/3003) 3290s
+  candidates batch 155 (2480/3003) 3397s
+  candidates batch 160 (2560/3003) 3501s
+  candidates batch 165 (2640/3003) 3606s
+  candidates batch 170 (2720/3003) 3720s
+  candidates batch 175 (2800/3003) 3825s
+  candidates batch 180 (2880/3003) 3932s
+  candidates batch 185 (2960/3003) 4042s
+M= 1 greedy           BLEU 21.72 chrF 49.57
+M= 1 one sample       BLEU 18.19 chrF 46.08
+M= 4 MBR ( 44 passes) BLEU 21.29 chrF 48.69  (oracle-by-reference BLEU 25.96, select 8s)
+M= 8 MBR ( 88 passes) BLEU 23.19 chrF 50.22  (oracle-by-reference BLEU 28.96, select 23s)
+M=12 MBR (132 passes) BLEU 23.81 chrF 50.78  (oracle-by-reference BLEU 30.52, select 44s)
+### END: 2026-11-22T04:39:48-08:00 rc=0 duration_s=4498
+P8-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_greedy
+### START: 2026-11-22T04:39:49-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_greedy/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   21.37     22.23   49.56      0.931
+
+BLEU|True = 21.37 59.5/30.3/17.0/9.7 (BP = 0.915 ratio = 0.919 hyp_len = 10625 ref_len = 11565)
+### END: 2026-11-22T04:41:52-08:00 rc=0 duration_s=123
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 0.6 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.6_p0.9_r1
+### START: 2026-11-22T04:41:53-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.6_p0.9_r1/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   19.64     20.54   48.58      0.940
+
+BLEU|True = 19.64 57.5/28.0/15.1/8.3 (BP = 0.926 ratio = 0.929 hyp_len = 10743 ref_len = 11565)
+### END: 2026-11-22T04:43:57-08:00 rc=0 duration_s=123
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 0.6 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.6_p0.9_r2
+### START: 2026-11-22T04:43:58-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.6_p0.9_r2/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   19.76     20.72   48.82      0.939
+
+BLEU|True = 19.76 57.5/28.0/15.2/8.6 (BP = 0.922 ratio = 0.925 hyp_len = 10701 ref_len = 11565)
+### END: 2026-11-22T04:46:01-08:00 rc=0 duration_s=123
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 0.6 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.6_p0.9_r3
+### START: 2026-11-22T04:46:02-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.6_p0.9_r3/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   20.25     21.31   48.75      0.940
+
+BLEU|True = 20.25 57.5/28.5/15.7/8.8 (BP = 0.927 ratio = 0.930 hyp_len = 10752 ref_len = 11565)
+### END: 2026-11-22T04:48:07-08:00 rc=0 duration_s=123
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 0.8 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.8_p0.9_r1
+### START: 2026-11-22T04:48:08-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.8_p0.9_r1/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   19.12     19.98   48.24      0.952
+
+BLEU|True = 19.12 56.4/26.9/14.5/7.8 (BP = 0.938 ratio = 0.940 hyp_len = 10872 ref_len = 11565)
+### END: 2026-11-22T04:50:15-08:00 rc=0 duration_s=127
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 0.8 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.8_p0.9_r2
+### START: 2026-11-22T04:50:16-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.8_p0.9_r2/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   18.90     19.67   47.62      0.951
+
+BLEU|True = 18.90 56.2/26.9/14.3/7.7 (BP = 0.937 ratio = 0.939 hyp_len = 10854 ref_len = 11565)
+### END: 2026-11-22T04:52:22-08:00 rc=0 duration_s=126
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 0.8 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.8_p0.9_r3
+### START: 2026-11-22T04:52:23-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t0.8_p0.9_r3/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   19.85     20.71   48.01      0.968
+
+BLEU|True = 19.85 56.0/27.0/14.8/8.4 (BP = 0.952 ratio = 0.954 hyp_len = 11028 ref_len = 11565)
+### END: 2026-11-22T04:54:30-08:00 rc=0 duration_s=126
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 1.0 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t1.0_p0.9_r1
+### START: 2026-11-22T04:54:31-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t1.0_p0.9_r1/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   17.13     17.88   45.72      0.980
+
+BLEU|True = 17.13 52.2/23.8/12.2/6.5 (BP = 0.967 ratio = 0.967 hyp_len = 11189 ref_len = 11565)
+### END: 2026-11-22T04:56:37-08:00 rc=0 duration_s=125
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 1.0 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t1.0_p0.9_r2
+### START: 2026-11-22T04:56:38-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t1.0_p0.9_r2/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   17.83     18.71   46.29      0.982
+
+BLEU|True = 17.83 52.7/24.1/12.7/7.1 (BP = 0.970 ratio = 0.970 hyp_len = 11221 ref_len = 11565)
+### END: 2026-11-22T04:58:45-08:00 rc=0 duration_s=127
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 1.0 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t1.0_p0.9_r3
+### START: 2026-11-22T04:58:46-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t1.0_p0.9_r3/
+
+merged 1 shards -> 500 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   17.26     18.05   46.19      0.991
+
+BLEU|True = 17.26 52.0/23.9/12.2/6.4 (BP = 0.977 ratio = 0.977 hyp_len = 11300 ref_len = 11565)
+### END: 2026-11-22T05:00:53-08:00 rc=0 duration_s=126
+P2-SAMPLER-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python train.py --steps 10000 --bs 1024 --tag aug --aug --eval_every 1000
+### START: 2026-11-22T05:00:53-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+train 5000 boards, test 1000 boards, params 14.90M, fine_drop 0.5, aug True
+[eval] step 0 2s held-out acc final 7.788% exact 0.0% util 25.52% train-acc 7.807% per-level acc [np.float64(10.0), np.float64(0.0), np.float64(0.1), np.float64(10.0), np.float64(10.1), np.float64(10.1), np.float64(10.1), np.float64(10.2), np.float64(10.6), np.float64(8.9), np.float64(8.2), np.float64(7.8)]
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p10_train_tokenizer\train.py", line 114, in <module>
+    logits, vq_loss, util, gutil, _ = vq(x)
+                                      ~~^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vqvae.py", line 94, in forward
+    x = self.decoder(z_q)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vae.py", line 253, in forward
+    x = self.middle_block(z)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vae.py", line 98, in forward
+    x = x + self.attn(self.ln_1(x))
+            ~~~~~~~~~^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vae.py", line 69, in forward
+    y = self.resid_dropout(self.c_proj(y))
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\dropout.py", line 73, in forward
+    return F.dropout(input, self.p, self.training, self.inplace)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\functional.py", line 1443, in dropout
+    _VF.dropout_(input, p, training) if inplace else _VF.dropout(input, p, training)
+                                                     ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 90.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.45 GiB is allocated by PyTorch, and 17.64 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+### END: 2026-11-22T05:01:07-08:00 rc=1 duration_s=13
+P10-AUG-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/experiments/common/score_genppl.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/tinystories.yaml --glob ~/Downloads/stanford_ncm_turing/experiments/p03_level1_probe/ts_default/shard_*.pkl --dtype fp16 --limit 64
+### START: 2026-11-22T05:01:08-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights:   3%|▎         | 12/436 [00:00<00:03, 112.38it/s]Loading weights:   8%|▊         | 34/436 [00:00<00:02, 144.03it/s]Loading weights:  11%|█         | 49/436 [00:00<00:02, 144.78it/s]Loading weights:  16%|█▌        | 70/436 [00:00<00:02, 145.97it/s]Loading weights:  22%|██▏       | 94/436 [00:00<00:02, 154.94it/s]Loading weights:  27%|██▋       | 118/436 [00:00<00:01, 160.66it/s]Loading weights:  31%|███       | 134/436 [00:00<00:01, 155.67it/s]Loading weights:  35%|███▌      | 154/436 [00:01<00:01, 154.54it/s]Loading weights:  39%|███▉      | 170/436 [00:01<00:01, 154.65it/s]Loading weights:  44%|████▎     | 190/436 [00:01<00:01, 154.79it/s]Loading weights:  49%|████▉     | 214/436 [00:01<00:01, 158.15it/s]Loading weights:  53%|█████▎    | 230/436 [00:01<00:01, 156.87it/s]Loading weights:  57%|█████▋    | 250/436 [00:01<00:01, 156.18it/s]Loading weights:  62%|██████▏   | 269/436 [00:01<00:01, 164.89it/s]Loading weights:  66%|██████▌   | 286/436 [00:01<00:00, 150.18it/s]Loading weights:  69%|██████▉   | 302/436 [00:01<00:00, 149.22it/s]Loading weights:  74%|███████▍  | 322/436 [00:02<00:00, 147.39it/s]Loading weights:  77%|███████▋  | 337/436 [00:02<00:00, 147.29it/s]Loading weights:  82%|████████▏ | 358/436 [00:02<00:00, 149.47it/s]Loading weights:  86%|████████▌ | 373/436 [00:02<00:00, 144.48it/s]Loading weights:  90%|█████████ | 394/436 [00:02<00:00, 143.94it/s]Loading weights:  94%|█████████▍| 409/436 [00:02<00:00, 139.71it/s]Loading weights:  99%|█████████▊| 430/436 [00:02<00:00, 149.45it/s]Loading weights: 100%|██████████| 436/436 [00:03<00:00, 140.65it/s]
+[score_genppl] metric=genppl ref=gpt2-large dtype=fp16 param_dtype=torch.float16 device=cuda samples=1280 limit=64
+ seed   genPPL  entropy
+   42    15.30   3.9475
+    0    15.96   3.9694
+    1    17.28   3.9849
+    2    15.81   3.9679
+    3    16.42   3.9652
+
+ mean    16.15   3.9670   (+/- 0.75 over 5 seeds, 320 samples)
+peak GPU memory allocated 2433 MiB
+### END: 2026-11-22T05:01:44-08:00 rc=0 duration_s=35
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/experiments/common/score_genppl.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/tinystories.yaml --glob ~/Downloads/stanford_ncm_turing/experiments/p03_level1_probe/ts_default/shard_*.pkl --dtype fp32 --device cpu --limit 64
+### START: 2026-11-22T05:01:44-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights: 100%|██████████| 436/436 [00:00<00:00, 5383.22it/s]
+[score_genppl] metric=genppl ref=gpt2-large dtype=fp32 param_dtype=torch.float32 device=cpu samples=1280 limit=64
+ seed   genPPL  entropy
+   42    15.30   3.9475
+    0    15.96   3.9694
+    1    17.28   3.9849
+    2    15.81   3.9679
+    3    16.42   3.9652
+
+ mean    16.15   3.9670   (+/- 0.75 over 5 seeds, 320 samples)
+### END: 2026-11-22T05:07:39-08:00 rc=0 duration_s=353
+QUEUE11-DONE

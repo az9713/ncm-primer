@@ -1,0 +1,48 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ar_vs_ncm_small.py
+### START: 2026-11-22T07:55:34-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+[mem] after NCM load: allocated 947 MiB
+  [mem B=4] before generate: allocated 947 MiB, peak 947 MiB, reserved 962 MiB
+  [mem B=4] after generate: allocated 978 MiB, peak 1122 MiB, reserved 1232 MiB
+  [mem B=4] after idx_to_zhats: allocated 982 MiB, peak 1124 MiB, reserved 1308 MiB
+  [mem B=4] after decode: allocated 1041 MiB, peak 1124 MiB, reserved 1310 MiB
+NCM B=  4 rep 0 N=64: 4.53s  per-1024 72.40s  peak reserved 2778 MiB
+NCM B=  4 rep 1 N=64: 4.53s  per-1024 72.45s  peak reserved 2778 MiB
+NCM B=  4: CUDA OOM under the memory cap 0.88: CUDA out of memory. Tried to allocate 50.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.11 GiB is allocated by PyTorch, and 398.18 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Mem
+  [mem B=8] before generate: allocated 956 MiB, peak 956 MiB, reserved 984 MiB
+  [mem B=8] after generate: allocated 997 MiB, peak 1285 MiB, reserved 1480 MiB
+  [mem B=8] after idx_to_zhats: allocated 1005 MiB, peak 1285 MiB, reserved 1480 MiB
+  [mem B=8] after decode: allocated 1125 MiB, peak 1285 MiB, reserved 1600 MiB
+NCM B=  8 rep 0 N=64: 3.97s  per-1024 63.55s  peak reserved 2072 MiB
+NCM B=  8 rep 1 N=64: 3.98s  per-1024 63.68s  peak reserved 3454 MiB
+NCM B=  8: CUDA OOM under the memory cap 0.88: CUDA out of memory. Tried to allocate 98.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.30 GiB is allocated by PyTorch, and 199.41 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Mem
+  [mem B=16] before generate: allocated 956 MiB, peak 956 MiB, reserved 984 MiB
+  [mem B=16] after generate: allocated 1034 MiB, peak 1610 MiB, reserved 2046 MiB
+  [mem B=16] after idx_to_zhats: allocated 1050 MiB, peak 1610 MiB, reserved 2046 MiB
+  [mem B=16] after decode: allocated 1289 MiB, peak 1610 MiB, reserved 2286 MiB
+NCM B= 16 rep 0 N=64: 3.76s  per-1024 60.10s  peak reserved 3404 MiB
+NCM B= 16 rep 1 N=64: 3.76s  per-1024 60.12s  peak reserved 3404 MiB
+NCM B= 16: CUDA OOM under the memory cap 0.88: CUDA out of memory. Tried to allocate 194.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.01 GiB is allocated by PyTorch, and 430.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Me
+pick_tokens B=16: CUDA OOM
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 8680.58it/s]
+params: GPT-2 124.44M, NCM generator 97.07M (module incl. shared), tokenizer 111.40M
+AR  B=  4 rep 0 N=64: 21.39s  per-1024 342.26s  peak reserved 584 MiB
+AR  B=  4 rep 1 N=64: 21.51s  per-1024 344.19s  peak reserved 584 MiB
+AR  B=  4 rep 2 N=64: 21.16s  per-1024 338.51s  peak reserved 584 MiB
+AR  B=  8 rep 0 N=64: 11.41s  per-1024 182.54s  peak reserved 660 MiB
+AR  B=  8 rep 1 N=64: 11.41s  per-1024 182.49s  peak reserved 660 MiB
+AR  B=  8 rep 2 N=64: 10.84s  per-1024 173.49s  peak reserved 660 MiB
+AR  B= 16 rep 0 N=64: 5.64s  per-1024 90.23s  peak reserved 778 MiB
+AR  B= 16 rep 1 N=64: 5.60s  per-1024 89.53s  peak reserved 778 MiB
+AR  B= 16 rep 2 N=64: 5.58s  per-1024 89.27s  peak reserved 778 MiB
+SUMMARY B=  4: NCM 72.43+/-0.03s  AR 341.65+/-2.88s per 1024 seqs  AR/NCM 4.72
+SUMMARY B=  8: NCM 63.62+/-0.09s  AR 179.51+/-5.21s per 1024 seqs  AR/NCM 2.82
+SUMMARY B= 16: NCM 60.11+/-0.01s  AR 89.68+/-0.50s per 1024 seqs  AR/NCM 1.49
+### END: 2026-11-22T07:58:28-08:00 rc=0 duration_s=174
+QUEUE18-DONE

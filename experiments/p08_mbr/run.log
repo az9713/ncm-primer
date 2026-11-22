@@ -1,0 +1,55 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python mbr.py --n 3003 --bs 16 --temp 0.8 --top_p 0.9
+### START: 2026-11-22T03:24:50-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+NCP Transformer, Total parameter count: 119.96M
+NCP Transformer, Non embedding parameter count: 119.66M
+greedy done 313.5s
+greedy vs evaluate.py shard (wmt_bs16_cfg0): 3003/3003 strings equal
+  candidates batch 0 (0/3003) 21s
+  candidates batch 5 (80/3003) 125s
+  candidates batch 10 (160/3003) 229s
+  candidates batch 15 (240/3003) 336s
+  candidates batch 20 (320/3003) 446s
+  candidates batch 25 (400/3003) 553s
+  candidates batch 30 (480/3003) 665s
+  candidates batch 35 (560/3003) 777s
+  candidates batch 40 (640/3003) 884s
+  candidates batch 45 (720/3003) 994s
+  candidates batch 50 (800/3003) 1104s
+  candidates batch 55 (880/3003) 1216s
+  candidates batch 60 (960/3003) 1320s
+  candidates batch 65 (1040/3003) 1427s
+  candidates batch 70 (1120/3003) 1534s
+  candidates batch 75 (1200/3003) 1644s
+  candidates batch 80 (1280/3003) 1753s
+  candidates batch 85 (1360/3003) 1865s
+  candidates batch 90 (1440/3003) 1972s
+  candidates batch 95 (1520/3003) 2082s
+  candidates batch 100 (1600/3003) 2194s
+  candidates batch 105 (1680/3003) 2296s
+  candidates batch 110 (1760/3003) 2411s
+  candidates batch 115 (1840/3003) 2520s
+  candidates batch 120 (1920/3003) 2627s
+  candidates batch 125 (2000/3003) 2737s
+  candidates batch 130 (2080/3003) 2847s
+  candidates batch 135 (2160/3003) 2956s
+  candidates batch 140 (2240/3003) 3068s
+  candidates batch 145 (2320/3003) 3183s
+  candidates batch 150 (2400/3003) 3290s
+  candidates batch 155 (2480/3003) 3397s
+  candidates batch 160 (2560/3003) 3501s
+  candidates batch 165 (2640/3003) 3606s
+  candidates batch 170 (2720/3003) 3720s
+  candidates batch 175 (2800/3003) 3825s
+  candidates batch 180 (2880/3003) 3932s
+  candidates batch 185 (2960/3003) 4042s
+M= 1 greedy           BLEU 21.72 chrF 49.57
+M= 1 one sample       BLEU 18.19 chrF 46.08
+M= 4 MBR ( 44 passes) BLEU 21.29 chrF 48.69  (oracle-by-reference BLEU 25.96, select 8s)
+M= 8 MBR ( 88 passes) BLEU 23.19 chrF 50.22  (oracle-by-reference BLEU 28.96, select 23s)
+M=12 MBR (132 passes) BLEU 23.81 chrF 50.78  (oracle-by-reference BLEU 30.52, select 44s)
+### END: 2026-11-22T04:39:48-08:00 rc=0 duration_s=4498

@@ -1,0 +1,6 @@
+# ncm-main integrity check, 2026-11-22T08:40:07-08:00
+## git status --short ncm-main (no lines = clean)
+## lines: 0
+## diff ncm_main_manifest_before.txt ncm_main_manifest_after.txt
+identical: 39 files
+## __pycache__ folders in ncm-main: 0

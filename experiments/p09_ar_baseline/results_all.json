@@ -1,0 +1,1121 @@
+{
+  "results_run1_B1only.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T00:18:34",
+      "mem_fraction_cap": 0.8
+    },
+    "reps": 3,
+    "nseq": {
+      "1": 64,
+      "16": 1024,
+      "64": 1024,
+      "256": 1024
+    },
+    "runs": [
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 0,
+        "ncm_s": 16.2576085000037,
+        "ar_s": 138.34653460000118,
+        "ncm_s_per_1024": 260.1217360000592,
+        "ar_s_per_1024": 2213.544553600019,
+        "ratio_ar_over_ncm": 8.509648550090851,
+        "peak_alloc_MiB": 2173.32958984375,
+        "peak_reserved_MiB": 2208.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 1,
+        "ncm_s": 15.445763400013675,
+        "ar_s": 135.12337750000006,
+        "ncm_s_per_1024": 247.1322144002188,
+        "ar_s_per_1024": 2161.974040000001,
+        "ratio_ar_over_ncm": 8.74824856503243,
+        "peak_alloc_MiB": 2173.32958984375,
+        "peak_reserved_MiB": 2208.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 2,
+        "ncm_s": 15.543827999994392,
+        "ar_s": 136.9557541999966,
+        "ncm_s_per_1024": 248.70124799991027,
+        "ar_s_per_1024": 2191.2920671999454,
+        "ratio_ar_over_ncm": 8.810941178713893,
+        "peak_alloc_MiB": 2173.32958984375,
+        "peak_reserved_MiB": 2208.0
+      },
+      {
+        "B": 16,
+        "error": "CUDA OOM under the 0.8 memory cap"
+      },
+      {
+        "B": 64,
+        "error": "CUDA OOM under the 0.8 memory cap"
+      },
+      {
+        "B": 256,
+        "error": "CUDA OOM under the 0.8 memory cap"
+      }
+    ],
+    "params": {
+      "gpt2": 124439808,
+      "ncm_generator": 97065600,
+      "ncm_tokenizer": 111404672
+    }
+  },
+  "results_small_batches.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T05:15:14",
+      "mem_fraction_cap": 0.88
+    },
+    "reps": 3,
+    "nseq": {
+      "1": 64,
+      "4": 256,
+      "8": 512
+    },
+    "ncm": [
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 0,
+        "s": 16.396331199997803,
+        "s_per_1024": 262.34129919996485,
+        "peak_reserved_MiB": 1772.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 1,
+        "s": 17.22097899999062,
+        "s_per_1024": 275.53566399984993,
+        "peak_reserved_MiB": 1772.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 2,
+        "s": 18.759430700010853,
+        "s_per_1024": 300.15089120017365,
+        "peak_reserved_MiB": 1772.0
+      },
+      {
+        "B": 4,
+        "error": "CUDA OOM under the 0.88 memory cap"
+      },
+      {
+        "B": 8,
+        "error": "CUDA OOM under the 0.88 memory cap"
+      }
+    ],
+    "ar": [
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 0,
+        "s": 147.2154459000012,
+        "s_per_1024": 2355.4471344000194,
+        "peak_reserved_MiB": 544.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 1,
+        "s": 143.21462969999993,
+        "s_per_1024": 2291.434075199999,
+        "peak_reserved_MiB": 544.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 2,
+        "s": 136.34421769999608,
+        "s_per_1024": 2181.5074831999373,
+        "peak_reserved_MiB": 544.0
+      },
+      {
+        "B": 4,
+        "nseq": 256,
+        "rep": 0,
+        "s": 136.57867020000413,
+        "s_per_1024": 546.3146808000165,
+        "peak_reserved_MiB": 584.0
+      },
+      {
+        "B": 4,
+        "nseq": 256,
+        "rep": 1,
+        "s": 139.32433210000454,
+        "s_per_1024": 557.2973284000182,
+        "peak_reserved_MiB": 584.0
+      },
+      {
+        "B": 4,
+        "nseq": 256,
+        "rep": 2,
+        "s": 128.42896650001057,
+        "s_per_1024": 513.7158660000423,
+        "peak_reserved_MiB": 584.0
+      },
+      {
+        "B": 8,
+        "nseq": 512,
+        "rep": 0,
+        "s": 132.194092500009,
+        "s_per_1024": 264.388185000018,
+        "peak_reserved_MiB": 660.0
+      },
+      {
+        "B": 8,
+        "nseq": 512,
+        "rep": 1,
+        "s": 146.39514459999918,
+        "s_per_1024": 292.79028919999837,
+        "peak_reserved_MiB": 660.0
+      },
+      {
+        "B": 8,
+        "nseq": 512,
+        "rep": 2,
+        "s": 140.7873952999944,
+        "s_per_1024": 281.5747905999888,
+        "peak_reserved_MiB": 660.0
+      }
+    ],
+    "pick_tokens_B16": [
+      {
+        "rep": 0,
+        "error": "CUDA OOM"
+      }
+    ],
+    "params": {
+      "ncm_generator_incl_shared": 97065600,
+      "ncm_tokenizer": 111404672,
+      "gpt2": 124439808
+    },
+    "summary": {
+      "1": {
+        "ncm_mean": 279.3426181333295,
+        "ncm_std": 19.19012732204703,
+        "ar_mean": 2276.129564266652,
+        "ar_std": 87.97398255213449,
+        "ratio_ar_over_ncm": 8.148164356289742
+      }
+    }
+  },
+  "results_b4_fresh.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T07:36:40",
+      "mem_fraction_cap": 0.88
+    },
+    "reps": 3,
+    "nseq": {
+      "4": 256
+    },
+    "ncm": [
+      {
+        "B": 4,
+        "error": "CUDA OOM under the 0.88 memory cap",
+        "message": "CUDA out of memory. Tried to allocate 50.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.11 GiB is allocated by PyTorch, and 398.18 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Mem"
+      }
+    ],
+    "ar": [
+      {
+        "B": 4,
+        "nseq": 256,
+        "rep": 0,
+        "s": 86.95432060000894,
+        "s_per_1024": 347.81728240003577,
+        "peak_reserved_MiB": 584.0
+      },
+      {
+        "B": 4,
+        "nseq": 256,
+        "rep": 1,
+        "s": 84.70069180001155,
+        "s_per_1024": 338.8027672000462,
+        "peak_reserved_MiB": 584.0
+      },
+      {
+        "B": 4,
+        "nseq": 256,
+        "rep": 2,
+        "s": 83.74142449999636,
+        "s_per_1024": 334.9656979999854,
+        "peak_reserved_MiB": 584.0
+      }
+    ],
+    "pick_tokens_B16": [
+      {
+        "rep": 0,
+        "error": "CUDA OOM"
+      }
+    ],
+    "params": {
+      "ncm_generator_incl_shared": 97065600,
+      "ncm_tokenizer": 111404672,
+      "gpt2": 124439808
+    },
+    "summary": {}
+  },
+  "results_b8_fresh.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T07:41:46",
+      "mem_fraction_cap": 0.88
+    },
+    "reps": 3,
+    "nseq": {
+      "8": 512
+    },
+    "ncm": [
+      {
+        "B": 8,
+        "error": "CUDA OOM under the 0.88 memory cap",
+        "message": "CUDA out of memory. Tried to allocate 58.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.37 GiB is allocated by PyTorch, and 139.25 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Mem"
+      }
+    ],
+    "ar": [
+      {
+        "B": 8,
+        "nseq": 512,
+        "rep": 0,
+        "s": 87.1719657000067,
+        "s_per_1024": 174.3439314000134,
+        "peak_reserved_MiB": 660.0
+      },
+      {
+        "B": 8,
+        "nseq": 512,
+        "rep": 1,
+        "s": 85.60205129999667,
+        "s_per_1024": 171.20410259999335,
+        "peak_reserved_MiB": 660.0
+      },
+      {
+        "B": 8,
+        "nseq": 512,
+        "rep": 2,
+        "s": 87.2573709999997,
+        "s_per_1024": 174.5147419999994,
+        "peak_reserved_MiB": 660.0
+      }
+    ],
+    "pick_tokens_B16": [
+      {
+        "rep": 0,
+        "error": "CUDA OOM"
+      }
+    ],
+    "params": {
+      "ncm_generator_incl_shared": 97065600,
+      "ncm_tokenizer": 111404672,
+      "gpt2": 124439808
+    },
+    "summary": {}
+  },
+  "results_b16_fresh.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T07:46:48",
+      "mem_fraction_cap": 0.88
+    },
+    "reps": 3,
+    "nseq": {
+      "16": 1024
+    },
+    "ncm": [
+      {
+        "B": 16,
+        "error": "CUDA OOM under the 0.88 memory cap",
+        "message": "CUDA out of memory. Tried to allocate 194.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.01 GiB is allocated by PyTorch, and 430.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Me"
+      }
+    ],
+    "ar": [
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 0,
+        "s": 89.07414369999606,
+        "s_per_1024": 89.07414369999606,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 1,
+        "s": 89.65663079998922,
+        "s_per_1024": 89.65663079998922,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 2,
+        "s": 89.79533880000236,
+        "s_per_1024": 89.79533880000236,
+        "peak_reserved_MiB": 778.0
+      }
+    ],
+    "pick_tokens_B16": [
+      {
+        "rep": 0,
+        "error": "CUDA OOM"
+      }
+    ],
+    "params": {
+      "ncm_generator_incl_shared": 97065600,
+      "ncm_tokenizer": 111404672,
+      "gpt2": 124439808
+    },
+    "summary": {}
+  },
+  "results_short_runs.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T07:55:43",
+      "mem_fraction_cap": 0.88
+    },
+    "reps": 3,
+    "nseq": {
+      "4": 64,
+      "8": 64,
+      "16": 64
+    },
+    "ncm": [
+      {
+        "B": 4,
+        "nseq": 64,
+        "rep": 0,
+        "s": 4.525135100004263,
+        "s_per_1024": 72.40216160006821,
+        "peak_reserved_MiB": 2778.0
+      },
+      {
+        "B": 4,
+        "nseq": 64,
+        "rep": 1,
+        "s": 4.5280204999871785,
+        "s_per_1024": 72.44832799979486,
+        "peak_reserved_MiB": 2778.0
+      },
+      {
+        "B": 4,
+        "error": "CUDA OOM under the 0.88 memory cap",
+        "message": "CUDA out of memory. Tried to allocate 50.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.11 GiB is allocated by PyTorch, and 398.18 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Mem"
+      },
+      {
+        "B": 8,
+        "nseq": 64,
+        "rep": 0,
+        "s": 3.971978500005207,
+        "s_per_1024": 63.55165600008331,
+        "peak_reserved_MiB": 2072.0
+      },
+      {
+        "B": 8,
+        "nseq": 64,
+        "rep": 1,
+        "s": 3.980172900002799,
+        "s_per_1024": 63.682766400044784,
+        "peak_reserved_MiB": 3454.0
+      },
+      {
+        "B": 8,
+        "error": "CUDA OOM under the 0.88 memory cap",
+        "message": "CUDA out of memory. Tried to allocate 98.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.30 GiB is allocated by PyTorch, and 199.41 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Mem"
+      },
+      {
+        "B": 16,
+        "nseq": 64,
+        "rep": 0,
+        "s": 3.7564855000091484,
+        "s_per_1024": 60.103768000146374,
+        "peak_reserved_MiB": 3404.0
+      },
+      {
+        "B": 16,
+        "nseq": 64,
+        "rep": 1,
+        "s": 3.7573902000003727,
+        "s_per_1024": 60.11824320000596,
+        "peak_reserved_MiB": 3404.0
+      },
+      {
+        "B": 16,
+        "error": "CUDA OOM under the 0.88 memory cap",
+        "message": "CUDA out of memory. Tried to allocate 194.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.01 GiB is allocated by PyTorch, and 430.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Me"
+      }
+    ],
+    "ar": [
+      {
+        "B": 4,
+        "nseq": 64,
+        "rep": 0,
+        "s": 21.39095640000596,
+        "s_per_1024": 342.2553024000954,
+        "peak_reserved_MiB": 584.0
+      },
+      {
+        "B": 4,
+        "nseq": 64,
+        "rep": 1,
+        "s": 21.511631500005024,
+        "s_per_1024": 344.1861040000804,
+        "peak_reserved_MiB": 584.0
+      },
+      {
+        "B": 4,
+        "nseq": 64,
+        "rep": 2,
+        "s": 21.157028800007538,
+        "s_per_1024": 338.5124608001206,
+        "peak_reserved_MiB": 584.0
+      },
+      {
+        "B": 8,
+        "nseq": 64,
+        "rep": 0,
+        "s": 11.408760799997253,
+        "s_per_1024": 182.54017279995605,
+        "peak_reserved_MiB": 660.0
+      },
+      {
+        "B": 8,
+        "nseq": 64,
+        "rep": 1,
+        "s": 11.40593429999717,
+        "s_per_1024": 182.49494879995473,
+        "peak_reserved_MiB": 660.0
+      },
+      {
+        "B": 8,
+        "nseq": 64,
+        "rep": 2,
+        "s": 10.843391800008249,
+        "s_per_1024": 173.49426880013198,
+        "peak_reserved_MiB": 660.0
+      },
+      {
+        "B": 16,
+        "nseq": 64,
+        "rep": 0,
+        "s": 5.639584999997169,
+        "s_per_1024": 90.2333599999547,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 16,
+        "nseq": 64,
+        "rep": 1,
+        "s": 5.595504900004016,
+        "s_per_1024": 89.52807840006426,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 16,
+        "nseq": 64,
+        "rep": 2,
+        "s": 5.5795896999916295,
+        "s_per_1024": 89.27343519986607,
+        "peak_reserved_MiB": 778.0
+      }
+    ],
+    "pick_tokens_B16": [
+      {
+        "rep": 0,
+        "error": "CUDA OOM"
+      }
+    ],
+    "params": {
+      "ncm_generator_incl_shared": 97065600,
+      "ncm_tokenizer": 111404672,
+      "gpt2": 124439808
+    },
+    "summary": {
+      "4": {
+        "ncm_mean": 72.42524479993153,
+        "ncm_std": 0.032644574309678855,
+        "ar_mean": 341.65128906676546,
+        "ar_std": 2.8846457096570255,
+        "ratio_ar_over_ncm": 4.717295606118386
+      },
+      "8": {
+        "ncm_mean": 63.61721120006405,
+        "ncm_std": 0.092709052896837,
+        "ar_mean": 179.50979680001424,
+        "ar_std": 5.209649137952552,
+        "ratio_ar_over_ncm": 2.821717478867315
+      },
+      "16": {
+        "ncm_mean": 60.11100560007617,
+        "ncm_std": 0.010235511979746181,
+        "ar_mean": 89.67829119996168,
+        "ar_std": 0.4972794178287141,
+        "ratio_ar_over_ncm": 1.4918780729871544
+      }
+    }
+  },
+  "results_gcfix.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T08:11:56",
+      "mem_fraction_cap": 0.88
+    },
+    "reps": 3,
+    "nseq": {
+      "16": 1024,
+      "64": 1024
+    },
+    "ncm": [
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 0,
+        "s": 59.69439950003289,
+        "s_per_1024": 59.69439950003289,
+        "peak_reserved_MiB": 2722.0
+      },
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 1,
+        "s": 62.05086869992374,
+        "s_per_1024": 62.05086869992374,
+        "peak_reserved_MiB": 2722.0
+      },
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 2,
+        "s": 63.31629349995637,
+        "s_per_1024": 63.31629349995637,
+        "peak_reserved_MiB": 2722.0
+      },
+      {
+        "B": 64,
+        "error": "CUDA OOM under the 0.88 memory cap",
+        "message": "CUDA out of memory. Tried to allocate 650.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 131.70 MiB is free. 3.52 GiB allowed; Of the allocated memory 2.45 GiB is allocated by PyTorch, and 640.22 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for"
+      }
+    ],
+    "ar": [
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 0,
+        "s": 88.04826370000956,
+        "s_per_1024": 88.04826370000956,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 1,
+        "s": 93.16492580002523,
+        "s_per_1024": 93.16492580002523,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 2,
+        "s": 90.5539552000555,
+        "s_per_1024": 90.5539552000555,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 64,
+        "nseq": 1024,
+        "rep": 0,
+        "s": 47.63722760001838,
+        "s_per_1024": 47.63722760001838,
+        "peak_reserved_MiB": 3302.0
+      },
+      {
+        "B": 64,
+        "nseq": 1024,
+        "rep": 1,
+        "s": 47.50858320000407,
+        "s_per_1024": 47.50858320000407,
+        "peak_reserved_MiB": 3302.0
+      },
+      {
+        "B": 64,
+        "nseq": 1024,
+        "rep": 2,
+        "s": 47.51810179998574,
+        "s_per_1024": 47.51810179998574,
+        "peak_reserved_MiB": 3302.0
+      }
+    ],
+    "pick_tokens_B16": [
+      {
+        "rep": 0,
+        "s": 66.98369090000051,
+        "B": 16
+      },
+      {
+        "rep": 1,
+        "s": 66.4445948000066,
+        "B": 16
+      },
+      {
+        "rep": 2,
+        "s": 66.41838829997869,
+        "B": 16
+      }
+    ],
+    "params": {
+      "ncm_generator_incl_shared": 97065600,
+      "ncm_tokenizer": 111404672,
+      "gpt2": 124439808
+    },
+    "summary": {
+      "16": {
+        "ncm_mean": 61.687187233304336,
+        "ncm_std": 1.83813144076866,
+        "ar_mean": 90.58904823336343,
+        "ar_std": 2.558511559906319,
+        "ratio_ar_over_ncm": 1.468522918556015
+      },
+      "pick_tokens_B16": [
+        66.61555799999526,
+        0.3190816027454923
+      ]
+    }
+  },
+  "leak_test.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T07:58:55",
+      "mem_fraction_cap": 0.88
+    },
+    "B": 16,
+    "after_load_MiB": 947.06396484375,
+    "calls": [
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 0,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 1,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 2,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 3,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 4,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 5,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 6,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 7,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 8,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 9,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 10,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 11,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 12,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 13,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 14,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 15,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 16,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 17,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 18,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "config sampler (T=1, top_k=0, top_p=1)",
+        "i": 19,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 0,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 1,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 2,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 3,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 4,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 5,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 6,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 7,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 8,
+        "allocated_MiB": 956.18896484375
+      },
+      {
+        "mode": "argmax (T=0)",
+        "i": 9,
+        "allocated_MiB": 956.18896484375
+      }
+    ]
+  },
+  "leak_test2.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T08:09:43",
+      "mem_fraction_cap": 0.88
+    },
+    "B": 16,
+    "variants": {
+      "a_generate_no_gc": [
+        1033.94921875,
+        1111.70947265625,
+        1190.4697265625,
+        1269.10498046875,
+        1347.333984375,
+        1425.25048828125,
+        1502.9482421875,
+        1580.96142578125,
+        1658.599609375,
+        1736.23779296875,
+        1814.529296875,
+        1892.75830078125,
+        1033.94921875,
+        1111.70947265625,
+        1189.4697265625,
+        1267.69873046875,
+        1345.458984375,
+        1423.28173828125,
+        1501.6669921875,
+        1579.83349609375
+      ],
+      "b_decode_gc": [
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375,
+        956.18896484375
+      ],
+      "c_decode_no_gc": [
+        1049.91015625,
+        1144.41259765625,
+        1237.7900390625,
+        1331.35791015625,
+        1425.9853515625,
+        1519.14111328125,
+        1613.4873046875,
+        1706.27392578125,
+        1800.9609375,
+        956.18896484375,
+        1049.91015625,
+        1144.41259765625,
+        1237.7900390625,
+        1331.35791015625,
+        1425.9853515625,
+        1519.14111328125,
+        1613.4873046875,
+        1706.27392578125,
+        1800.9609375,
+        1894.40380859375
+      ]
+    }
+  },
+  "results_run2.json": {
+    "env": {
+      "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "time": "2026-11-22T01:14:27",
+      "mem_fraction_cap": 0.88
+    },
+    "reps": 3,
+    "nseq": {
+      "1": 64,
+      "16": 1024,
+      "64": 1024,
+      "256": 1024
+    },
+    "ncm": [
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 0,
+        "s": 13.787021099997219,
+        "s_per_1024": 220.5923375999555,
+        "peak_reserved_MiB": 1772.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 1,
+        "s": 16.15383369999472,
+        "s_per_1024": 258.4613391999155,
+        "peak_reserved_MiB": 1772.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 2,
+        "s": 16.95724680001149,
+        "s_per_1024": 271.31594880018383,
+        "peak_reserved_MiB": 1772.0
+      },
+      {
+        "B": 16,
+        "error": "CUDA OOM under the 0.88 memory cap"
+      },
+      {
+        "B": 64,
+        "error": "CUDA OOM under the 0.88 memory cap"
+      },
+      {
+        "B": 256,
+        "error": "CUDA OOM under the 0.88 memory cap"
+      }
+    ],
+    "ar": [
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 0,
+        "s": 145.8207914999948,
+        "s_per_1024": 2333.132663999917,
+        "peak_reserved_MiB": 544.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 1,
+        "s": 128.89918890000263,
+        "s_per_1024": 2062.387022400042,
+        "peak_reserved_MiB": 544.0
+      },
+      {
+        "B": 1,
+        "nseq": 64,
+        "rep": 2,
+        "s": 134.21410560001095,
+        "s_per_1024": 2147.4256896001752,
+        "peak_reserved_MiB": 544.0
+      },
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 0,
+        "s": 116.8982837999938,
+        "s_per_1024": 116.8982837999938,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 1,
+        "s": 120.3863268999994,
+        "s_per_1024": 120.3863268999994,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 16,
+        "nseq": 1024,
+        "rep": 2,
+        "s": 128.12485990001005,
+        "s_per_1024": 128.12485990001005,
+        "peak_reserved_MiB": 778.0
+      },
+      {
+        "B": 64,
+        "nseq": 1024,
+        "rep": 0,
+        "s": 51.52527779999946,
+        "s_per_1024": 51.52527779999946,
+        "peak_reserved_MiB": 3302.0
+      },
+      {
+        "B": 64,
+        "nseq": 1024,
+        "rep": 1,
+        "s": 52.013371299995924,
+        "s_per_1024": 52.013371299995924,
+        "peak_reserved_MiB": 3302.0
+      },
+      {
+        "B": 64,
+        "nseq": 1024,
+        "rep": 2,
+        "s": 52.04729770000267,
+        "s_per_1024": 52.04729770000267,
+        "peak_reserved_MiB": 3302.0
+      },
+      {
+        "B": 256,
+        "nseq": 1024,
+        "rep": 0,
+        "s": 108.14154450000206,
+        "s_per_1024": 108.14154450000206,
+        "peak_reserved_MiB": 3604.0
+      },
+      {
+        "B": 256,
+        "nseq": 1024,
+        "rep": 1,
+        "s": 105.77321309999388,
+        "s_per_1024": 105.77321309999388,
+        "peak_reserved_MiB": 3604.0
+      },
+      {
+        "B": 256,
+        "nseq": 1024,
+        "rep": 2,
+        "s": 107.39684729999863,
+        "s_per_1024": 107.39684729999863,
+        "peak_reserved_MiB": 3604.0
+      }
+    ],
+    "pick_tokens_B16": [
+      {
+        "rep": 0,
+        "error": "CUDA OOM"
+      }
+    ],
+    "params": {
+      "ncm_generator_incl_shared": 97065600,
+      "ncm_tokenizer": 111404672,
+      "gpt2": 124439808
+    },
+    "summary": {
+      "1": {
+        "ncm_mean": 250.12320853335163,
+        "ncm_std": 26.36976489386097,
+        "ar_mean": 2180.9817920000446,
+        "ar_std": 138.45688721596653,
+        "ratio_ar_over_ncm": 8.719629836785941
+      }
+    }
+  }
+}

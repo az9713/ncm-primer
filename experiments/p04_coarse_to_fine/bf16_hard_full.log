@@ -1,0 +1,35 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python bf16_hard_full.py
+### START: 2026-11-22T00:27:12-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+NCP Transformer, Total parameter count: 25.46M
+NCP Transformer, Non embedding parameter count: 25.32M
+default        solved 1725/2000 = 86.25%  (59.6s)   paper Table 3: 86.1%
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p04_coarse_to_fine\bf16_hard_full.py", line 19, in <module>
+    g = net.generate(None, x, temperature=0.0, top_k=0, top_p=1.0)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\utils\_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 690, in generate
+    logits = self._decode_level_logits(x, prefix_emb, level_idx, _pbias, hidx=_hi)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 516, in _decode_level_logits
+    x = block(x, attn_mask=gen_mask, rope_cos_sin=rope_k)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\common.py", line 205, in forward
+    a = self.attn(self.ln_1(x), attn_mask, rope_cos_sin=rope_cos_sin, block_mask=block_mask)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\common.py", line 109, in forward
+    q = apply_rotary_emb(q, cos, sin)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\common.py", line 30, in apply_rotary_emb
+    return x * cos + rotated * sin
+           ~~~~~~~~^~~~~~~~~~~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 40.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 33.70 MiB is free. 3.20 GiB allowed; Of the allocated memory 3.02 GiB is allocated by PyTorch, and 153.52 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+### END: 2026-11-22T00:28:38-08:00 rc=1 duration_s=85

@@ -1,0 +1,19 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/lm1b-small.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/lm1b/small --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_default
+### START: 2026-11-21T18:30:39-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_default/
+
+merged 1 shards -> 1280 lm1b-small outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights: 100%|██████████| 436/436 [00:00<00:00, 4502.95it/s]
+ seed   genPPL  entropy
+   42    93.92   4.3150
+    0    92.79   4.3177
+    1    94.84   4.3126
+    2    96.04   4.3091
+    3    92.69   4.3143
+
+ mean    94.06   4.3138   (+/- 1.42 over 5 seeds, 1280 samples)
+### END: 2026-11-21T19:59:06-08:00 rc=0 duration_s=5279

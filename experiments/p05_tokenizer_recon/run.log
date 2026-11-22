@@ -1,0 +1,121 @@
+### CMD: ../.venv/Scripts/python recon.py
+### START: 2026-11-21T17:14:20-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+== sudoku-easy: test solutions (2000 boards, 89 tokens, no padding); partial_decodes check True; 4.5s
+lvl  l_k  acc_all% acc_nonpad% seq_exact%   util%
+  1    1    22.318      22.318       0.00  100.00
+  2    2    22.752      22.752       0.00   18.75
+  3    4    24.782      24.782       0.00   75.00
+  4    6    28.196      28.196       0.00   87.50
+  5    9    28.003      28.003       0.00   12.50
+  6   13    35.556      35.556       0.00   93.75
+  7   18    42.429      42.429       0.00   93.75
+  8   26    54.451      54.451       0.00   93.75
+  9   37    68.997      68.997       0.00   93.75
+ 10   50    84.101      84.101       0.00  100.00
+ 11   67    89.018      89.018       0.00  100.00
+ 12   89   100.000     100.000     100.00  100.00
+final acc_all 100.000 nonpad 100.000 (paper 100.0); util mean 80.73 = 155/192 (paper 80.73)
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+== sudoku-medium: test solutions (2000 boards, 89 tokens, no padding); partial_decodes check True; 3.9s
+lvl  l_k  acc_all% acc_nonpad% seq_exact%   util%
+  1    1    22.636      22.636       0.00   93.75
+  2    2    22.497      22.497       0.00   31.25
+  3    4    24.716      24.716       0.00   93.75
+  4    6    27.651      27.651       0.00   93.75
+  5    9    27.695      27.695       0.00   18.75
+  6   13    35.283      35.283       0.00   93.75
+  7   18    40.192      40.192       0.00   93.75
+  8   26    50.725      50.725       0.00   93.75
+  9   37    64.883      64.883       0.00   93.75
+ 10   50    78.021      78.021       0.00  100.00
+ 11   67    84.113      84.113       0.00  100.00
+ 12   89    99.999      99.999      99.95  100.00
+final acc_all 99.999 nonpad 99.999 (paper 100.0); util mean 83.85 = 161/192 (paper 83.85)
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+== sudoku-hard: test solutions (2000 boards, 89 tokens, no padding); partial_decodes check True; 4.1s
+lvl  l_k  acc_all% acc_nonpad% seq_exact%   util%
+  1    1    22.364      22.364       0.00  100.00
+  2    2    22.315      22.315       0.00   12.50
+  3    4    24.662      24.662       0.00   87.50
+  4    6    27.775      27.775       0.00   87.50
+  5    9    27.729      27.729       0.00    6.25
+  6   13    34.780      34.780       0.00   93.75
+  7   18    39.783      39.783       0.00   93.75
+  8   26    51.289      51.289       0.00   93.75
+  9   37    66.735      66.735       0.00   93.75
+ 10   50    79.659      79.659       0.00  100.00
+ 11   67    85.253      85.253       0.00  100.00
+ 12   89   100.000     100.000     100.00  100.00
+final acc_all 100.000 nonpad 100.000 (paper 100.0); util mean 80.73 = 155/192 (paper 80.73)
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+== lm1b: valid_bert_30522.bin, all 71825 released rows of 128 tokens as stored (rows start with [CLS]=EOS); partial_decodes check True; 3684.6s
+lvl  l_k  acc_all% acc_nonpad% seq_exact%   util%
+  1    1     7.572       7.572       0.00   22.16
+  2    8    10.384      10.384       0.00   64.81
+  3   16    15.327      15.327       0.00   99.39
+  4   24    22.878      22.878       0.00   99.78
+  5   32    34.021      34.021       0.00   99.85
+  6   40    43.918      43.918       0.00   99.98
+  7   52    57.242      57.242       0.00   99.99
+  8   64    78.677      78.677       0.00   99.87
+  9   76    86.835      86.835       0.00   99.93
+ 10   92    92.625      92.625       0.03   99.98
+ 11  108    95.714      95.714       0.68   99.93
+ 12  128    99.858      99.858      83.83   99.89
+final acc_all 99.858 nonpad 99.858 (paper 99.86); util mean 90.46 = 88927/98304 (paper 89.31)
+VQVAE, Total parameter count: 36.43M
+VQVAE, Non embedding parameter count: 33.24M
+== tinystories: valid_bpe_8192.pickle, all 27544 stories; story+EOS, PAD to 128, truncated at 128; partial_decodes check True; 305.5s
+lvl  l_k  acc_all% acc_nonpad% seq_exact%   util%
+  1    1     9.621       9.655       0.00   60.06
+  2    8    11.601      11.642       0.00   77.66
+  3   16    21.747      21.824       0.00   96.75
+  4   24    35.831      35.959       0.00   98.97
+  5   32    55.089      55.285       0.00   99.51
+  6   40    68.830      69.075       0.00   98.95
+  7   52    81.839      82.130       0.00   99.00
+  8   64    93.748      94.081       0.56   99.63
+  9   76    96.377      96.720       5.13   98.39
+ 10   92    97.829      98.177      17.31   98.63
+ 11  108    98.604      98.954      34.96   98.88
+ 12  128    99.626      99.980      93.35   98.68
+final acc_all 99.626 nonpad 99.980 (paper 99.98); util mean 93.76 = 46085/49152 (paper 90.12)
+VQVAE, Total parameter count: 60.63M
+VQVAE, Non embedding parameter count: 41.30M
+== xsum: XSum test reference summaries (11334), GPT-2 tokens + EOS, PAD to 48; partial_decodes check True; 169.5s
+lvl  l_k  acc_all% acc_nonpad% seq_exact%   util%
+  1    4    13.546      24.037       0.00   61.21
+  2    6    20.862      37.021       0.00   89.58
+  3   10    27.323      48.486       0.00   96.09
+  4   14    33.679      59.765       0.00   96.19
+  5   20    40.883      72.550       0.00   93.82
+  6   26    46.878      83.188       0.00   88.65
+  7   32    51.773      91.875       0.01   78.96
+  8   40    53.891      95.634       0.07   69.46
+  9   48    56.223      99.771       0.80   85.23
+final acc_all 56.223 nonpad 99.771 (paper 99.79); util mean 84.35 = 31096/36864 (paper 86.2)
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+== wmt14: WMT14 newstest English references (3003), Qwen3 tokens + EOS, PAD to 64; partial_decodes check True; 155.7s
+lvl  l_k  acc_all% acc_nonpad% seq_exact%   util%
+  1    1     4.777      11.765       0.00   12.77
+  2    4     6.649      16.375       0.00   18.90
+  3    8     9.088      22.381       0.00   37.48
+  4   14    13.005      32.029       0.00   57.28
+  5   20    17.387      42.820       0.00   64.06
+  6   26    22.026      54.245       0.00   65.43
+  7   32    29.652      73.027       0.00   69.14
+  8   40    33.485      82.466       0.00   60.74
+  9   48    36.204      89.164       0.00   55.54
+ 10   56    37.669      92.770       0.00   53.96
+ 11   64    39.998      98.507       0.27   77.78
+final acc_all 39.998 nonpad 98.507 (paper 98.79); util mean 52.10 = 23473/45056 (paper 61.89)
+### END: 2026-11-21T18:27:14-08:00 rc=0 duration_s=4362

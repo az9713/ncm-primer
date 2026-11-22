@@ -1,0 +1,108 @@
+cross.md:7 [43] Numeric precision changes intermediate Sudoku decodes. bf16 autocast gives the Fig. 20 correct-cell counts at levels 1 to 8 and the final board (9 of 
+cross.md:9 [28] The frequency penalty raises genPPL from 78.53 to 94.15 and entropy from 4.12 to 4.30; the released default gives 94.06 and 4.31, which matches Table 
+cross.md:26 [26] Two consequences: (1) X fp32 scoring and WMT14 at batch 64 spill to shared memory; I used fp16 scoring (validated) and batch 16 (BLEU change 0.01).
+cross.md:27 [29] XSum runs 9 passes against the paper's NFE 8; LM1B and TinyStories run 11 generator passes plus a unigram draw for level 1 against the paper's NFE 12 
+cross.md:32 [26] Lowercased BLEU matches Table 2 to within 0.04 for greedy (22.62 against 22.6) and guided decoding (23.86 against 23.9); cased BLEU is 0.88 and 0.93 l
+cross.md:36 [26] After the last run, X printed no lines and the new manifest (X) is identical to the first; the output of both checks is in X.
+env.md:37 [30] Every job ran through X, which writes the command line, the start time, the end time, the exit code and the duration into the project's log, and tees 
+env.md:41 [46] On this 4 GB GPU the merge process used 3,593 MB dedicated plus 2,224 MB shared GPU memory (session reading of the Windows GPU performance counters at
+env.md:41 [27] I copied X (X) and X (X) into X with one change: the reference model loads in fp16 (X); logits are cast to fp32 before the loss.
+env.md:41 [26] For the X branch the scoring batch is 8 instead of 32; X is token-weighted over all samples, so the batch size does not change it.
+env.md:41 [42] Validation against fp32: on LM1B the fp16 copy reproduces the official fp32 merge (five per-seed values equal to two decimals, project 1); on TinyStor
+env.md:43 [51] On Windows an overflow otherwise spills to shared memory and slows a job instead of raising an error: WMT14 batch 128 took 530.8 s per X call with spi
+env.md:49 [34] I replaced X (by X, not in-place edit) with a version that runs a job only when the environment token equals X, and rotated the token 4 times; skipped
+env.md:50 [36] XSum default at batch 32 (Windows PID 36812, 01:09 on 22 Nov, spilled 2,360 MB (session reading, not logged), no progress in 7 minutes) and the 10,000
+env.md:51 [33] Its PID was not captured, so I moved X to X at about 22:41; the script ended with X at its next file read (23:39), and a waiter restored the folder at
+env.md:52 [34] A CPU fp32 scoring job (PID 26384) slowed all other jobs; it survived its task stop, and I set its priority to Idle at about 20:10 on 21 Nov (the job 
+env.md:54 [27] Three unrelated Python processes (another workload, started 19:22 on 21 Nov), Chrome and the ClamAV daemon shared the machine (session reading of the 
+env.md:54 [26] Timing runs from 01:10 on 22 Nov show lower spread (for example Sudoku batch 1: 0.195 ± 0.011 s, against 1.28 ± 0.18 s at 22:02).
+env.md:55 [37] A few numbers come from interactive checks during the run and are not in a log file: the shared GPU memory of spilled jobs (marked "session reading" w
+header.md:20 [28] Command lines in the project sections use shortened paths ("…" or repository-relative); section 5 lists every exact command line with its log, start t
+header.md:22 [43] Main limits: OWT is not released; no diffusion baselines in the repository; no generator training code; a 4 GB GPU forced fp16 genPPL scoring (validat
+p01.md:7 [28] The four arms are paired: the same seeds give the same level-1 draws and the same generated codes, because X draws no random numbers and runs after X.
+p01.md:22 [32] The fp16 copy gives the same five per-seed genPPL values as the official fp32 merge, to two decimals (93.92, 92.79, 94.84, 96.04, 92.69), the same mea
+p01.md:44 [63] Config X, checkpoint X, first 1,000 of the 11,334 test documents (X, the spec's first step; a full run of four arms was not affordable on this GPU), g
+p01.md:56 [26] The default is within 0.37 (R-1), 0.04 (R-2) and 0.22 (R-L) of Table 2; the subset is the first 1,000 documents, not the full test set.
+p01.md:58 [29] The penalties are a decode-time addition that the paper's Algorithm 2 does not describe: they matter for LM1B (+15.5 genPPL, +0.20 entropy) and not fo
+p02.md:3 [27] Compare with Table 2 (p.10): WMT14 NCM 22.6 (NFE 11), NCM + CFG 23.9 (NFE 22); XSum NCM 35.0/12.8/28.0 (NFE 8), NCM + CFG 35.3/13.0/28.2 (NFE 16).
+p02.md:9 [30] At batch 64 the WMT14 run spilled 2,652 MB to shared GPU memory (session reading, not logged) and took 1,978 s (logged); I used X for all other WMT14 
+p02.md:44 [28] The run-to-run range (0.61 to 0.95 BLEU on 500 sources) is larger than the batch-size effect (0.01) and smaller than the loss from sampling at T ≥ 0.8
+p02.md:56 [30] The unguided run at batch 32 spilled 2,360 MB to shared memory (project 1; session reading), and guidance doubles the rows; I did not test guided runs
+p02.md:66 [33] This is the shape of Fig. 14 (p.30), where BLEU peaks at w = 1.0. chrF peaks later (50.30 at w = 1.5), and the length ratio rises with w at each step.
+p02.md:68 [47] Consistent with NCM: Yes for WMT14 under lowercased BLEU (22.62 and 23.86 against 22.6 and 23.9) and for the guidance gains (WMT14 +1.25 BLEU against 
+p02.md:73 [50] Durations (from the logs): X batch 64: 1,978 s (20:51:37–21:25:00, with memory spill); batch 16: 475 s; w = 0.5 full: 1,597 s; w = 1.0 full: 638 s (th
+p03.md:9 [60] Part B (probe): fix the level-1 code to each of 20 codes (the 10 most frequent codes in the stored table and 10 other codes drawn from the table with 
+p03.md:40 [30] X reseeds with the same seeds for every code, so sample i of code A and sample i of code B share the random stream of levels 2 to 12.
+p03.md:50 [32] The same story appears under different codes when the seed is the same: "Once upon a time, there was a busy ant named Andy" under codes 822, 732, 1559
+p03.md:54 [37] The level-1 code controls the opening template: "Once upon a time" against "One day" (codes 72 and 141 give "One" in 91 and 95 of 96 samples; the othe
+p03.md:56 [26] Its effect on content is measurable but small: same code against different code (both at different seeds) raises the word-count cosine by +0.0179 (0.4
+p03.md:56 [31] The random stream of levels 2 to 12 has an effect 5.65 times as large: same seed against different seed (both at different codes) raises it by +0.1012
+p03.md:57 [27] With ℓ_1 = 1 and 4,096 codes, the first level thus fixes a coarse property (the story opening), and the later, sampled levels decide characters and pl
+p03.md:59 [33] A uniform level-1 draw raises genPPL by 2.00 (16.29 → 18.29) at almost the same entropy: the level-1 distribution matters for quality, and the stored 
+p03.md:61 [47] On the first 64 samples of each seed of the default run (320 samples), the fp16 GPU scorer and the fp32 CPU scorer give the same five per-seed values 
+p03.md:63 [41] The probe gives no paper number to compare; it shows that the single level-1 code fixes the story opening and has a small effect on content (+0.0179 c
+p03.md:68 [43] Durations: part A default 635 s generation + 60 s scoring (23:43:43–23:55:20), uniform 602 s + 58 s, smooth 598 s + 57 s; probe 185 s (01:37:05–01:40:
+p04.md:29 [30] All 11 BLEU values are equal to Table 12, and the decoded text of all 11 rows is equal to the Table 12 rows (compared against the p.36 page image).
+p04.md:61 [35] Durations: viewer 241 s (17:09:34–17:13:37), precision check 10 s (17:14:08–17:14:18), bf16 full set 99 s (X; the first attempt X hit CUDA OOM at batc
+p05.md:17 [31] Check: on the first batch of each tokenizer, X equals the X partial-sum decode at all levels and equals the eval decode path at the last level (X for 
+p05.md:45 [33] The easy curve is within 4.44 points of the hard curve at each level (largest at level 10: 84.101 against 79.659); the medium curve within 1.85 points
+p05.md:50 [33] A truncated hierarchy thus loses 1 to 15 % of the tokens; the paper's claim that later levels "fill in and correct the content" (Fig. 3 caption, p.4) 
+p05.md:51 [32] The low "all positions" accuracy of XSum (56.2 %) and WMT14 (40.0 %) comes only from the fill positions: the decoder never outputs PAD there (0.00 % f
+p05.md:51 [28] The TinyStories decoder outputs X (22.7 %) and X (13.9 %) at fill positions, the start of a new story, which indicates training rows packed from conse
+p05.md:53 [26] Final non-pad accuracy agrees with Table 1 within 0.02 points for Sudoku, LM1B, TinyStories and XSum, and is 0.28 points lower for WMT14 (98.507 again
+p05.md:53 [41] Two format causes of the WMT14 gap are excluded: EOS fill lowers the accuracy (95.942 %), and rows without truncation give 98.523 % (2,974 of 3,003 re
+p05.md:53 [34] For the text tokenizers it differs by −9.79 to +3.64 points; utilization depends on the size and domain of the held-out set (WMT14: 3,003 short refere
+p06.md:3 [27] Measure the time of each generator pass and of a full X call, per task and batch size, and the quality after each level against cumulative time.
+p06.md:3 [38] The paper benchmarks 1,024 sequences at batch 16 on one NVIDIA H100 SXM 80 GB (Section 4.6, p.11) and reports speed ratios against diffusion baselines
+p06.md:5 [32] The paper gives no absolute NCM time in its text; Fig. 1 places NCM at about 6 s (LM1B) and about 3 s (XSum) for 1,024 sequences, values read from log
+p06.md:5 [27] My GPU is an RTX 3050 Laptop with 4 GB, so absolute times are not comparable to an H100; per-pass shapes and ratios within this GPU are.
+p06.md:7 [36] X runs between calls, outside the timed region: X leaves GPU tensors in reference cycles (project 9, X), and without the collection the earlier runs r
+p06.md:9 [58] Runs: X (22:02–23:39 on 21 Nov; invalid for WMT14 batch 128, which spilled to shared memory at 530.8 s per call; noisy, Sudoku batch 1 1.28 ± 0.18 s);
+p06.md:25 [29] On this GPU the out-of-memory errors report 0 bytes free at 3.25–3.27 GiB allocated, so a row with peak reserved memory above about 3,328 MiB may use 
+p06.md:38 [40] The cost of a pass grows with ℓ_k for the unconditional tasks (prefix of 1 token): the last LM1B pass (128 + 1 rows) costs 11.0 times the first (8 + 1
+p06.md:38 [33] For XSum the 512-token prefix dominates every pass, so all 9 passes cost 591 to 645 ms at batch 16, and the per-token cost (7.33 ms) is the highest of
+p06.md:49 [27] With an unpadded prefix the KV path gives the same codes as the eager path; with padded prefixes it agrees on 25.5 to 37.4 % of codes.
+p06.md:63 [44] LM1B, 1,024 sequences at batch 16 on this GPU: 64 × 0.891 s = 57.0 s for X alone (project 9: 61.69 s with the decode), against about 6 s for the full 
+p06.md:63 [28] XSum: 64 × 5.633 s = 360.5 s, against about 3 s in Fig. 1, about 120 times longer; the 512-token prefix makes XSum compute-bound on this GPU.
+p06.md:65 [36] The measurements support the paper's mechanism that coarse levels are cheap for unconditional tasks (first LM1B pass 11.0 times cheaper than the last)
+p07.md:43 [26] For 271 of 275 unsolved boards the violation count reaches its minimum at the last level, so they do not stop improving at an intermediate level.
+p07.md:43 [28] I did not check whether the 4 boards with their minimum at level 1 are boards without digits at level 1 (as the 23 zero-violation boards below are).
+p07.md:46 [35] The differences are 2 boards (easy: 1988 against 1990), 1 board (medium: 1929 against 1930) and 3 boards (hard: 1725 against 1722) out of 2,000, if Ta
+p08.md:7 [26] Config X, all 3,003 newstest sources, batch 16 (the config batch 64 spills GPU memory; see project 2), eager path (the KV-cache defect does not apply)
+p08.md:9 [29] The paper does not give its MBR sampler; I chose the setting of the project spec and did not tune it on the test set (one setting, one run).
+p08.md:11 [38] Also reported: one sampled candidate alone (M = 1, candidate 0) and the reference oracle (per source, the candidate with the highest sentence BLEU aga
+p08.md:34 [27] The oracle BLEU (30.52 at M = 12) is 6.71 above MBR at M = 12: the candidate pool holds better translations than the consensus choice picks.
+p08.md:36 [45] In Fig. 15 (p.30) the curve starts at about 22.4 BLEU for K = 1 and is about 23.3 at K = 4 (read from the plot, about ±0.2); whether its K = 1 point i
+p08.md:38 [38] MBR improves BLEU with M as the paper reports (+2.05 lowercased at 132 passes, against +2.6), and the M = 12 result is 0.53 BLEU (lowercased) below Ta
+p08.md:43 [29] Duration: 4,498 s (03:24:50–04:39:48): greedy 313.5 s, 12 candidates 4,079.5 s (12 × 3,003 = 36,036 generations, 340 s per candidate set), selection 8
+p09.md:3 [34] Time an autoregressive model with a KV cache (GPT-2, 124.44M parameters) against NCM LM1B small (generator module 97.07M parameters including shared m
+p09.md:9 [28] ,024 sequences per measurement (batch 1: 64 sequences, scaled to 1,024 and stated); 1 warm-up batch; 3 repeats with seeds 0, 1, 2; X around each timed
+p09.md:12 [27] X (run 2: batches 1, 16, 64, 256); X (run 3); X, X, X in fresh processes (run 4, X); X (run 5, short runs, X); X.
+p09.md:32 [28] Peak reserved GPU memory: NCM batch 1: 1,772 MiB (run 2/3); GPT-2: 544 MiB (batch 1), 778 MiB (16), 3,302 MiB (64), 3,604 MiB (256, at the cap).
+p09.md:37 [41] At batch 256 it takes 105.8–108.1 s with 3,604 MiB reserved, above the about 3,328 MiB at which this GPU reports 0 bytes free; the slowdown against ba
+p09.md:38 [54] X isolates the cause: without X, live memory grows by about 78 MiB per X call at batch 16 (1,034 → 1,893 MiB over 12 calls) and falls back only when P
+p09.md:38 [28] Runs 1 to 5 timed batches 4 to 16 with fewer repeats (see table); their NCM values agree with run 6 at batch 16 (60.10–60.12 against 59.69–63.32 s).
+p09.md:39 [35] GPT-2 at batch 4 took 513.72–557.30 s in run 3 (05:15–05:37) and 334.97–347.82 s in runs 4 and 5 (07:36–07:58); at batch 16, 116.90–128.12 s (run 2, 0
+p09.md:40 [35] The eval-path penalties (X, 128 sequential argmax steps in float64 over 30,528 tokens) add 4.93 s per 1,024 sequences at batch 16: 66.98, 66.44, 66.42
+p09.md:42 [30] The result here is that, on one laptop GPU at batch 1, an autoregressive model with a KV cache is 8.2 to 8.8 times slower than NCM per 128-token sampl
+p09.md:42 [52] The ratio falls as the batch grows: 4.72 at batch 4, 2.82 at batch 8 and 1.49 at batch 16 (run 5, same process, 64 sequences per batch size); at batch
+p09.md:42 [29] GPT-2 time per sequence falls nearly in proportion to the batch (341.65 → 179.51 → 89.68 s per 1,024 sequences), while NCM falls only from 72.43 to 60
+p09.md:44 [40] Batches 1, 4, 8 and 16 measured (batch 16 with 3 full repeats; batches 4 and 8 from short runs with 2 NCM repeats); NCM batch 64 and 256 do not fit in
+p09.md:49 [51] Durations: run 1 514 s (00:18:20–00:26:55, ended at an uncaught OOM in the penalty timing), run 2 1,371 s (01:14:13–01:37:04), run 3 1,373 s (05:14:59
+p10.md:3 [43] Train a multiscale residual VQ-VAE on Sudoku solutions with the repository's training-mode forward, and compare per-level reconstruction and codebook 
+p10.md:9 [61] optimizer: AdamW (β 0.9/0.99, weight decay 0.01), peak learning rate 5×10⁻⁴, 500 warm-up steps, cosine decay to 5×10⁻⁵ over the run length (2,500 step
+p10.md:10 [26] batch 1,024 as in Table 5, approximated by 4 micro-batches of 256 with gradient accumulation (batch 1,024 in one pass did not fit in 3.2–3.6 GB).
+p10.md:10 [73] Three differences from one batch of 1,024: (1) each micro-batch draws its own fine-level dropout decision and cutoff level (X, X) and its own dropout 
+p10.md:11 [36] optional augmentation (X): each training board passes through a random validity-preserving transform (digit relabeling, row and column swaps within ba
+p10.md:12 [33] evaluation on the held-out boards: token accuracy after each level (full-length partial sums from X), exact boards, and utilization = distinct codes u
+p10.md:14 [32] I trained 2,500 steps per run (25 % of the paper's updates, 2.56 million board presentations, about 512 passes over the 5,000 training boards), two ru
+p10.md:26 [47] Codes used per level (of 16): released [16, 2, 14, 14, 1, 15, 15, 15, 15, 16, 16, 16]; mine, real [16, 1, 1, 6, 2, 13, 15, 16, 16, 16, 16, 16]; mine, 
+p10.md:41 [43] After 100 steps (timing run) the held-out level-12 accuracy is already 99.987 %, and from step 500 it is 100.000 %, while utilization is 17.71 % (step
+p10.md:41 [30] The last level has one 16-way code per position (ℓ_12 = L = 89) and the Sudoku vocabulary has 12 symbols, so the last level alone can copy the board.
+p10.md:43 [36] Against the released tokenizer, mine is higher at levels 1 to 3 (24.7 against 22.4 at level 1) and lower at levels 4 to 11 (by up to 9.3 points at lev
+p10.md:45 [44] Augmentation (one run each, so the difference has no error estimate): utilization 72.40 % against 69.79 %, and accuracy at levels 9 to 11 higher by 0.
+p10.md:47 [35] My tokenizer reaches 100.000 % held-out accuracy and 69.79 % utilization after 25 % of the paper's updates (Table 5: 10,000 at batch 1,024; here 2,500
+p10.md:49 [36] Utilization (69.79 % real, 72.40 % augmented) is 8.3 to 10.9 points below the released tokenizer and Table 1 (80.73 %), and the per-level accuracy at 
+p10.md:49 [27] With a quarter of the updates, a 4 times faster learning-rate decay and an approximate batch, I cannot tell whether the gap closes at the paper's budg
+p10.md:54 [34] Logs: X, X, X (earlier attempts in X and X hit CUDA OOM at batch 1,024 without accumulation, or were stopped by their captured PID after a 10,000-step
+sentences over 25 words: 107

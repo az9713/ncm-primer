@@ -1,0 +1,66 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --n 1000 --cfg 0 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg0
+### START: 2026-11-22T00:39:18-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg0/
+
+merged 1 shards -> 1000 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   20.49     21.47   48.03      0.900
+
+BLEU|True = 20.49 59.6/30.3/16.8/9.5 (BP = 0.885 ratio = 0.891 hyp_len = 20597 ref_len = 23121)
+### END: 2026-11-22T00:41:30-08:00 rc=0 duration_s=132
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --n 1000 --cfg 0.5 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg0.5
+### START: 2026-11-22T00:41:31-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg0.5/
+
+merged 1 shards -> 1000 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   21.42     22.41   49.44      0.917
+
+BLEU|True = 21.42 59.9/31.0/17.5/10.0 (BP = 0.898 ratio = 0.903 hyp_len = 20884 ref_len = 23121)
+### END: 2026-11-22T00:45:21-08:00 rc=0 duration_s=229
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --n 1000 --cfg 1.0 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg1.0
+### START: 2026-11-22T00:45:21-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg1.0/
+
+merged 1 shards -> 1000 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   22.01     22.96   50.03      0.923
+
+BLEU|True = 22.01 60.1/31.4/17.9/10.3 (BP = 0.906 ratio = 0.910 hyp_len = 21038 ref_len = 23121)
+### END: 2026-11-22T00:49:11-08:00 rc=0 duration_s=229
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --n 1000 --cfg 1.5 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg1.5
+### START: 2026-11-22T00:49:12-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg1.5/
+
+merged 1 shards -> 1000 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   21.82     22.80   50.30      0.930
+
+BLEU|True = 21.82 59.9/31.0/17.5/10.1 (BP = 0.912 ratio = 0.915 hyp_len = 21162 ref_len = 23121)
+### END: 2026-11-22T00:53:02-08:00 rc=0 duration_s=230
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --n 1000 --cfg 2.0 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg2.0
+### START: 2026-11-22T00:53:03-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg2.0/
+
+merged 1 shards -> 1000 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   21.58     22.54   50.29      0.934
+
+BLEU|True = 21.58 59.6/30.7/17.3/9.8 (BP = 0.915 ratio = 0.918 hyp_len = 21234 ref_len = 23121)
+### END: 2026-11-22T00:56:53-08:00 rc=0 duration_s=230
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --n 1000 --cfg 3.0 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg3.0
+### START: 2026-11-22T00:56:54-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt1k_bs16_cfg3.0/
+
+merged 1 shards -> 1000 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   20.53     21.59   49.53      0.943
+
+BLEU|True = 20.53 58.1/29.3/16.1/8.9 (BP = 0.923 ratio = 0.926 hyp_len = 21410 ref_len = 23121)
+### END: 2026-11-22T01:00:45-08:00 rc=0 duration_s=230

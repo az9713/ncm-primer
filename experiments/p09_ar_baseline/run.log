@@ -1,0 +1,40 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ar_vs_ncm.py
+### START: 2026-11-22T00:18:20-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 4317.80it/s]
+params: GPT-2 124.44M, NCM generator 97.07M (+shared modules), tokenizer 111.40M
+B=  1 rep 0 N=64: NCM 16.26s  AR 138.35s  per-1024: NCM 260.12s AR 2213.54s  AR/NCM 8.51  peak reserved 2208 MiB
+B=  1 rep 1 N=64: NCM 15.45s  AR 135.12s  per-1024: NCM 247.13s AR 2161.97s  AR/NCM 8.75  peak reserved 2208 MiB
+B=  1 rep 2 N=64: NCM 15.54s  AR 136.96s  per-1024: NCM 248.70s AR 2191.29s  AR/NCM 8.81  peak reserved 2208 MiB
+B= 16: CUDA OOM under the memory cap 0.8 (does not fit in 4 GB without spilling)
+B= 64: CUDA OOM under the memory cap 0.8 (does not fit in 4 GB without spilling)
+B=256: CUDA OOM under the memory cap 0.8 (does not fit in 4 GB without spilling)
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p09_ar_baseline\ar_vs_ncm.py", line 104, in <module>
+    t_pen = timed(lambda: ncm_batch(16, penalties=True), 1024 // 16)
+  File "~\Downloads\stanford_ncm_turing\experiments\p09_ar_baseline\ar_vs_ncm.py", line 62, in timed
+    fn()
+    ~~^^
+  File "~\Downloads\stanford_ncm_turing\experiments\p09_ar_baseline\ar_vs_ncm.py", line 104, in <lambda>
+    t_pen = timed(lambda: ncm_batch(16, penalties=True), 1024 // 16)
+                          ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "~\Downloads\stanford_ncm_turing\experiments\p09_ar_baseline\ar_vs_ncm.py", line 49, in ncm_batch
+    g = net.generate(l1, torch.full((B, 1), EOS, device="cuda"), temperature=float(G.temperature), top_k=int(G.top_k), top_p=float(G.top_p))
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\utils\_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 691, in generate
+    idx_next = self._sample_level(logits, temperature, top_k, top_p)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 485, in _sample_level
+    return self._sample_level_raw(logits, temperature, top_k, top_p)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 494, in _sample_level_raw
+    sorted_logits, sorted_idx = torch.sort(logits_flat, dim=-1, descending=True)
+                                ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 80.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 59.70 MiB is free. 3.20 GiB allowed; Of the allocated memory 2.98 GiB is allocated by PyTorch, and 175.89 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+### END: 2026-11-22T00:26:55-08:00 rc=1 duration_s=514

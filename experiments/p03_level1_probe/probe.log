@@ -1,0 +1,21 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python probe.py
+### START: 2026-11-22T00:17:22-08:00
+VQVAE, Total parameter count: 36.43M
+VQVAE, Non embedding parameter count: 33.24M
+NCP Transformer, Total parameter count: 88.61M
+NCP Transformer, Non embedding parameter count: 88.30M
+active codes in table: 2558 of 4096 ; top-10 mass 0.0571
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p03_level1_probe\probe.py", line 43, in <module>
+    gg = net.generate(l1, prefix, temperature=float(G.temperature), top_k=int(G.top_k), top_p=float(G.top_p))
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\utils\_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 691, in generate
+    idx_next = self._sample_level(logits, temperature, top_k, top_p)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 485, in _sample_level
+    return self._sample_level_raw(logits, temperature, top_k, top_p)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\next_concept.py", line 495, in _sample_level_raw
+    cumprobs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 64.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 27.70 MiB is free. 3.20 GiB allowed; Of the allocated memory 2.98 GiB is allocated by PyTorch, and 202.77 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+### END: 2026-11-22T00:18:20-08:00 rc=1 duration_s=58

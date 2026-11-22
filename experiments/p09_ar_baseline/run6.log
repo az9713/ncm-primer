@@ -1,0 +1,34 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ar_vs_ncm_small.py
+### START: 2026-11-22T08:11:47-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+[mem] after NCM load: allocated 947 MiB
+  [mem B=16] before generate: allocated 947 MiB, peak 947 MiB, reserved 962 MiB
+  [mem B=16] after generate: allocated 1034 MiB, peak 1610 MiB, reserved 2046 MiB
+  [mem B=16] after idx_to_zhats: allocated 1050 MiB, peak 1610 MiB, reserved 2046 MiB
+  [mem B=16] after decode: allocated 1289 MiB, peak 1610 MiB, reserved 2286 MiB
+NCM B= 16 rep 0 N=1024: 59.69s  per-1024 59.69s  peak reserved 2722 MiB
+NCM B= 16 rep 1 N=1024: 62.05s  per-1024 62.05s  peak reserved 2722 MiB
+NCM B= 16 rep 2 N=1024: 63.32s  per-1024 63.32s  peak reserved 2722 MiB
+  [mem B=64] before generate: allocated 956 MiB, peak 956 MiB, reserved 984 MiB
+NCM B= 64: CUDA OOM under the memory cap 0.88: CUDA out of memory. Tried to allocate 650.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 131.70 MiB is free. 3.52 GiB allowed; Of the allocated memory 2.45 GiB is allocated by PyTorch, and 640.22 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for
+NCM B=16 rep 0 N=1024 with pick_tokens penalties: 66.98s
+NCM B=16 rep 1 N=1024 with pick_tokens penalties: 66.44s
+NCM B=16 rep 2 N=1024 with pick_tokens penalties: 66.42s
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 10937.49it/s]
+params: GPT-2 124.44M, NCM generator 97.07M (module incl. shared), tokenizer 111.40M
+AR  B= 16 rep 0 N=1024: 88.05s  per-1024 88.05s  peak reserved 778 MiB
+AR  B= 16 rep 1 N=1024: 93.16s  per-1024 93.16s  peak reserved 778 MiB
+AR  B= 16 rep 2 N=1024: 90.55s  per-1024 90.55s  peak reserved 778 MiB
+AR  B= 64 rep 0 N=1024: 47.64s  per-1024 47.64s  peak reserved 3302 MiB
+AR  B= 64 rep 1 N=1024: 47.51s  per-1024 47.51s  peak reserved 3302 MiB
+AR  B= 64 rep 2 N=1024: 47.52s  per-1024 47.52s  peak reserved 3302 MiB
+SUMMARY B= 16: NCM 61.69+/-1.84s  AR 90.59+/-2.56s per 1024 seqs  AR/NCM 1.47
+SUMMARY B= 64: incomplete (NCM runs 0, AR runs 3)
+SUMMARY NCM B=16 with pick_tokens: 66.62s per 1024
+### END: 2026-11-22T08:26:55-08:00 rc=0 duration_s=908

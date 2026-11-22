@@ -1,0 +1,81 @@
+### CMD: ../.venv/Scripts/python seed_effect.py
+### START: 2026-11-22T01:40:52-08:00
+{
+ "codes": [
+  3479,
+  342,
+  1078,
+  72,
+  1048,
+  822,
+  3757,
+  2318,
+  141,
+  732,
+  292,
+  1559,
+  419,
+  473,
+  3566,
+  2899,
+  2172,
+  840,
+  1630,
+  448
+ ],
+ "samples_per_code": 8,
+ "tf_cosine_same_seed_different_code": 0.5285437930632764,
+ "n_same_seed_pairs": 1520,
+ "tf_cosine_different_seed_different_code": 0.4231158274589143,
+ "n_diff_seed_pairs": 10640,
+ "tf_cosine_same_code_different_seed": 0.4432319061327019,
+ "n_within_pairs": 560,
+ "first6words_equal_same_seed_different_code": 0.44802631578947366,
+ "first6words_equal_different_seed_different_code": 0.41541353383458646
+}
+### END: 2026-11-22T01:40:54-08:00 rc=0 duration_s=2
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python seed_effect.py
+### START: 2026-11-22T07:55:31-08:00
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p03_level1_probe\seed_effect.py", line 34, in <module>
+    res = {"source": "samples_all.json (96 per code)" if os.path.exists(_all) else "samples.txt (8 per code)", "codes": [c for c, _ in groups], "samples_per_code": n_s,
+                                                                        ^^^^
+NameError: name '_all' is not defined. Did you mean: 'all'?
+### END: 2026-11-22T07:55:33-08:00 rc=1 duration_s=2
+### CMD: ../.venv/Scripts/python -B seed_effect.py
+### START: 2026-11-22T08:00:08-08:00
+{
+ "source": "samples_all.json (96 per code)",
+ "codes": [
+  3479,
+  342,
+  1078,
+  72,
+  1048,
+  822,
+  3757,
+  2318,
+  141,
+  732,
+  292,
+  1559,
+  419,
+  473,
+  3566,
+  2899,
+  2172,
+  840,
+  1630,
+  448
+ ],
+ "samples_per_code": 96,
+ "tf_cosine_same_seed_different_code": 0.5426379538972004,
+ "n_same_seed_pairs": 18240,
+ "tf_cosine_different_seed_different_code": 0.4414639588483917,
+ "n_diff_seed_pairs": 1732800,
+ "tf_cosine_same_code_different_seed": 0.4593815288880764,
+ "n_within_pairs": 91200,
+ "first6words_equal_same_seed_different_code": 0.47944078947368424,
+ "first6words_equal_different_seed_different_code": 0.423859649122807
+}
+### END: 2026-11-22T08:00:11-08:00 rc=0 duration_s=3

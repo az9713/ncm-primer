@@ -5,3 +5,8 @@ transcript.txt
 .claude/
 .ignore/
 HANDOFF.md
+# Experiments: large or local files
+experiments/.venv/
+experiments/artifacts/
+experiments/data/
+__pycache__/

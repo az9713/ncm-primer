@@ -1,0 +1,33 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/experiments/common/score_genppl.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/tinystories.yaml --glob ~/Downloads/stanford_ncm_turing/experiments/p03_level1_probe/ts_default/shard_*.pkl --dtype fp16 --limit 64
+### START: 2026-11-22T05:01:08-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights:   3%|▎         | 12/436 [00:00<00:03, 112.38it/s]Loading weights:   8%|▊         | 34/436 [00:00<00:02, 144.03it/s]Loading weights:  11%|█         | 49/436 [00:00<00:02, 144.78it/s]Loading weights:  16%|█▌        | 70/436 [00:00<00:02, 145.97it/s]Loading weights:  22%|██▏       | 94/436 [00:00<00:02, 154.94it/s]Loading weights:  27%|██▋       | 118/436 [00:00<00:01, 160.66it/s]Loading weights:  31%|███       | 134/436 [00:00<00:01, 155.67it/s]Loading weights:  35%|███▌      | 154/436 [00:01<00:01, 154.54it/s]Loading weights:  39%|███▉      | 170/436 [00:01<00:01, 154.65it/s]Loading weights:  44%|████▎     | 190/436 [00:01<00:01, 154.79it/s]Loading weights:  49%|████▉     | 214/436 [00:01<00:01, 158.15it/s]Loading weights:  53%|█████▎    | 230/436 [00:01<00:01, 156.87it/s]Loading weights:  57%|█████▋    | 250/436 [00:01<00:01, 156.18it/s]Loading weights:  62%|██████▏   | 269/436 [00:01<00:01, 164.89it/s]Loading weights:  66%|██████▌   | 286/436 [00:01<00:00, 150.18it/s]Loading weights:  69%|██████▉   | 302/436 [00:01<00:00, 149.22it/s]Loading weights:  74%|███████▍  | 322/436 [00:02<00:00, 147.39it/s]Loading weights:  77%|███████▋  | 337/436 [00:02<00:00, 147.29it/s]Loading weights:  82%|████████▏ | 358/436 [00:02<00:00, 149.47it/s]Loading weights:  86%|████████▌ | 373/436 [00:02<00:00, 144.48it/s]Loading weights:  90%|█████████ | 394/436 [00:02<00:00, 143.94it/s]Loading weights:  94%|█████████▍| 409/436 [00:02<00:00, 139.71it/s]Loading weights:  99%|█████████▊| 430/436 [00:02<00:00, 149.45it/s]Loading weights: 100%|██████████| 436/436 [00:03<00:00, 140.65it/s]
+[score_genppl] metric=genppl ref=gpt2-large dtype=fp16 param_dtype=torch.float16 device=cuda samples=1280 limit=64
+ seed   genPPL  entropy
+   42    15.30   3.9475
+    0    15.96   3.9694
+    1    17.28   3.9849
+    2    15.81   3.9679
+    3    16.42   3.9652
+
+ mean    16.15   3.9670   (+/- 0.75 over 5 seeds, 320 samples)
+peak GPU memory allocated 2433 MiB
+### END: 2026-11-22T05:01:44-08:00 rc=0 duration_s=35
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/experiments/common/score_genppl.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/tinystories.yaml --glob ~/Downloads/stanford_ncm_turing/experiments/p03_level1_probe/ts_default/shard_*.pkl --dtype fp32 --device cpu --limit 64
+### START: 2026-11-22T05:01:44-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights: 100%|██████████| 436/436 [00:00<00:00, 5383.22it/s]
+[score_genppl] metric=genppl ref=gpt2-large dtype=fp32 param_dtype=torch.float32 device=cpu samples=1280 limit=64
+ seed   genPPL  entropy
+   42    15.30   3.9475
+    0    15.96   3.9694
+    1    17.28   3.9849
+    2    15.81   3.9679
+    3    16.42   3.9652
+
+ mean    16.15   3.9670   (+/- 0.75 over 5 seeds, 320 samples)
+### END: 2026-11-22T05:07:39-08:00 rc=0 duration_s=353

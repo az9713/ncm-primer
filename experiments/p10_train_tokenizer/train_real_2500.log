@@ -1,0 +1,45 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python train.py --steps 2500 --bs 1024 --accum 4 --tag real --eval_every 500
+### START: 2026-11-22T05:42:31-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+train 5000 boards, test 1000 boards, params 14.90M, fine_drop 0.5, aug False
+[eval] step 0 2s held-out acc final 7.788% exact 0.0% util 25.52% train-acc 7.807% per-level acc [np.float64(10.0), np.float64(0.0), np.float64(0.1), np.float64(10.0), np.float64(10.1), np.float64(10.1), np.float64(10.1), np.float64(10.2), np.float64(10.6), np.float64(8.9), np.float64(8.2), np.float64(7.8)]
+~\Downloads\stanford_ncm_turing\experiments\p10_train_tokenizer\train.py:120: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  print(f"step {step:5d} lr {lr_at(step):.2e} rec {rec.item():.4f} vq {float(vq_loss):.4f} gnorm {float(gn):.2f} "
+step     0 lr 0.00e+00 rec 2.6945 vq 1.1807 gnorm 4.01 hit-util 66.1% 5s
+step   100 lr 1.00e-04 rec 2.1146 vq 0.7004 gnorm 0.35 hit-util 66.1% 138s
+step   200 lr 2.00e-04 rec 2.0328 vq 0.6989 gnorm 0.27 hit-util 66.1% 275s
+step   300 lr 3.00e-04 rec 0.0083 vq 0.7193 gnorm 0.80 hit-util 66.1% 413s
+step   400 lr 4.00e-04 rec 0.0115 vq 0.8085 gnorm 1.53 hit-util 99.5% 550s
+[eval] step 500 690s held-out acc final 100.000% exact 100.0% util 41.67% train-acc 100.000% per-level acc [np.float64(18.9), np.float64(19.0), np.float64(19.1), np.float64(17.1), np.float64(19.0), np.float64(19.2), np.float64(20.8), np.float64(31.1), np.float64(41.4), np.float64(52.9), np.float64(64.1), np.float64(100.0)]
+step   500 lr 5.00e-04 rec 0.0076 vq 0.9452 gnorm 1.59 hit-util 100.0% 693s
+step   600 lr 4.97e-04 rec 0.0061 vq 1.1638 gnorm 2.66 hit-util 100.0% 831s
+step   700 lr 4.89e-04 rec 2.0929 vq 1.1444 gnorm 3.34 hit-util 100.0% 968s
+step   800 lr 4.75e-04 rec 2.0380 vq 1.1122 gnorm 1.66 hit-util 100.0% 1106s
+step   900 lr 4.57e-04 rec 2.6738 vq 2.1007 gnorm 3.90 hit-util 100.0% 1245s
+[eval] step 1000 1386s held-out acc final 100.000% exact 100.0% util 34.38% train-acc 100.000% per-level acc [np.float64(19.5), np.float64(19.2), np.float64(19.3), np.float64(19.2), np.float64(19.3), np.float64(19.2), np.float64(20.2), np.float64(32.5), np.float64(42.6), np.float64(54.9), np.float64(66.1), np.float64(100.0)]
+step  1000 lr 4.34e-04 rec 2.0167 vq 1.0253 gnorm 2.48 hit-util 100.0% 1389s
+step  1100 lr 4.07e-04 rec 0.0036 vq 1.1240 gnorm 2.31 hit-util 100.0% 1526s
+step  1200 lr 3.77e-04 rec 0.0027 vq 0.9103 gnorm 1.48 hit-util 100.0% 1664s
+step  1300 lr 3.45e-04 rec 2.0094 vq 0.9792 gnorm 1.24 hit-util 100.0% 1802s
+step  1400 lr 3.10e-04 rec 0.0026 vq 0.9491 gnorm 1.26 hit-util 100.0% 1941s
+[eval] step 1500 2082s held-out acc final 100.000% exact 100.0% util 46.35% train-acc 100.000% per-level acc [np.float64(19.2), np.float64(19.1), np.float64(19.2), np.float64(19.2), np.float64(19.2), np.float64(21.9), np.float64(27.9), np.float64(36.2), np.float64(46.1), np.float64(56.3), np.float64(67.1), np.float64(100.0)]
+step  1500 lr 2.75e-04 rec 0.0026 vq 0.9813 gnorm 0.94 hit-util 100.0% 2085s
+step  1600 lr 2.40e-04 rec 2.0061 vq 0.9407 gnorm 0.83 hit-util 100.0% 2226s
+step  1700 lr 2.05e-04 rec 0.0025 vq 0.8923 gnorm 0.37 hit-util 100.0% 2363s
+step  1800 lr 1.73e-04 rec 0.0026 vq 0.9393 gnorm 0.72 hit-util 100.0% 2501s
+step  1900 lr 1.43e-04 rec 0.0027 vq 0.9061 gnorm 0.29 hit-util 100.0% 2641s
+[eval] step 2000 2779s held-out acc final 100.000% exact 100.0% util 67.19% train-acc 100.000% per-level acc [np.float64(22.0), np.float64(22.2), np.float64(22.2), np.float64(22.1), np.float64(22.2), np.float64(29.9), np.float64(36.9), np.float64(46.0), np.float64(57.7), np.float64(65.9), np.float64(76.0), np.float64(100.0)]
+step  2000 lr 1.16e-04 rec 1.9912 vq 0.9226 gnorm 0.50 hit-util 100.0% 2782s
+step  2100 lr 9.30e-05 rec 1.9744 vq 0.9086 gnorm 0.31 hit-util 100.0% 2920s
+step  2200 lr 7.45e-05 rec 0.0022 vq 0.9028 gnorm 0.14 hit-util 100.0% 3058s
+step  2300 lr 6.10e-05 rec 0.0019 vq 0.8976 gnorm 0.14 hit-util 100.0% 3196s
+step  2400 lr 5.28e-05 rec 0.0020 vq 0.8992 gnorm 0.15 hit-util 100.0% 3329s
+[eval] step 2500 3462s held-out acc final 100.000% exact 100.0% util 69.79% train-acc 100.000% per-level acc [np.float64(24.7), np.float64(24.7), np.float64(24.8), np.float64(25.4), np.float64(25.3), np.float64(32.2), np.float64(39.4), np.float64(49.3), np.float64(61.0), np.float64(70.5), np.float64(80.8), np.float64(100.0)]
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+released sudoku-hard tokenizer on same held-out boards: 100.0 util 80.72916666666666
+### END: 2026-11-22T06:40:24-08:00 rc=0 duration_s=3473

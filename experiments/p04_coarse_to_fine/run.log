@@ -1,0 +1,58 @@
+### CMD: ../.venv/Scripts/python viewer.py
+### START: 2026-11-21T17:09:34-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+NCP Transformer, Total parameter count: 25.46M
+NCP Transformer, Non embedding parameter count: 25.32M
+Sudoku hard puzzle 0, clues: 30  puzzle: _216_7_85|76____2__|__3__27__|_523_____|_________|8_67_____|2___84_36|6_81__4__|_4__9___7
+correct cells per level (method B): [15, 16, 16, 21, 19, 24, 27, 42, 54, 58, 64, 81]
+paper Fig.20                       : [16, 15, 16, 21, 19, 25, 28, 44, 55, 62, 64, 81]
+  L 1 l_k= 1  A=6                                         B=937624965|462694864|767625968|386862648|696562649|686869348|679483486|688286436|659483296
+  L 2 l_k= 2  A=86                                        B=937624965|462694864|767655964|386862648|696562649|686869349|679686486|686686436|654483296
+  L 3 l_k= 4  A=8886                                      B=937628965|232695864|967626924|386862649|696562322|286839349|679686236|676986416|353483256
+  L 4 l_k= 6  A=224666                                    B=937624965|262695961|969626924|326862649|494562622|686839349|679686736|676993454|353483796
+  L 5 l_k= 9  A=222266566                                 B=937624965|262695961|969626924|326862649|494562622|686839341|679686786|676983454|353483796
+  L 6 l_k=13  A=1853619315641                             B=117624988|442355561|535686964|656562111|194972628|323339149|229573786|686683454|443483216
+  L 7 l_k=18  A=257112274339246546                        B=962624355|437655951|557394264|626267111|194978626|676339959|275596496|686673454|949586176
+  L 8 l_k=26  A=14572932439756339253694491                B=122644355|444332111|553192264|225369177|175558623|636724459|275586466|688973454|342988166
+  L 9 l_k=37  A=2635765953244511745636754254669453511     B=922644385|774835521|853192764|455339117|171458623|866721554|227584436|681973455|445926811
+  L10 l_k=50  A=9643577422183224425398794663861149178366  B=992644355|774335591|853912264|455339187|179458623|836725544|217584936|661133455|345996177
+  L11 l_k=67  A=9266755774832115332744425691881944663886  B=921674355|764885591|553392764|455369177|179448623|836725549|217554936|661173552|355296817
+  L12 l_k=89  A=921647385|764835291|583912764|452369178|  B=921647385|764835291|583912764|452369178|179458623|836721549|217584936|698173452|345296817
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+NCP Transformer, Total parameter count: 119.96M
+NCP Transformer, Non embedding parameter count: 119.66M
+
+WMT14 source 1218: Es besteht allerdings die Sorge, dass kleine und mittlere Unternehmen angreifbar gegenüber Hacking und Überwachung bleiben.
+ref: However, there is concern that small and medium-sized companies remain vulnerable to hacking and surveillance.
+  L 1 l_k= 1 BLEU=  6.0  B: However, it is a important to the the the and the.
+              A: 
+  L 2 l_k= 4 BLEU=  7.2  B: However, it is a small to to small and and small, and small and and.
+              A: ,.
+  L 3 l_k= 8 BLEU=  6.3  B: However, it is a concern for small small small medium-sized and-sized-sized and and and...
+              A: , and.
+  L 4 l_k=14 BLEU= 16.0  B: However, there is a medium of medium-sized enterprises remain remain remain remain to to to to.
+              A:  there small remain to
+  L 5 l_k=20 BLEU= 17.5  B: However, there is a concern of medium medium-sized-sized enterprises remain remain remain and and orientation.
+              A: , concern medium enterprises remain orientation
+  L 6 l_k=26 BLEU= 17.7  B: However, there is a concern that medium medium-sized enterprises will remain remain remain surveillance surveillance surveillance capabilities
+              A: , is that medium enterprises remain surveillance surveillance
+  L 7 l_k=32 BLEU= 24.2  B: However, there is that that and and medium-sized enterprises will remain remain vulnerable surveillance and surveillance.
+              A: However there concern and medium will remain to surveillance
+  L 8 l_k=40 BLEU= 51.7  B: However, there is that concern and and medium-sized enterprises will remain vulnerable to hacking and surveillance.
+              A: However there is that and medium enterprises will remain outdated surveillance.
+  L 9 l_k=48 BLEU= 38.9  B: However, there is that that small and medium-sized enterprises will remain vulnerable to to and surveillance.
+              A: However, there that that and medium-sized enterprises remain to to surveillance surveillance
+  L10 l_k=56 BLEU= 56.3  B: However, there is concern that small and medium-sized enterprises will remain vulnerable to to surveillance surveillance.
+              A: However, there is concern that small medium-sized enterprises remain remain to to surveillance surveillance
+  L11 l_k=64 BLEU= 77.8  B: However, there is concern that small and medium-sized enterprises will remain vulnerable to hacking and surveillance.
+              A: However, there is concern that small and medium-sized enterprises will remain vulnerable to hacking and surveillance........ ladies....
+
+WMT14 first 500: corpus BLEU per level: [0.35, 0.68, 1.4, 2.38, 4.18, 6.53, 11.1, 13.45, 15.81, 17.26, 20.06]
+normalised token edit distance to final per level: [0.888, 0.832, 0.75, 0.645, 0.541, 0.429, 0.273, 0.2, 0.146, 0.108, 0.0]
+wrote trajectory.html
+### END: 2026-11-21T17:13:37-08:00 rc=0 duration_s=241

@@ -1,0 +1,27 @@
+### CMD: ../.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/sudoku-hard.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/sudoku/hard --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/sudoku/hard --out ~/Downloads/stanford_ncm_turing/experiments/p07_sudoku_trace/eval_hard
+### START: 2026-11-21T16:52:07-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p07_sudoku_trace/eval_hard/
+
+merged 1 shards -> 2000 sudoku-hard outputs
+
+ solved %  solved  cell %  valid %
+    86.25 1725/2000   98.35    86.25
+### END: 2026-11-21T16:56:17-08:00 rc=0 duration_s=250
+### CMD: ../.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/sudoku-easy.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/sudoku/easy --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/sudoku/easy --out ~/Downloads/stanford_ncm_turing/experiments/p07_sudoku_trace/eval_easy
+### START: 2026-11-21T16:56:18-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p07_sudoku_trace/eval_easy/
+
+merged 1 shards -> 2000 sudoku-easy outputs
+
+ solved %  solved  cell %  valid %
+    99.40 1988/2000   99.97    99.40
+### END: 2026-11-21T16:58:16-08:00 rc=0 duration_s=117
+### CMD: ../.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/sudoku-medium.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/sudoku/medium --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/sudoku/medium --out ~/Downloads/stanford_ncm_turing/experiments/p07_sudoku_trace/eval_medium
+### START: 2026-11-21T16:58:17-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p07_sudoku_trace/eval_medium/
+
+merged 1 shards -> 2000 sudoku-medium outputs
+
+ solved %  solved  cell %  valid %
+    96.45 1929/2000   99.79    96.45
+### END: 2026-11-21T17:00:28-08:00 rc=0 duration_s=130

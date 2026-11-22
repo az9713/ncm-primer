@@ -1,0 +1,31 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ar_vs_ncm_small.py
+### START: 2026-11-22T05:14:59-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+NCM B=  1 rep 0 N=64: 16.40s  per-1024 262.34s  peak reserved 1772 MiB
+NCM B=  1 rep 1 N=64: 17.22s  per-1024 275.54s  peak reserved 1772 MiB
+NCM B=  1 rep 2 N=64: 18.76s  per-1024 300.15s  peak reserved 1772 MiB
+NCM B=  4: CUDA OOM under the memory cap 0.88
+NCM B=  8: CUDA OOM under the memory cap 0.88
+pick_tokens B=16: CUDA OOM
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 5393.01it/s]
+params: GPT-2 124.44M, NCM generator 97.07M (module incl. shared), tokenizer 111.40M
+AR  B=  1 rep 0 N=64: 147.22s  per-1024 2355.45s  peak reserved 544 MiB
+AR  B=  1 rep 1 N=64: 143.21s  per-1024 2291.43s  peak reserved 544 MiB
+AR  B=  1 rep 2 N=64: 136.34s  per-1024 2181.51s  peak reserved 544 MiB
+AR  B=  4 rep 0 N=256: 136.58s  per-1024 546.31s  peak reserved 584 MiB
+AR  B=  4 rep 1 N=256: 139.32s  per-1024 557.30s  peak reserved 584 MiB
+AR  B=  4 rep 2 N=256: 128.43s  per-1024 513.72s  peak reserved 584 MiB
+AR  B=  8 rep 0 N=512: 132.19s  per-1024 264.39s  peak reserved 660 MiB
+AR  B=  8 rep 1 N=512: 146.40s  per-1024 292.79s  peak reserved 660 MiB
+AR  B=  8 rep 2 N=512: 140.79s  per-1024 281.57s  peak reserved 660 MiB
+SUMMARY B=  1: NCM 279.34+/-19.19s  AR 2276.13+/-87.97s per 1024 seqs  AR/NCM 8.15
+SUMMARY B=  4: incomplete (NCM runs 0, AR runs 3)
+SUMMARY B=  8: incomplete (NCM runs 0, AR runs 3)
+### END: 2026-11-22T05:37:52-08:00 rc=0 duration_s=1373
+QUEUE13-DONE

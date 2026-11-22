@@ -1,0 +1,58 @@
+{
+  "env": {
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "time": "2026-11-22T07:41:46",
+    "mem_fraction_cap": 0.88
+  },
+  "reps": 3,
+  "nseq": {
+    "8": 512
+  },
+  "ncm": [
+    {
+      "B": 8,
+      "error": "CUDA OOM under the 0.88 memory cap",
+      "message": "CUDA out of memory. Tried to allocate 58.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.37 GiB is allocated by PyTorch, and 139.25 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Mem"
+    }
+  ],
+  "ar": [
+    {
+      "B": 8,
+      "nseq": 512,
+      "rep": 0,
+      "s": 87.1719657000067,
+      "s_per_1024": 174.3439314000134,
+      "peak_reserved_MiB": 660.0
+    },
+    {
+      "B": 8,
+      "nseq": 512,
+      "rep": 1,
+      "s": 85.60205129999667,
+      "s_per_1024": 171.20410259999335,
+      "peak_reserved_MiB": 660.0
+    },
+    {
+      "B": 8,
+      "nseq": 512,
+      "rep": 2,
+      "s": 87.2573709999997,
+      "s_per_1024": 174.5147419999994,
+      "peak_reserved_MiB": 660.0
+    }
+  ],
+  "pick_tokens_B16": [
+    {
+      "rep": 0,
+      "error": "CUDA OOM"
+    }
+  ],
+  "params": {
+    "ncm_generator_incl_shared": 97065600,
+    "ncm_tokenizer": 111404672,
+    "gpt2": 124439808
+  },
+  "summary": {}
+}

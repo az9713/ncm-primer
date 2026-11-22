@@ -1,0 +1,31 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python timing.py
+### START: 2026-11-21T22:02:34-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+NCP Transformer, Total parameter count: 25.46M
+NCP Transformer, Non embedding parameter count: 25.32M
+sudoku-hard  B=  1 kv=False passes=12 generate 1.2847s +/- 0.1821 ms/token 14.4347 per-pass ms [112.84, 97.19, 68.96, 69.86, 69.52, 52.89, 61.32, 45.05, 76.74, 66.05, 66.76, 83.61]
+sudoku-hard  B= 16 kv=False passes=12 generate 0.8437s +/- 0.1113 ms/token 0.5925 per-pass ms [82.31, 104.52, 74.66, 66.24, 76.63, 68.0, 78.27, 66.35, 56.37, 59.9, 59.85, 64.71]
+sudoku-hard  B=128 kv=False passes=12 generate 4.3840s +/- 0.0677 ms/token 0.3848 per-pass ms [250.94, 275.04, 342.82, 267.76, 276.89, 314.26, 344.21, 329.81, 367.94, 480.05, 449.76, 518.98]
+sudoku-hard quality vs cumulative ms (B=128): [(1, 247.7, 0), (2, 513.1, 0), (3, 817.0, 0), (4, 1096.8, 0), (5, 1375.4, 0), (6, 1663.9, 0), (7, 1972.0, 0), (8, 2335.1, 0), (9, 2697.3, 0), (10, 3101.2, 0), (11, 3586.3, 0), (12, 5809.1, 109)]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+NCP Transformer, Total parameter count: 119.96M
+NCP Transformer, Non embedding parameter count: 119.66M
+wmt14        B=  1 kv=False passes=11 generate 1.4573s +/- 0.1589 ms/token 22.7709 per-pass ms [66.55, 73.34, 74.51, 82.95, 87.09, 80.01, 90.28, 94.8, 111.19, 132.43, 112.59]
+wmt14        B=  1 kv=True  passes=11 generate 1.5207s +/- 0.4361 ms/token 23.7611 per-pass ms [83.46, 206.03, 326.39, 305.35, 249.94, 187.96, 235.27, 248.73, 199.14, 169.76, 150.05] kv-vs-eager code agreement 37.4% (padded rows 1/1)
+wmt14        B= 16 kv=False passes=11 generate 1.8654s +/- 0.1212 ms/token 1.8217 per-pass ms [101.18, 109.03, 110.9, 117.42, 122.49, 131.62, 132.69, 142.88, 151.5, 158.95, 165.4]
+wmt14        B= 16 kv=True  passes=11 generate 3.4548s +/- 3.3645 ms/token 3.3739 per-pass ms [106.99, 13.27, 98.4, 86.08, 97.62, 102.16, 88.76, 163.73, 153.61, 103.75, 100.8] kv-vs-eager code agreement 25.5% (padded rows 16/16)
+wmt14        B=128 kv=False passes=11 generate 530.8343s +/- 73.3157 ms/token 64.7991 per-pass ms [56479.38, 43210.89, 46632.67, 38632.59, 47140.74, 58620.89, 84467.02, 84846.46, 98227.23, 89574.66, 95656.88]
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p06_wallclock\timing.py", line 77, in <module>
+    cfg, tk, net, sd = load(cfgpath(task), os.path.join(ART, ck))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\Downloads\stanford_ncm_turing\experiments\p06_wallclock\timing.py", line 29, in inputs
+    if task == "wmt14":
+    
+FileNotFoundError: [Errno 2] No such file or directory: '~\\Downloads\\stanford_ncm_turing\\experiments\\data\\wmt14\\sources.pickle'
+### END: 2026-11-21T23:39:14-08:00 rc=1 duration_s=5788

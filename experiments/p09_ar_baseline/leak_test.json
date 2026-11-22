@@ -1,0 +1,163 @@
+{
+  "env": {
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "time": "2026-11-22T07:58:55",
+    "mem_fraction_cap": 0.88
+  },
+  "B": 16,
+  "after_load_MiB": 947.06396484375,
+  "calls": [
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 0,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 1,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 2,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 3,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 4,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 5,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 6,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 7,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 8,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 9,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 10,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 11,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 12,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 13,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 14,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 15,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 16,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 17,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 18,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "config sampler (T=1, top_k=0, top_p=1)",
+      "i": 19,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 0,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 1,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 2,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 3,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 4,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 5,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 6,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 7,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 8,
+      "allocated_MiB": 956.18896484375
+    },
+    {
+      "mode": "argmax (T=0)",
+      "i": 9,
+      "allocated_MiB": 956.18896484375
+    }
+  ]
+}

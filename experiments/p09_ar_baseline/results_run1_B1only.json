@@ -1,0 +1,71 @@
+{
+  "env": {
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "time": "2026-11-22T00:18:34",
+    "mem_fraction_cap": 0.8
+  },
+  "reps": 3,
+  "nseq": {
+    "1": 64,
+    "16": 1024,
+    "64": 1024,
+    "256": 1024
+  },
+  "runs": [
+    {
+      "B": 1,
+      "nseq": 64,
+      "rep": 0,
+      "ncm_s": 16.2576085000037,
+      "ar_s": 138.34653460000118,
+      "ncm_s_per_1024": 260.1217360000592,
+      "ar_s_per_1024": 2213.544553600019,
+      "ratio_ar_over_ncm": 8.509648550090851,
+      "peak_alloc_MiB": 2173.32958984375,
+      "peak_reserved_MiB": 2208.0
+    },
+    {
+      "B": 1,
+      "nseq": 64,
+      "rep": 1,
+      "ncm_s": 15.445763400013675,
+      "ar_s": 135.12337750000006,
+      "ncm_s_per_1024": 247.1322144002188,
+      "ar_s_per_1024": 2161.974040000001,
+      "ratio_ar_over_ncm": 8.74824856503243,
+      "peak_alloc_MiB": 2173.32958984375,
+      "peak_reserved_MiB": 2208.0
+    },
+    {
+      "B": 1,
+      "nseq": 64,
+      "rep": 2,
+      "ncm_s": 15.543827999994392,
+      "ar_s": 136.9557541999966,
+      "ncm_s_per_1024": 248.70124799991027,
+      "ar_s_per_1024": 2191.2920671999454,
+      "ratio_ar_over_ncm": 8.810941178713893,
+      "peak_alloc_MiB": 2173.32958984375,
+      "peak_reserved_MiB": 2208.0
+    },
+    {
+      "B": 16,
+      "error": "CUDA OOM under the 0.8 memory cap"
+    },
+    {
+      "B": 64,
+      "error": "CUDA OOM under the 0.8 memory cap"
+    },
+    {
+      "B": 256,
+      "error": "CUDA OOM under the 0.8 memory cap"
+    }
+  ],
+  "params": {
+    "gpt2": 124439808,
+    "ncm_generator": 97065600,
+    "ncm_tokenizer": 111404672
+  }
+}

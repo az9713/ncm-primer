@@ -1,0 +1,58 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python train.py --steps 10000 --bs 1024 --tag real --eval_every 1000
+### START: 2026-11-22T01:41:52-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+train 5000 boards, test 1000 boards, params 14.90M, fine_drop 0.5, aug False
+[eval] step 0 3s held-out acc final 7.788% exact 0.0% util 25.52% train-acc 7.807% per-level acc [10.0, 0.0, 0.1, 10.0, 10.1, 10.1, 10.1, 10.2, 10.6, 8.9, 8.2, 7.8]
+Traceback (most recent call last):
+  File "~\Downloads\stanford_ncm_turing\experiments\p10_train_tokenizer\train.py", line 104, in <module>
+    logits, vq_loss, util, gutil, _ = vq(x)
+                                      ~~^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vqvae.py", line 94, in forward
+    x = self.decoder(z_q)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vae.py", line 253, in forward
+    x = self.middle_block(z)
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vae.py", line 98, in forward
+    x = x + self.attn(self.ln_1(x))
+            ~~~~~~~~~^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "~\Downloads\stanford_ncm_turing\ncm-main\models\vae.py", line 65, in forward
+    y = torch.nn.functional.scaled_dot_product_attention(
+        q, k, v, attn_mask=attn_mask, dropout_p=self.dropout if self.training else 0
+    )
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 90.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. 3.52 GiB allowed; Of the allocated memory 3.25 GiB is allocated by PyTorch, and 264.64 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+### END: 2026-11-22T01:42:07-08:00 rc=1 duration_s=15
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python train.py --steps 10000 --bs 1024 --accum 4 --tag real --eval_every 1000
+### START: 2026-11-22T05:40:27-08:00
+VQVAE, Total parameter count: 14.90M
+VQVAE, Non embedding parameter count: 14.87M
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+train 5000 boards, test 1000 boards, params 14.90M, fine_drop 0.5, aug False
+[eval] step 0 2s held-out acc final 7.788% exact 0.0% util 25.52% train-acc 7.807% per-level acc [np.float64(10.0), np.float64(0.0), np.float64(0.1), np.float64(10.0), np.float64(10.1), np.float64(10.1), np.float64(10.1), np.float64(10.2), np.float64(10.6), np.float64(8.9), np.float64(8.2), np.float64(7.8)]
+~\Downloads\stanford_ncm_turing\experiments\p10_train_tokenizer\train.py:120: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  print(f"step {step:5d} lr {lr_at(step):.2e} rec {rec.item():.4f} vq {float(vq_loss):.4f} gnorm {float(gn):.2f} "
+step     0 lr 0.00e+00 rec 2.6945 vq 1.1807 gnorm 4.01 hit-util 66.1% 5s
+### END: 2026-11-22T05:42:07-08:00 rc=1 duration_s=100

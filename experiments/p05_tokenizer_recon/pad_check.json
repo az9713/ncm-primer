@@ -1,0 +1,160 @@
+{
+  "env": {
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "time": "2026-11-21T23:39:50",
+    "mem_fraction_cap": 0.8
+  },
+  "xsum": {
+    "eos_then_pad": {
+      "text_acc_pct": 99.77069008259072,
+      "fill_positions_acc_pct": 0.0,
+      "fill_share_pct": 43.64816775483795,
+      "rows_exact_on_text_pct": 94.26504323275101,
+      "top_pred_at_fill_positions": [
+        [
+          50256,
+          0.9908658300345321
+        ],
+        [
+          13,
+          0.004514444538027457
+        ],
+        [
+          1,
+          0.0009180493556809568
+        ]
+      ],
+      "top_pred_tokens": [
+        "<|endoftext|>",
+        ".",
+        "\""
+      ]
+    },
+    "eos_fill": {
+      "text_acc_pct": 99.62455801573529,
+      "fill_positions_acc_pct": 99.442432409669,
+      "fill_share_pct": 43.64816775483795,
+      "rows_exact_on_text_pct": 90.65643197458974,
+      "top_pred_at_fill_positions": [
+        [
+          50256,
+          0.99442432409669
+        ],
+        [
+          24222,
+          0.002046660490187821
+        ],
+        [
+          4586,
+          0.002017181841152194
+        ]
+      ],
+      "top_pred_tokens": [
+        "<|endoftext|>",
+        " unsupported",
+        " Last"
+      ]
+    }
+  },
+  "wmt14": {
+    "eos_then_pad": {
+      "text_acc_pct": 98.50713754837386,
+      "fill_positions_acc_pct": 0.0,
+      "fill_share_pct": 59.39581252081252,
+      "rows_exact_on_text_pct": 70.16317016317016,
+      "top_pred_at_fill_positions": [
+        [
+          151645,
+          0.7768540743206546
+        ],
+        [
+          13,
+          0.1648387266324439
+        ],
+        [
+          279,
+          0.006780314312244862
+        ]
+      ],
+      "top_pred_tokens": [
+        "<|im_end|>",
+        ".",
+        " the"
+      ]
+    },
+    "eos_fill": {
+      "text_acc_pct": 95.94172070017171,
+      "fill_positions_acc_pct": 27.992010792438286,
+      "fill_share_pct": 59.39581252081252,
+      "rows_exact_on_text_pct": 25.174825174825173,
+      "top_pred_at_fill_positions": [
+        [
+          151645,
+          0.2799201079243829
+        ],
+        [
+          16887,
+          0.1321460483206896
+        ],
+        [
+          8408,
+          0.13056047094276152
+        ]
+      ],
+      "top_pred_tokens": [
+        "<|im_end|>",
+        " Und",
+        " Die"
+      ]
+    }
+  },
+  "tinystories": {
+    "eos_then_pad": {
+      "text_acc_pct": 99.97961941825395,
+      "fill_positions_acc_pct": 0.0,
+      "fill_share_pct": 0.35409254284054603,
+      "rows_exact_on_text_pct": 97.67281440604124,
+      "top_pred_at_fill_positions": [
+        [
+          438,
+          0.22661006087792374
+        ],
+        [
+          447,
+          0.13857737904517783
+        ],
+        [
+          0,
+          0.07369432874078821
+        ]
+      ],
+      "top_pred_tokens": [
+        "Once",
+        " upon",
+        "<|endoftext|>"
+      ]
+    },
+    "eos_fill": {
+      "text_acc_pct": 99.97967634725323,
+      "fill_positions_acc_pct": 99.991989746876,
+      "fill_share_pct": 0.35409254284054603,
+      "rows_exact_on_text_pct": 97.68007551553877,
+      "top_pred_at_fill_positions": [
+        [
+          0,
+          0.99991989746876
+        ],
+        [
+          264,
+          8.010253123998718e-05
+        ]
+      ],
+      "top_pred_tokens": [
+        "<|endoftext|>",
+        " the"
+      ]
+    }
+  }
+}

@@ -1,0 +1,60 @@
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_default
+### START: 2026-11-22T01:00:45-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_default/
+### END: 2026-11-22T01:09:26-08:00 rc=1 duration_s=519
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_default
+### START: 2026-11-22T01:42:08-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_default/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2948.73it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.63   12.84   27.78    82.43    20.9
+### END: 2026-11-22T01:49:45-08:00 rc=0 duration_s=456
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --freq 0 --mu 0 --adj  --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_argmax
+### START: 2026-11-22T01:49:48-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_argmax/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 2121.59it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.49   12.86   27.71    82.82    21.0
+### END: 2026-11-22T01:57:31-08:00 rc=0 duration_s=463
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --freq 0 --mu 0 --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_adjonly
+### START: 2026-11-22T01:57:32-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_adjonly/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 5989.49it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.56   12.85   27.73    82.02    21.0
+### END: 2026-11-22T02:05:08-08:00 rc=0 duration_s=456
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/xsum.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/xsum --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/xsum --n 1000 --bs 16 --adj  --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_freqonly
+### START: 2026-11-22T02:05:09-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/xsum1k_freqonly/
+
+merged 1 shards -> 1000 xsum outputs
+
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|██████████| 148/148 [00:00<00:00, 6622.47it/s]
+    R-1     R-2     R-L   genPPL   words
+  34.59   12.88   27.74    81.95    20.9
+### END: 2026-11-22T02:12:44-08:00 rc=0 duration_s=455

@@ -1,0 +1,135 @@
+merge pid 21716 gone 2026-11-21T19:59:00-08:00
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/experiments/common/score_genppl.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/lm1b-small.yaml --glob ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_default/shard_*.pkl --dtype fp16
+### START: 2026-11-21T20:00:08-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights:  30%|███       | 132/436 [00:00<00:00, 1237.04it/s]Loading weights:  59%|█████▊    | 256/436 [00:00<00:00, 444.20it/s] Loading weights:  75%|███████▍  | 325/436 [00:00<00:00, 388.68it/s]Loading weights:  86%|████████▋ | 377/436 [00:00<00:00, 377.04it/s]Loading weights:  97%|█████████▋| 422/436 [00:01<00:00, 351.76it/s]Loading weights: 100%|██████████| 436/436 [00:01<00:00, 378.23it/s]
+[score_genppl] metric=genppl_flm ref=gpt2-large dtype=fp16 param_dtype=torch.float16 device=cuda samples=1280 limit=0
+ seed   genPPL  entropy
+   42    93.92   4.3150
+    0    92.79   4.3177
+    1    94.84   4.3126
+    2    96.04   4.3091
+    3    92.69   4.3143
+
+ mean    94.06   4.3138   (+/- 1.41 over 5 seeds, 1280 samples)
+peak GPU memory allocated 2659 MiB
+### END: 2026-11-21T20:15:05-08:00 rc=0 duration_s=872
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/scripts/eval_shard.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/lm1b-small.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/lm1b/small --nshards 1 --freq 0 --mu 0 --adj  --shard 0 --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_argmax/shard_0.pkl
+### START: 2026-11-21T20:15:33-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+  shard0 seed 42: 256 samples
+  shard0 seed 0: 256 samples
+  shard0 seed 1: 256 samples
+  shard0 seed 2: 256 samples
+  shard0 seed 3: 256 samples
+shard 0: 1280 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_argmax/shard_0.pkl
+### END: 2026-11-21T20:23:00-08:00 rc=0 duration_s=445
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/experiments/common/score_genppl.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/lm1b-small.yaml --glob ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_argmax/shard_*.pkl --dtype fp16
+### START: 2026-11-21T20:23:04-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights:  16%|█▌        | 70/436 [00:00<00:00, 607.25it/s]Loading weights:  30%|███       | 131/436 [00:00<00:00, 354.20it/s]Loading weights:  39%|███▉      | 172/436 [00:00<00:00, 315.49it/s]Loading weights:  47%|████▋     | 207/436 [00:00<00:00, 302.98it/s]Loading weights:  56%|█████▌    | 242/436 [00:00<00:00, 310.57it/s]Loading weights:  63%|██████▎   | 275/436 [00:00<00:00, 259.55it/s]Loading weights:  69%|██████▉   | 303/436 [00:01<00:00, 256.12it/s]Loading weights:  77%|███████▋  | 334/436 [00:01<00:00, 269.55it/s]Loading weights:  83%|████████▎ | 362/436 [00:01<00:00, 260.18it/s]Loading weights:  89%|████████▉ | 389/436 [00:01<00:00, 259.47it/s]Loading weights:  95%|█████████▌| 416/436 [00:01<00:00, 232.38it/s]Loading weights: 100%|██████████| 436/436 [00:01<00:00, 246.23it/s]
+[score_genppl] metric=genppl_flm ref=gpt2-large dtype=fp16 param_dtype=torch.float16 device=cuda samples=1280 limit=0
+ seed   genPPL  entropy
+   42    77.41   4.1221
+    0    77.43   4.1198
+    1    78.88   4.1119
+    2    80.67   4.0983
+    3    78.26   4.1360
+
+ mean    78.53   4.1176   (+/- 1.35 over 5 seeds, 1280 samples)
+peak GPU memory allocated 2659 MiB
+### END: 2026-11-21T20:28:38-08:00 rc=0 duration_s=331
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/scripts/eval_shard.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/lm1b-small.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/lm1b/small --nshards 1 --freq 0 --mu 0 --shard 0 --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_adjonly/shard_0.pkl
+### START: 2026-11-21T20:29:13-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+  shard0 seed 42: 256 samples
+  shard0 seed 0: 256 samples
+  shard0 seed 1: 256 samples
+  shard0 seed 2: 256 samples
+  shard0 seed 3: 256 samples
+shard 0: 1280 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_adjonly/shard_0.pkl
+### END: 2026-11-21T20:38:20-08:00 rc=0 duration_s=545
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/experiments/common/score_genppl.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/lm1b-small.yaml --glob ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_adjonly/shard_*.pkl --dtype fp16
+### START: 2026-11-21T20:38:22-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights:  19%|█▉        | 82/436 [00:00<00:00, 689.03it/s]Loading weights:  35%|███▍      | 151/436 [00:00<00:00, 661.60it/s]Loading weights:  50%|█████     | 218/436 [00:00<00:00, 566.06it/s]Loading weights:  63%|██████▎   | 276/436 [00:00<00:00, 504.96it/s]Loading weights:  75%|███████▌  | 328/436 [00:00<00:00, 507.55it/s]Loading weights:  87%|████████▋ | 380/436 [00:00<00:00, 491.63it/s]Loading weights:  99%|█████████▊| 430/436 [00:00<00:00, 462.75it/s]Loading weights: 100%|██████████| 436/436 [00:00<00:00, 479.05it/s]
+[score_genppl] metric=genppl_flm ref=gpt2-large dtype=fp16 param_dtype=torch.float16 device=cuda samples=1280 limit=0
+ seed   genPPL  entropy
+   42    78.43   4.1688
+    0    78.23   4.1660
+    1    79.46   4.1589
+    2    82.24   4.1545
+    3    79.40   4.1764
+
+ mean    79.55   4.1649   (+/- 1.60 over 5 seeds, 1280 samples)
+peak GPU memory allocated 2659 MiB
+### END: 2026-11-21T20:41:32-08:00 rc=0 duration_s=176
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/scripts/eval_shard.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/lm1b-small.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/lm1b/small --nshards 1 --adj  --shard 0 --out ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_freqonly/shard_0.pkl
+### START: 2026-11-21T20:41:42-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+  shard0 seed 42: 256 samples
+  shard0 seed 0: 256 samples
+  shard0 seed 1: 256 samples
+  shard0 seed 2: 256 samples
+  shard0 seed 3: 256 samples
+shard 0: 1280 -> ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_freqonly/shard_0.pkl
+### END: 2026-11-21T20:47:55-08:00 rc=0 duration_s=372
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/experiments/common/score_genppl.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/lm1b-small.yaml --glob ~/Downloads/stanford_ncm_turing/experiments/p01_penalties/lm1b_freqonly/shard_*.pkl --dtype fp16
+### START: 2026-11-21T20:47:56-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/436 [00:00<?, ?it/s]Loading weights:  11%|█▏        | 50/436 [00:00<00:00, 479.78it/s]Loading weights:  24%|██▍       | 106/436 [00:00<00:00, 508.54it/s]Loading weights:  38%|███▊      | 166/436 [00:00<00:00, 529.75it/s]Loading weights:  50%|█████     | 220/436 [00:00<00:00, 531.68it/s]Loading weights:  66%|██████▌   | 286/436 [00:00<00:00, 528.04it/s]Loading weights:  79%|███████▉  | 346/436 [00:00<00:00, 511.60it/s]Loading weights:  92%|█████████▏| 400/436 [00:00<00:00, 517.49it/s]Loading weights: 100%|██████████| 436/436 [00:00<00:00, 482.65it/s]
+[score_genppl] metric=genppl_flm ref=gpt2-large dtype=fp16 param_dtype=torch.float16 device=cuda samples=1280 limit=0
+ seed   genPPL  entropy
+   42    93.02   4.3048
+    0    93.38   4.3085
+    1    96.13   4.3018
+    2    96.08   4.2980
+    3    92.15   4.3042
+
+ mean    94.15   4.3034   (+/- 1.84 over 5 seeds, 1280 samples)
+peak GPU memory allocated 2659 MiB
+### END: 2026-11-21T20:50:53-08:00 rc=0 duration_s=166
+P1-LM1B-DONE
+### CMD: ~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --cfg 0 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt_cfg0
+### START: 2026-11-21T20:51:37-08:00
+[evaluate] 1 shard(s) on GPU(s) 0 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt_cfg0/
+
+merged 1 shards -> 3003 wmt14 outputs
+
+    BLEU  BLEU(lc)    chrF  len ratio
+   21.73     22.62   49.59      0.938
+
+BLEU|True = 21.73 59.0/30.5/17.1/9.7 (BP = 0.928 ratio = 0.931 hyp_len = 62668 ref_len = 67337)
+### END: 2026-11-21T21:25:00-08:00 rc=0 duration_s=1978
+P2-WMT-CFG-DONE
+P6-DONE
+P3-DONE
+P9-DONE
+P10-TIMING-DONE
+QUEUE4-DONE

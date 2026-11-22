@@ -1,0 +1,21 @@
+{
+  "env": {
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "time": "2026-11-22T01:40:16",
+    "mem_fraction_cap": 0.88
+  },
+  "default": {
+    "solved": 1725,
+    "n": 2000,
+    "pct": 86.25,
+    "seconds": 60.75398349761963
+  },
+  "autocast_bf16": {
+    "solved": 1727,
+    "n": 2000,
+    "pct": 86.35,
+    "seconds": 31.940437078475952
+  }
+}

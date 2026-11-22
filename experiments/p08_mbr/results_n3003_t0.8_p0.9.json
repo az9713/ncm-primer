@@ -1,0 +1,66 @@
+{
+  "env": {
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "time": "2026-11-22T04:38:26",
+    "mem_fraction_cap": 0.88
+  },
+  "args": {
+    "n": 3003,
+    "bs": 16,
+    "M": 12,
+    "temp": 0.8,
+    "top_p": 0.9,
+    "tag": ""
+  },
+  "greedy_seconds": 313.52052640914917,
+  "candidate_seconds": 4079.518934249878,
+  "rows": [
+    {
+      "M": 1,
+      "kind": "greedy",
+      "passes_per_source": 11,
+      "bleu": 21.72241629159254,
+      "chrf": 49.56960873285829
+    },
+    {
+      "M": 1,
+      "kind": "single sample (candidate 0)",
+      "passes_per_source": 11,
+      "bleu": 18.1947926097617,
+      "chrf": 46.07644292154248
+    },
+    {
+      "M": 4,
+      "kind": "MBR",
+      "passes_per_source": 44,
+      "bleu": 21.288810107059746,
+      "chrf": 48.68732056416401,
+      "oracle_bleu": 25.957806191425785,
+      "select_seconds": 8.328858375549316
+    },
+    {
+      "M": 8,
+      "kind": "MBR",
+      "passes_per_source": 88,
+      "bleu": 23.186078233599023,
+      "chrf": 50.220714943142575,
+      "oracle_bleu": 28.956172704328257,
+      "select_seconds": 22.899706602096558
+    },
+    {
+      "M": 12,
+      "kind": "MBR",
+      "passes_per_source": 132,
+      "bleu": 23.813102645832153,
+      "chrf": 50.77569868069091,
+      "oracle_bleu": 30.516474150629044,
+      "select_seconds": 44.47197723388672
+    }
+  ],
+  "greedy_check_vs_evaluate_shard": {
+    "equal": 3003,
+    "n": 3003
+  }
+}

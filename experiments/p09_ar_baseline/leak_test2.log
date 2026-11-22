@@ -1,0 +1,13 @@
+### CMD: ../.venv/Scripts/python -B leak_test2.py
+### START: 2026-11-22T08:09:28-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+a_generate_no_gc   allocated MiB per call: [1034, 1112, 1190, 1269, 1347, 1425, 1503, 1581, 1659, 1736, 1815, 1893, 1034, 1112, 1189, 1268, 1345, 1423, 1502, 1580]
+b_decode_gc        allocated MiB per call: [956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956, 956]
+c_decode_no_gc     allocated MiB per call: [1050, 1144, 1238, 1331, 1426, 1519, 1613, 1706, 1801, 956, 1050, 1144, 1238, 1331, 1426, 1519, 1613, 1706, 1801, 1894]
+### END: 2026-11-22T08:10:40-08:00 rc=0 duration_s=72
