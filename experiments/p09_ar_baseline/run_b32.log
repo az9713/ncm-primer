@@ -1,0 +1,32 @@
+### CMD: P9_NSEQ=32:1024 P9_OUT=results_b32.json python ar_vs_ncm_small.py
+### START: 2026-11-22T12:25:40-08:00
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 111.40M
+VQVAE, Non embedding parameter count: 99.63M
+NCP Transformer, Total parameter count: 97.07M
+NCP Transformer, Non embedding parameter count: 96.76M
+[mem] after NCM load: allocated 947 MiB
+  [mem B=32] before generate: allocated 947 MiB, peak 947 MiB, reserved 962 MiB
+  [mem B=32] after generate: allocated 1110 MiB, peak 2262 MiB, reserved 3388 MiB
+  [mem B=32] after idx_to_zhats: allocated 1142 MiB, peak 2262 MiB, reserved 3388 MiB
+  [mem B=32] after decode: allocated 1380 MiB, peak 2262 MiB, reserved 3388 MiB
+NCM B= 32 rep 0 N=1024: 59.74s  per-1024 59.74s  peak reserved 3598 MiB
+NCM B= 32 rep 1 N=1024: 60.22s  per-1024 60.22s  peak reserved 3598 MiB
+NCM B= 32 rep 2 N=1024: 62.61s  per-1024 62.61s  peak reserved 3598 MiB
+  [mem B=16] before generate: allocated 956 MiB, peak 2685 MiB, reserved 984 MiB
+  [mem B=16] after generate: allocated 1034 MiB, peak 2685 MiB, reserved 2046 MiB
+  [mem B=16] after idx_to_zhats: allocated 1051 MiB, peak 2685 MiB, reserved 2046 MiB
+  [mem B=16] after decode: allocated 1289 MiB, peak 2685 MiB, reserved 2764 MiB
+NCM B=16 rep 0 N=1024 with pick_tokens penalties: 69.29s
+NCM B=16 rep 1 N=1024 with pick_tokens penalties: 66.33s
+NCM B=16 rep 2 N=1024 with pick_tokens penalties: 65.35s
+Loading weights:   0%|          | 0/148 [00:00<?, ?it/s]Loading weights: 100%|##########| 148/148 [00:00<00:00, 6143.86it/s]
+params: GPT-2 124.44M, NCM generator 97.07M (module incl. shared), tokenizer 111.40M
+AR  B= 32 rep 0 N=1024: 82.11s  per-1024 82.11s  peak reserved 1024 MiB
+AR  B= 32 rep 1 N=1024: 80.91s  per-1024 80.91s  peak reserved 1024 MiB
+AR  B= 32 rep 2 N=1024: 80.46s  per-1024 80.46s  peak reserved 1024 MiB
+SUMMARY B= 32: NCM 60.86+/-1.54s  AR 81.16+/-0.85s per 1024 seqs  AR/NCM 1.33
+SUMMARY NCM B=16 with pick_tokens: 66.99s per 1024
+### END: 2026-11-22T12:37:40-08:00 rc=0

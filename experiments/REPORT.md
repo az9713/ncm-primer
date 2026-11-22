@@ -14,8 +14,8 @@ Date of runs: 21–22 November 2026. Machine: Windows 11, NVIDIA GeForce RTX 305
 | 6 | Wall-clock vs passes | Completed within 4 GB | LM1B batch 16: 0.891 s per `generate()`; last pass costs 11.0× the first. XSum: prefix dominates (9 passes of 591–645 ms). WMT14 KV cache: 100 % code agreement and 2.35× faster at batch 16 with unpadded prefixes; 25.5–37.4 % agreement with padded prefixes | No absolute NCM time in the text; diffusion ratios (21×, 31×) not testable | No paper value | `p06_wallclock/results.json` |
 | 7 | Sudoku constraint trace | Completed | Solved 99.40 / 96.45 / 86.25 % (easy/medium/hard). Hard mean violations 34.29 at level 11, 0.47 at level 12 | Table 3 (p.10): 99.5 / 96.5 / 86.1 | Yes | `p07_sudoku_trace/results.json` |
 | 8 | MBR decoding (WMT14) | Completed (full test set) | M = 12: lowercased BLEU 24.67, cased 23.81 (greedy 22.62 / 21.72; M = 4: 22.11 / 21.29; M = 8: 24.04 / 23.19) | Table 2: 25.2 (greedy 22.6) | Partly | `p08_mbr/results_n3003_t0.8_p0.9.json` |
-| 9 | AR KV-cache baseline | Partial | GPT-2 (KV cache) / NCM LM1B time per 128-token sample: 8.15–8.81 at batch 1, 4.72 at batch 4, 2.82 at batch 8, 1.47 at batch 16 (NCM 61.69 s, GPT-2 90.59 s per 1,024; NCM excludes the 4.93 s penalty loop). NCM batch ≥ 64 does not fit. `generate()` leaves GPU tensors in reference cycles (needs `gc.collect()`) | No paper value (no AR timing in the paper) | No paper value | `p09_ar_baseline/results_all.json` |
-| 10 | Train a tiny tokenizer | Completed (2,500 of 10,000 updates) | Held-out level-12 accuracy 100.000 %; utilization 69.79 % (real boards), 72.40 % (augmented); released tokenizer on the same boards 100.0 %, 80.73 %. Level-12 accuracy is 100 % from step 500 and does not discriminate | Table 1: Sudoku 100 %, util 80.73 %; Table 5: 10,000 updates, batch 1,024 | Partly | `p10_train_tokenizer/results.json` |
+| 9 | AR KV-cache baseline | Completed within 4 GB (batches 1 to 32) | GPT-2 (KV cache) / NCM LM1B time per 128-token sample: 8.15–8.81 at batch 1, 4.72 at batch 4, 2.82 at batch 8, 1.47 at batch 16 (NCM 61.69 s, GPT-2 90.59 s per 1,024; NCM excludes the 4.93 s penalty loop), 1.33 at batch 32 (NCM 60.86 s, GPT-2 81.16 s). NCM batch ≥ 64 does not fit in 4 GB. `generate()` leaves GPU tensors in reference cycles (needs `gc.collect()`) | No paper value (no AR timing in the paper) | No paper value | `p09_ar_baseline/results_all.json` |
+| 10 | Train a tiny tokenizer | Completed (10,000 updates, as Table 5) | 10,000 steps, real boards: held-out level-12 accuracy 100.000 %, utilization 89.58 %; accuracy higher than the released tokenizer at levels 1 to 11. 2,500-step runs: 69.79 % (real), 72.40 % (augmented). Released tokenizer on the same boards 100.0 %, 80.73 %. Level-12 accuracy is 100 % from step 500 and does not discriminate | Table 1: Sudoku 100 %, util 80.73 %; Table 5: 10,000 updates, batch 1,024 | Yes | `p10_train_tokenizer/results.json` |
 
 Command lines in the project sections use shortened paths ("…" or repository-relative). Section 5 lists every exact command line with its log, start time, exit code and duration.
 
@@ -674,7 +674,7 @@ M=12 MBR (132 passes) BLEU 23.81 chrF 50.78  (oracle-by-reference BLEU 30.52, se
 - 1,024 sequences per measurement (batch 1: 64 sequences, scaled to 1,024 and stated). The setup has 1 warm-up batch and 3 repeats with seeds 0, 1, 2. The code calls `torch.cuda.synchronize()` around each timed loop.
 - Run 1 (`run.log`) loaded both models at once under a 0.8 memory cap. Runs 2 and 3 (`run2.log`, `run3.log`) time NCM first, free it, then load GPT-2, under a 0.88 cap (3.6 GB).
 
-**How it was run.** Run 2: `python experiments/p09_ar_baseline/ar_vs_ncm.py` (batches 1, 16, 64, 256). Run 3: `P9_NSEQ="1:64,4:256,8:512" python experiments/p09_ar_baseline/ar_vs_ncm_small.py`. In fresh processes: `P9_NSEQ="4:256"`, `"8:512"`, `"16:1024"` (run 4, `run4.log`). In short runs: `P9_NSEQ="4:64,8:64,16:64" python experiments/p09_ar_baseline/ar_vs_ncm_small.py` (run 5, `run5.log`). Also run: `python experiments/p09_ar_baseline/leak_test.py`.
+**How it was run.** Run 2: `python experiments/p09_ar_baseline/ar_vs_ncm.py` (batches 1, 16, 64, 256). Run 3: `P9_NSEQ="1:64,4:256,8:512" python experiments/p09_ar_baseline/ar_vs_ncm_small.py`. In fresh processes: `P9_NSEQ="4:256"`, `"8:512"`, `"16:1024"` (run 4, `run4.log`). In short runs: `P9_NSEQ="4:64,8:64,16:64" python experiments/p09_ar_baseline/ar_vs_ncm_small.py` (run 5, `run5.log`). Also run: `python experiments/p09_ar_baseline/leak_test.py`. Run 7, batch 32, with `gc.collect()` between batches: `P9_NSEQ=32:1024 P9_OUT=results_b32.json python experiments/p09_ar_baseline/ar_vs_ncm_small.py` (`run_b32.log`).
 
 **Results: seconds per 1,024 sequences of 128 tokens (3 repeats).**
 
@@ -687,6 +687,7 @@ M=12 MBR (132 passes) BLEU 23.81 chrF 50.78  (oracle-by-reference BLEU 30.52, se
 | 8 (run 5) | 63.55, 63.68 (2 repeats) | 182.54, 182.49, 173.49 | 2.82 |
 | 16 (run 5) | 60.10, 60.12 (2 repeats) | 90.23, 89.53, 89.27 | 1.49 |
 | 16 (run 6, with `gc.collect()`, 1,024 sequences) | 59.69, 62.05, 63.32 (mean 61.69 ± 1.84) | 88.05, 93.16, 90.55 (mean 90.59 ± 2.56) | 1.47 |
+| 32 (run 7, with `gc.collect()`, 1,024 sequences) | 59.74, 60.22, 62.61 (mean 60.86 ± 1.54) | 82.11, 80.91, 80.46 (mean 81.16 ± 0.85) | 1.33 |
 | 64 (run 6) | does not fit (first call needs a 650 MiB block) | 47.64, 47.51, 47.52 | – |
 | 4 (runs 3 and 4, 256 sequences) | raised OOM | run 3: 546.31, 557.30, 513.72; run 4: 347.82, 338.80, 334.97 | – |
 | 8 (runs 3 and 4, 512 sequences) | raised OOM | run 3: 264.39, 292.79, 281.57; run 4: 174.34, 171.20, 174.51 | – |
@@ -694,7 +695,7 @@ M=12 MBR (132 passes) BLEU 23.81 chrF 50.78  (oracle-by-reference BLEU 30.52, se
 | 64 | does not fit | 51.53, 52.01, 52.05 | – |
 | 256 | does not fit | 108.14, 105.77, 107.40 (spill-suspect, see below) | – |
 
-Peak reserved GPU memory: NCM batch 1: 1,772 MiB (run 2/3). GPT-2: 544 MiB (batch 1), 778 MiB (16), 3,302 MiB (64), 3,604 MiB (256, at the cap).
+Peak reserved GPU memory: NCM batch 1: 1,772 MiB (run 2/3). NCM batch 32: 3,598 MiB (run 7), 88 % of the 4,096 MiB card. GPT-2: 544 MiB (batch 1), 778 MiB (16), 1,024 MiB (32), 3,302 MiB (64), 3,604 MiB (256, at the cap).
 
 **Observations.**
 
@@ -704,17 +705,18 @@ Peak reserved GPU memory: NCM batch 1: 1,772 MiB (run 2/3). GPT-2: 544 MiB (batc
 - **GPT-2 run-to-run spread.** GPT-2 at batch 4 took 513.72–557.30 s in run 3 (05:15–05:37). It took 334.97–347.82 s in runs 4 and 5 (07:36–07:58). At batch 16, it took 116.90–128.12 s (run 2, 01:14–01:37) against 89.07–90.23 s (runs 4 and 5). The machine load changed between runs. Ratios are therefore computed only within one run (run 5 for batches 4 to 16, runs 1 to 3 for batch 1).
 - The eval-path penalties (`pick_tokens()`, 128 sequential argmax steps in float64 over 30,528 tokens) add 4.93 s per 1,024 sequences at batch 16. The timings are 66.98, 66.44, 66.42 s (mean 66.62) against 61.69 s without them (run 6). The NCM times in the table exclude this loop.
 
-**Comparison with the paper.** No paper value: the paper compares NCM only with diffusion and flow models (Fig. 1, Section 4.6). The result here is for one laptop GPU. At batch 1, an autoregressive model with a KV cache is 8.2 to 8.8 times slower than NCM per 128-token sample. The ratio falls as the batch grows. It is 4.72 at batch 4, 2.82 at batch 8 and 1.49 at batch 16 (run 5, same process, 64 sequences per batch size). At batch 16, the paper's benchmark batch, the full run 6 gives 1.47 (1.37 if NCM includes the eval penalties: 90.59 / 66.62). GPT-2 time per sequence falls nearly in proportion to the batch (341.65 → 179.51 → 89.68 s per 1,024 sequences). In contrast, NCM falls only from 72.43 to 60.11 s. I did not profile either model, so the cause of the different scaling is not measured.
+**Comparison with the paper.** No paper value: the paper compares NCM only with diffusion and flow models (Fig. 1, Section 4.6). The result here is for one laptop GPU. At batch 1, an autoregressive model with a KV cache is 8.2 to 8.8 times slower than NCM per 128-token sample. The ratio falls as the batch grows. It is 4.72 at batch 4, 2.82 at batch 8 and 1.49 at batch 16 (run 5, same process, 64 sequences per batch size). At batch 16, the paper's benchmark batch, the full run 6 gives 1.47 (1.37 if NCM includes the eval penalties: 90.59 / 66.62). At batch 32 (run 7) it is 1.33. NCM time per 1,024 sequences is almost the same at batch 16 and 32 (61.69 and 60.86 s). So NCM is at its throughput limit on this GPU from batch 16. GPT-2 still gets faster from batch 32 (81.16 s) to batch 64 (47.5–52.1 s). Run 7 also repeated the penalty timing at batch 16: 69.29, 66.33, 65.35 s (mean 66.99), against 66.62 in run 6. GPT-2 time per sequence falls nearly in proportion to the batch (341.65 → 179.51 → 89.68 s per 1,024 sequences). In contrast, NCM falls only from 72.43 to 60.11 s. I did not profile either model, so the cause of the different scaling is not measured.
 
-**Verdict.** Partial. Batches 1, 4, 8 and 16 measured (batch 16 with 3 full repeats). Batches 4 and 8 come from short runs with 2 NCM repeats. NCM batch 64 and 256 do not fit in 4 GB. GPT-2 batch 256 invalid (spill). Consistent with NCM: No paper value.
+**Verdict.** Completed within the 4 GB limit. Batches 1, 4, 8, 16 and 32 measured (batches 16 and 32 with 3 full repeats). Batches 4 and 8 come from short runs with 2 NCM repeats. NCM batch 64 and 256 do not fit in 4 GB. Batch 32 already reserves 3,598 MiB. Batch 64 raised OOM also with `gc.collect()` (run 6). A GPU with more memory is the only way to measure them. GPT-2 batch 256 invalid (spill). Consistent with NCM: No paper value.
 
 **Receipt.**
 
-- Scripts: `experiments/p09_ar_baseline/ar_vs_ncm.py`, `ar_vs_ncm_small.py`. Logs: `run.log`, `run2.log`, `run3.log`, `run4.log`. Numbers: `results_run1_B1only.json`, `results.json` (run 2), `results_small_batches.json` (run 3), `results_b4_fresh.json`, `results_b8_fresh.json`, `results_b16_fresh.json` (run 4), `results_short_runs.json` (run 5), `results_gcfix.json` (run 6), `leak_test.json`, `leak_test2.json`; collected in `results_all.json`.
-- Durations: run 1 514 s (00:18:20–00:26:55, ended at an uncaught OOM in the penalty timing). Run 2 1,371 s (01:14:13–01:37:04). Run 3 1,373 s (05:14:59–05:37:52). Run 4 306 + 294 + 298 s (07:36:30–07:51:37). Run 5 174 s (07:55:34–07:58:28). Leak tests 41 s and 72 s. Run 6 908 s (08:11:47–08:26:55).
-- Log excerpt (first line `run6.log`, next three `run5.log`, the rest `run2.log`):
+- Scripts: `experiments/p09_ar_baseline/ar_vs_ncm.py`, `ar_vs_ncm_small.py`. Logs: `run.log`, `run2.log`, `run3.log`, `run4.log`. Numbers: `results_run1_B1only.json`, `results.json` (run 2), `results_small_batches.json` (run 3), `results_b4_fresh.json`, `results_b8_fresh.json`, `results_b16_fresh.json` (run 4), `results_short_runs.json` (run 5). Also `results_gcfix.json` (run 6), `results_b32.json` (run 7, log `run_b32.log`), `leak_test.json`, `leak_test2.json`; collected in `results_all.json`.
+- Durations: run 1 514 s (00:18:20–00:26:55, ended at an uncaught OOM in the penalty timing). Run 2 1,371 s (01:14:13–01:37:04). Run 3 1,373 s (05:14:59–05:37:52). Run 4 306 + 294 + 298 s (07:36:30–07:51:37). Run 5 174 s (07:55:34–07:58:28). Leak tests 41 s and 72 s. Run 6 908 s (08:11:47–08:26:55). Run 7 720 s (12:25:40–12:37:40).
+- Log excerpt (first line `run_b32.log`, second `run6.log`, next three `run5.log`, the rest `run2.log`):
 
 ```text
+SUMMARY B= 32: NCM 60.86+/-1.54s  AR 81.16+/-0.85s per 1024 seqs  AR/NCM 1.33
 SUMMARY B= 16: NCM 61.69+/-1.84s  AR 90.59+/-2.56s per 1024 seqs  AR/NCM 1.47
 SUMMARY B=  4: NCM 72.43+/-0.03s  AR 341.65+/-2.88s per 1024 seqs  AR/NCM 4.72
 SUMMARY B=  8: NCM 63.62+/-0.09s  AR 179.51+/-5.21s per 1024 seqs  AR/NCM 2.82
@@ -733,26 +735,36 @@ SUMMARY B=  1: NCM 250.12+/-26.37s  AR 2180.98+/-138.46s per 1024 seqs  AR/NCM 8
 
 - data: the 6,000 Sudoku solutions of the three difficulties; 1,000 boards held out (fixed permutation, seed 1234); 5,000 for training;
 - loss: token cross-entropy + `vq_loss`, weight 1:1 (the paper's loss weights are not in the repository);
-- optimizer: AdamW (β 0.9/0.99, weight decay 0.01), peak learning rate 5×10⁻⁴, 500 warm-up steps. Cosine decay goes to 5×10⁻⁵ over the run length (2,500 steps here). So the decay is 4 times as fast as over the paper's 10,000. Gradient clipping is at 1 (Table 5, p.23). Codebook EMA decay is 0.99 and fine-level dropout is 0.5 from the `sudoku-hard` config, as in Table 5;
+- optimizer: AdamW (β 0.9/0.99, weight decay 0.01), peak learning rate 5×10⁻⁴, 500 warm-up steps. Cosine decay goes to 5×10⁻⁵ over the run length. The full run has 10,000 steps, as in the paper. The two short runs have 2,500 steps, so their decay is 4 times as fast. Gradient clipping is at 1 (Table 5, p.23). Codebook EMA decay is 0.99 and fine-level dropout is 0.5 from the `sudoku-hard` config, as in Table 5;
 - batch 1,024 as in Table 5, approximated by 4 micro-batches of 256 with gradient accumulation. Batch 1,024 in one pass did not fit in 3.2–3.6 GB. The approximation has three differences from one batch of 1,024. (1) Each micro-batch draws its own fine-level dropout decision and cutoff level (`models/quant.py:459-461`, `:525-530`) and its own dropout masks. (2) The EMA codebook update runs once per micro-batch, 4 times per optimizer step on 256 boards each. The codebooks change between micro-batches. (3) The loss is the mean of 4 micro-batch means. This equals the batch mean only because all micro-batches have the same size;
 - optional augmentation (`--aug`): each training board passes through a random validity-preserving transform. The transform consists of digit relabeling, row and column swaps within bands, band and stack swaps, and transpose. The script asserts that 64 transformed boards are valid Sudoku solutions;
 - evaluation on the held-out boards: token accuracy after each level (full-length partial sums from `z_to_idx(..., return_zhats=True)`), exact boards, and utilization. Utilization = distinct codes used per level ÷ 16, averaged over 12 levels (eval-mode count).
 
-**Budget against the paper.** Table 5: 10,000 updates at batch 1,024. One step here took 1.4 s (100 steps in 140 s), so 10,000 steps would take about 3.9 hours per run. I trained 2,500 steps per run (25 % of the paper's updates, 2.56 million board presentations, about 512 passes over the 5,000 training boards). I made two runs: real boards only, and augmented boards.
+**Budget against the paper.** Table 5: 10,000 updates at batch 1,024. One step here took 1.4 s (100 steps in 140 s), so 10,000 steps would take about 3.9 hours per run. I first made two runs of 2,500 steps: real boards only, and augmented boards. Each run is 25 % of the paper's updates, 2.56 million board presentations, about 512 passes over the 5,000 training boards. Then I made one full run of 10,000 steps on real boards (10.24 million board presentations). It took 12,962 s (3.6 hours, 1.30 s per step).
 
-**How it was run.** `python experiments/p10_train_tokenizer/train.py --steps 2500 --bs 1024 --accum 4 --tag real --eval_every 500`, then the same with `--tag aug --aug`.
+**How it was run.** `python experiments/p10_train_tokenizer/train.py --steps 2500 --bs 1024 --accum 4 --tag real --eval_every 500`, then the same with `--tag aug --aug`. Full run: `python train.py --steps 10000 --bs 1024 --accum 4 --tag real10k --eval_every 1000`.
 
 **Results: held-out boards (1,000), token accuracy (%) after each level.**
 
 | Tokenizer | L1 | L2 | L3 | L4 | L5 | L6 | L7 | L8 | L9 | L10 | L11 | L12 | Exact boards | Utilization |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Released `sudoku/hard` | 22.4 | 22.3 | 24.6 | 27.8 | 27.7 | 34.7 | 39.7 | 51.2 | 66.8 | 79.8 | 85.4 | 100.0 | 100.0 % | 80.73 % (155/192) |
+| Mine, real boards, 10,000 steps | 25.7 | 25.7 | 26.2 | 28.6 | 28.0 | 38.4 | 46.7 | 59.3 | 76.0 | 89.4 | 94.2 | 100.0 | 100.0 % | 89.58 % (172/192) |
 | Mine, real boards, 2,500 steps | 24.7 | 24.7 | 24.8 | 25.4 | 25.3 | 32.2 | 39.4 | 49.3 | 61.0 | 70.5 | 80.8 | 100.0 | 100.0 % | 69.79 % (134/192) |
 | Mine, augmented boards, 2,500 steps | 23.0 | 23.0 | 23.1 | 23.8 | 23.8 | 32.5 | 39.7 | 49.3 | 62.0 | 71.2 | 82.0 | 100.0 | 100.0 % | 72.40 % (139/192) |
 
-Codes used per level (of 16): released [16, 2, 14, 14, 1, 15, 15, 15, 15, 16, 16, 16]. Mine, real [16, 1, 1, 6, 2, 13, 15, 16, 16, 16, 16, 16]. Mine, augmented [16, 2, 3, 6, 4, 13, 15, 16, 16, 16, 16, 16].
+Codes used per level (of 16): released [16, 2, 14, 14, 1, 15, 15, 15, 15, 16, 16, 16]. Mine, real, 10,000 steps [16, 6, 16, 16, 6, 16, 16, 16, 16, 16, 16, 16]. Mine, real, 2,500 steps [16, 1, 1, 6, 2, 13, 15, 16, 16, 16, 16, 16]. Mine, augmented [16, 2, 3, 6, 4, 13, 15, 16, 16, 16, 16, 16].
 
-**Training trajectory (real boards).**
+**Training trajectory, full run (real boards, 10,000 steps, `train_real10k.json`).**
+
+| Step | 0 | 1,000 | 2,000 | 3,000 | 4,000 | 5,000 | 6,000 | 7,000 | 8,000 | 9,000 | 10,000 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Held-out accuracy, level 12 (%) | 7.788 | 100.000 | 100.000 | 100.000 | 100.000 | 100.000 | 100.000 | 100.000 | 100.000 | 100.000 | 100.000 |
+| Utilization (%) | 25.52 | 36.46 | 58.33 | 72.92 | 80.21 | 80.73 | 84.90 | 84.38 | 88.02 | 89.06 | 89.58 |
+
+Utilization reaches the Table 1 value (80.73 %) at step 5,000 and is above it from step 6,000. The training loss had two one-step spikes: reconstruction loss 2.0112 at step 1,600 and 1.8858 at step 9,200. Each was back below 0.01 at the next logged step (0.0037 at 1,700, 0.0002 at 9,300). No held-out evaluation showed a drop.
+
+**Training trajectory, 2,500-step run (real boards).**
 
 | Step | Time (s) | Held-out accuracy, level 12 | Utilization | Codes used per level |
 |---|---|---|---|---|
@@ -767,18 +779,19 @@ Codes used per level (of 16): released [16, 2, 14, 14, 1, 15, 15, 15, 15, 16, 16
 
 - **Level-12 accuracy does not discriminate.** After 100 steps (timing run) the held-out level-12 accuracy is already 99.987 %, and from step 500 it is 100.000 %. Utilization is 17.71 % (step 100) and 41.67 % (step 500). Levels 1 to 6 decode at about 19 %. The last level has one 16-way code per position (ℓ_12 = L = 89). The Sudoku vocabulary has 12 symbols. So the last level alone can copy the board. Table 1's 100 % Sudoku accuracy is therefore a weak test; the per-level curve and the utilization separate tokenizers.
 - **Coarse levels learn late.** Levels 1 to 5 use 1 code each until step 1,500 (level 4: 2 codes in the augmented run). In the real-data run, level 1 uses 14 codes at step 2,000 and 16 at step 2,500. The released tokenizer also leaves level 2 (2 codes) and level 5 (1 code) almost unused.
-- **Against the released tokenizer**, mine is higher at levels 1 to 3 (24.7 against 22.4 at level 1). It is lower at levels 4 to 11 (by up to 9.3 points at level 10: 70.5 against 79.8). Utilization is 69.79 % against 80.73 %.
+- **Against the released tokenizer, 10,000 steps:** mine is higher at all levels 1 to 11. The difference is 0.3 points at level 5 (28.0 against 27.7) and 9.6 points at level 10 (89.4 against 79.8). Utilization is 89.58 % against 80.73 %. Levels 2 and 5 use 6 codes each; the released tokenizer uses 2 and 1.
+- **Against the released tokenizer, 2,500 steps:** mine is higher at levels 1 to 3 (24.7 against 22.4 at level 1). It is lower at levels 4 to 11 (by up to 9.3 points at level 10: 70.5 against 79.8). Utilization is 69.79 % against 80.73 %.
 
 - **Augmentation** (one run each, so the difference has no error estimate): utilization 72.40 % against 69.79 %. Accuracy at levels 9 to 11 is higher by 0.7 to 1.2 points (62.0/71.2/82.0 against 61.0/70.5/80.8). Accuracy at levels 1 to 5 is lower by 1.5 to 1.7 points. Both runs keep levels 2, 3 and 5 at 1 to 4 codes.
 
-**Comparison with the paper.** Table 1 (p.8): Sudoku accuracy 100 % and utilization 80.73 % (hard). My tokenizer reaches 100.000 % held-out accuracy and 69.79 % utilization after 25 % of the paper's updates. The paper uses 10,000 updates at batch 1,024 (Table 5). Here I used 2,500 updates with accumulation and a 4 times faster cosine decay. The released tokenizer on the same 1,000 boards gives 100.0 % and 80.73 %, the Table 1 value. The held-out boards are test-set solutions; the training data of the released tokenizer is not documented, so it may have seen these boards.
+**Comparison with the paper.** Table 1 (p.8): Sudoku accuracy 100 % and utilization 80.73 % (hard). At the paper's budget of 10,000 updates, my tokenizer reaches 100.000 % held-out accuracy and 89.58 % utilization. After 2,500 updates (25 %) it had 69.79 %. The paper uses 10,000 updates at batch 1,024 (Table 5). The full run used 10,000 updates with gradient accumulation (4 × 256); the short runs used 2,500 updates and a 4 times faster cosine decay. The released tokenizer on the same 1,000 boards gives 100.0 % and 80.73 %, the Table 1 value. The held-out boards are test-set solutions; the training data of the released tokenizer is not documented, so it may have seen these boards. My training boards and held-out boards come from the same 6,000 solutions, so the two tokenizers are not compared on equal terms. My loss weights are 1:1, because the paper's weights are not in the repository.
 
-**Verdict.** Completed with a reduced budget (2,500 of 10,000 updates, stated). Consistent with NCM: Partly. The training-mode forward with my loss and loop trains a working Sudoku tokenizer: 100.000 % held-out accuracy at level 12, as Table 1 states. Utilization (69.79 % real, 72.40 % augmented) is 8.3 to 10.9 points below the released tokenizer and Table 1 (80.73 %). The per-level accuracy at levels 4 to 11 is up to 9.3 points lower. I used a quarter of the updates, a 4 times faster learning-rate decay and an approximate batch. So I cannot tell whether the gap closes at the paper's budget.
+**Verdict.** Completed at the paper's budget (10,000 updates, batch 1,024 by accumulation). Consistent with NCM: Yes. I added a loss, an optimizer and a data loader to the training-mode forward of the repository. The result is a Sudoku tokenizer with 100.000 % held-out accuracy, as Table 1 states. Its utilization (89.58 %) is 8.85 points above Table 1 (80.73 %). Its accuracy is higher than the released tokenizer at levels 1 to 11. The 2,500-step runs were 8.3 to 10.9 points below Table 1, so that gap came from the short budget. Two limits apply: one seed only, and my training and held-out boards come from the same pool of solutions.
 
 **Receipt.**
 
-- Durations: timing run 153 s (05:37:53–05:40:26); real 3,473 s (05:42:31–06:40:24); augmented 3,365 s (06:40:24–07:36:30).
-- Script: `experiments/p10_train_tokenizer/train.py`. Logs: `timing100.log`, `train_real_2500.log`, `train_aug_2500.log`. Earlier attempts in `train_real.log` and `train_aug.log` hit CUDA OOM at batch 1,024 without accumulation. Alternatively, they were stopped by their captured PID after a 10,000-step start that exceeded the time limit. Numbers: `train_real.json`, `train_aug.json`, `train_timing100.json`, collected in `results.json`. Checkpoints: `experiments/artifacts/p10_tokenizer_real.pt`, `p10_tokenizer_aug.pt` (excluded from version control).
+- Durations: full run 12,962 s (08:48:28–12:24:43); timing run 153 s (05:37:53–05:40:26); real 3,473 s (05:42:31–06:40:24); augmented 3,365 s (06:40:24–07:36:30).
+- Script: `experiments/p10_train_tokenizer/train.py`. Logs: `train_real_10000.log`, `timing100.log`, `train_real_2500.log`, `train_aug_2500.log`. Earlier attempts in `train_real.log` and `train_aug.log` hit CUDA OOM at batch 1,024 without accumulation. Alternatively, they were stopped by their captured PID after a 10,000-step start that exceeded the time limit. Numbers: `train_real10k.json`, `train_real.json`, `train_aug.json`, `train_timing100.json`, collected in `results.json`. Checkpoints: `experiments/artifacts/p10_tokenizer_real10k.pt`, `p10_tokenizer_real.pt`, `p10_tokenizer_aug.pt` (excluded from version control).
 
 ## 4. Cross-project findings and limits
 
@@ -1015,6 +1028,8 @@ Every job was started by `experiments/common/run.sh`, which wrote these lines in
   `../.venv/Scripts/python -B leak_test2.py`
 - `run6.log` 2026-11-22T08:11:47-08:00 rc=0 908 s:
   `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ar_vs_ncm_small.py`
+- `run_b32.log` 2026-11-22T12:25:40-08:00 rc=? ? s:
+  `P9_NSEQ=32:1024 P9_OUT=results_b32.json python ar_vs_ncm_small.py`
 
 ### p10_train_tokenizer
 
@@ -1032,3 +1047,5 @@ Every job was started by `experiments/common/run.sh`, which wrote these lines in
   `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python train.py --steps 2500 --bs 1024 --accum 4 --tag real --eval_every 500`
 - `train_aug_2500.log` 2026-11-22T06:40:24-08:00 rc=0 3365 s:
   `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python train.py --steps 2500 --bs 1024 --accum 4 --tag aug --aug --eval_every 500`
+- `train_real_10000.log` 2026-11-22T08:48:28-08:00 rc=? ? s:
+  `python train.py --steps 10000 --bs 1024 --accum 4 --tag real10k --eval_every 1000`

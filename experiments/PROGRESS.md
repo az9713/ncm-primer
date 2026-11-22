@@ -12,7 +12,7 @@ All 10 projects run. Final report: `REPORT.md` and `REPORT.html` (assembled by `
 | 6 | Wall-clock | Completed within 4 GB | LM1B B16 0.891 s/generate; WMT14 KV unpadded 100 % agreement and 2.35x faster at B16; padded 25.5-37.4 % | p06_wallclock/results.json |
 | 7 | Sudoku trace | Completed | 99.40/96.45/86.25 % (paper 99.5/96.5/86.1) | p07_sudoku_trace/results.json |
 | 8 | MBR | Completed | M=12 lowercased 24.67 / cased 23.81 (paper 25.2) | p08_mbr/results.json |
-| 9 | AR baseline | Partial | GPT-2/NCM 8.15-8.81 (B1), 4.72 (B4), 2.82 (B8), 1.47 (B16, full run with gc.collect) | p09_ar_baseline/results_all.json |
-| 10 | Train tokenizer | Completed (2,500 of 10,000 steps) | held-out 100 %, util 69.79 % (real) / 72.40 % (aug) vs released 80.73 % | p10_train_tokenizer/results.json |
+| 9 | AR baseline | Completed within 4 GB (B1-B32) | GPT-2/NCM 8.15-8.81 (B1), 4.72 (B4), 2.82 (B8), 1.47 (B16), 1.33 (B32); NCM B>=64 does not fit | p09_ar_baseline/results_all.json, results_b32.json |
+| 10 | Train tokenizer | Completed (10,000 steps, real boards) | held-out 100 %, util 89.58 % vs released 80.73 %; 2,500-step runs 69.79 % / 72.40 % | p10_train_tokenizer/train_real10k.json, train_real_10000.log |
 
 ncm-main: git status empty; sha256 manifest of 39 files identical before/after (ncm_main_manifest_before.txt, _after.txt).

@@ -196,6 +196,8 @@ Every job was started by `experiments/common/run.sh`, which wrote these lines in
   `../.venv/Scripts/python -B leak_test2.py`
 - `run6.log` 2026-11-22T08:11:47-08:00 rc=0 908 s:
   `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ar_vs_ncm_small.py`
+- `run_b32.log` 2026-11-22T12:25:40-08:00 rc=? ? s:
+  `P9_NSEQ=32:1024 P9_OUT=results_b32.json python ar_vs_ncm_small.py`
 
 ### p10_train_tokenizer
 
@@ -213,3 +215,5 @@ Every job was started by `experiments/common/run.sh`, which wrote these lines in
   `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python train.py --steps 2500 --bs 1024 --accum 4 --tag real --eval_every 500`
 - `train_aug_2500.log` 2026-11-22T06:40:24-08:00 rc=0 3365 s:
   `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python train.py --steps 2500 --bs 1024 --accum 4 --tag aug --aug --eval_every 500`
+- `train_real_10000.log` 2026-11-22T08:48:28-08:00 rc=? ? s:
+  `python train.py --steps 10000 --bs 1024 --accum 4 --tag real10k --eval_every 1000`
