@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Design decisions</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="design-decisions">Design decisions</h1>
+<p>This page records three decisions for which the code gives a reason in a comment. The alternatives are the ones that the comment names. The repository does not record other alternatives.</p>
+<h2 id="adr-001-straight-through-estimator-at-level-1-only">ADR 001: straight-through estimator at level 1 only</h2>
+<p><strong>Status:</strong> Accepted (as implemented in <code>models/quant.py:503-505</code>).</p>
+<h3 id="context">Context</h3>
+<p>The quantizer selects codes by argmin, which has no gradient. A straight-through estimator copies the gradient past the quantization step.</p>
+<h3 id="decision">Decision</h3>
+<p>Apply the straight-through estimator only at level 1, and only when <code>learned_l1_sampling</code> is true.</p>
+<h3 id="alternatives-considered">Alternatives considered</h3>
+<ul>
+<li>Straight-through at every level. The comment at <code>models/quant.py:503</code> says that at higher levels it "diverges within ~100 steps".</li>
+</ul>
+<h3 id="rationale">Rationale</h3>
+<p>Level 1 has a learned resampler (<code>learned_down_l1</code>), which needs a gradient. The other levels use fixed area pooling.</p>
+<h3 id="trade-offs">Trade-offs</h3>
+<p>The encoder gets gradient through level 1 and through the final STE on the sum (<code>:531</code>). It gets no per-level gradient at levels 2 to K.</p>
+<h3 id="consequences">Consequences</h3>
+<p>Do not add STE at higher levels in a training script without a test of stability.</p>
+<h2 id="adr-002-no-learned-scale-in-the-pre-quantization-norm">ADR 002: no learned scale in the pre-quantization norm</h2>
+<p><strong>Status:</strong> Accepted (as implemented in <code>models/vqvae.py:59-67</code>).</p>
+<h3 id="context_1">Context</h3>
+<p>The encoder output goes through a norm before quantization.</p>
+<h3 id="decision_1">Decision</h3>
+<p>Use <code>GroupNorm(..., affine=False)</code> or <code>LayerNorm(..., elementwise_affine=False)</code>.</p>
+<h3 id="alternatives-considered_1">Alternatives considered</h3>
+<ul>
+<li>A norm with a learned scale gamma. The comment says that the squared distance ‖z − e‖² is not scale-invariant, so a learned gamma "would inflate without bound".</li>
+</ul>
+<h3 id="rationale_1">Rationale</h3>
+<p>Without gamma, the encoder output has a fixed scale. The codebook vectors can follow it.</p>
+<h3 id="trade-offs_1">Trade-offs</h3>
+<p>The model cannot learn a global scale for the encoder output.</p>
+<h3 id="consequences_1">Consequences</h3>
+<p>A training script must not add <code>affine=True</code> here.</p>
+<h2 id="adr-003-keep-the-tokenizer-out-of-the-generator-state-dict">ADR 003: keep the tokenizer out of the generator state dict</h2>
+<p><strong>Status:</strong> Accepted (as implemented in <code>models/next_concept.py:80-81</code>).</p>
+<h3 id="context_2">Context</h3>
+<p>The generator needs the tokenizer codebooks and resampling functions at each level.</p>
+<h3 id="decision_2">Decision</h3>
+<p>Store the <code>VQVAE</code> in a one-element tuple, <code>self.vqvae_local = (vqvae_local,)</code>.</p>
+<h3 id="alternatives-considered_2">Alternatives considered</h3>
+<ul>
+<li>Store it as a normal submodule. The comment says the tuple keeps the frozen VQ-VAE "out of the module tree and the state dict".</li>
+</ul>
+<h3 id="rationale_2">Rationale</h3>
+<p>The tokenizer is frozen and is saved in its own file, <code>tokenizer.pt</code>.</p>
+<h3 id="trade-offs_2">Trade-offs</h3>
+<p><code>net.cuda()</code> does not move the tokenizer. <code>scripts/eval_shard.py:50</code> moves it separately with <code>tk.vqvae.cuda()</code>. <code>net.parameters()</code> does not include tokenizer weights.</p>
+<h3 id="consequences_2">Consequences</h3>
+<p>Move the tokenizer to the device yourself. Load <code>tokenizer.pt</code> before you build the generator, because some heads copy the codebooks at construction (<code>_TiedCodebookHead</code>, <code>models/next_concept.py:17-25</code>).</p>
+<footer>Generated from <code>architecture/decisions.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

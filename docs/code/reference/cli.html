@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Command-line reference</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="command-line-reference">Command-line reference</h1>
+<p>This page lists every flag of the three scripts. It tracks <code>evaluate.py</code>, <code>scripts/eval_shard.py</code> and <code>scripts/eval_merge.py</code>.</p>
+<h2 id="evaluatepy"><code>evaluate.py</code></h2>
+<p>Defined at <code>evaluate.py:10-17</code>. Unknown flags go to every shard unchanged (<code>parse_known_args</code>, <code>:17</code>, <code>:26-27</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Type</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--config</code></td>
+<td>path</td>
+<td>required</td>
+<td>Eval config, for example <code>config/eval/xsum.yaml</code>.</td>
+</tr>
+<tr>
+<td><code>--checkpoint-dir</code></td>
+<td>path</td>
+<td>required</td>
+<td>Folder with the files named under <code>checkpoints:</code>.</td>
+</tr>
+<tr>
+<td><code>--data-dir</code></td>
+<td>path</td>
+<td><code>""</code></td>
+<td>Folder with the files named under <code>data:</code>. Not needed for unconditional tasks.</td>
+</tr>
+<tr>
+<td><code>--out</code></td>
+<td>path</td>
+<td><code>eval/&lt;task&gt;</code></td>
+<td>Output folder for <code>shard_k.log</code> and <code>shard_k.pkl</code>.</td>
+</tr>
+<tr>
+<td><code>--gpus</code></td>
+<td>string</td>
+<td>all visible</td>
+<td>Comma-separated GPU ids. One shard per id.</td>
+</tr>
+<tr>
+<td><code>--n</code></td>
+<td>int</td>
+<td>0 (all)</td>
+<td>Evaluate only the first n inputs.</td>
+</tr>
+</tbody>
+</table>
+<p>Exit codes: the script exits with the message <code>no GPU visible; pass --gpus</code> when it finds no GPU (<code>:21-22</code>). It exits with <code>shard(s) [...] failed; see &lt;out&gt;/shard_*.log</code> when a shard fails (<code>:37-39</code>). The merge runs with <code>check=True</code>, so a merge error stops the script (<code>:41-42</code>).</p>
+<h2 id="scriptseval_shardpy"><code>scripts/eval_shard.py</code></h2>
+<p>Defined at <code>scripts/eval_shard.py:9-27</code>. You can call it directly. It inserts <code>NCM_ROOT</code>, or the working directory, into <code>sys.path</code> (<code>:4</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Type</th>
+<th>Default</th>
+<th>Config field it overrides</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--config</code></td>
+<td>path</td>
+<td>required</td>
+<td>—</td>
+<td>Eval config.</td>
+</tr>
+<tr>
+<td><code>--checkpoint-dir</code></td>
+<td>path</td>
+<td><code>artifacts/&lt;task&gt;</code></td>
+<td>—</td>
+<td>Checkpoint folder (<code>:31</code>).</td>
+</tr>
+<tr>
+<td><code>--data-dir</code></td>
+<td>path</td>
+<td><code>$NCM_DATA_ROOT/&lt;task&gt;</code> or <code>data/&lt;task&gt;</code></td>
+<td>—</td>
+<td>Data folder (<code>:32</code>).</td>
+</tr>
+<tr>
+<td><code>--split</code></td>
+<td>string</td>
+<td><code>eval.split</code> or <code>test</code></td>
+<td><code>eval.split</code></td>
+<td>Data split (<code>:41</code>).</td>
+</tr>
+<tr>
+<td><code>--n</code></td>
+<td>int</td>
+<td><code>eval.n_docs</code></td>
+<td><code>eval.n_docs</code>, <code>eval.n_samples</code></td>
+<td>Inputs (conditional) or samples per seed (unconditional) (<code>:42</code>, <code>:84</code>).</td>
+</tr>
+<tr>
+<td><code>--bs</code></td>
+<td>int</td>
+<td><code>eval.batch_size</code></td>
+<td><code>eval.batch_size</code></td>
+<td>Batch size (<code>:43</code>).</td>
+</tr>
+<tr>
+<td><code>--shard</code></td>
+<td>int</td>
+<td>0</td>
+<td>—</td>
+<td>Index of this shard.</td>
+</tr>
+<tr>
+<td><code>--nshards</code></td>
+<td>int</td>
+<td>1</td>
+<td>—</td>
+<td>Total shards.</td>
+</tr>
+<tr>
+<td><code>--temp</code></td>
+<td>float</td>
+<td>config, else 1.0</td>
+<td><code>generation.temperature</code></td>
+<td>Temperature.</td>
+</tr>
+<tr>
+<td><code>--top_k</code></td>
+<td>int</td>
+<td>config, else 1</td>
+<td><code>generation.top_k</code></td>
+<td>Top-k.</td>
+</tr>
+<tr>
+<td><code>--top_p</code></td>
+<td>float</td>
+<td>config, else 0.0</td>
+<td><code>generation.top_p</code></td>
+<td>Top-p.</td>
+</tr>
+<tr>
+<td><code>--cfg</code></td>
+<td>float</td>
+<td>config, else 0.0</td>
+<td><code>generation.cfg_scale</code></td>
+<td>Guidance weight.</td>
+</tr>
+<tr>
+<td><code>--freq</code></td>
+<td>float</td>
+<td>config, else 0.0</td>
+<td><code>generation.frequency_penalty</code></td>
+<td>Frequency penalty.</td>
+</tr>
+<tr>
+<td><code>--mu</code></td>
+<td>float</td>
+<td>config, else 0.0</td>
+<td><code>generation.frequency_deficit</code></td>
+<td>Frequency deficit bonus.</td>
+</tr>
+<tr>
+<td><code>--adj</code></td>
+<td>string</td>
+<td>config, else empty</td>
+<td><code>generation.adjacency_penalty</code></td>
+<td><code>"a,w,d"</code>. <code>--adj ""</code> turns it off.</td>
+</tr>
+<tr>
+<td><code>--l0</code></td>
+<td>string</td>
+<td><code>unigram</code></td>
+<td>—</td>
+<td>Level-1 draw: <code>unigram</code>, <code>active</code>, <code>uniform</code>, <code>smooth:&lt;eps&gt;</code> (<code>:70-78</code>).</td>
+</tr>
+<tr>
+<td><code>--out</code></td>
+<td>path</td>
+<td>required</td>
+<td>—</td>
+<td>Output pickle.</td>
+</tr>
+</tbody>
+</table>
+<p><code>--l0</code> modes, used only when the config has <code>level0_unigram</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unigram</code></td>
+<td>The stored table.</td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td>Uniform over codes with probability above 0 in the table (<code>:72-73</code>).</td>
+</tr>
+<tr>
+<td><code>uniform</code></td>
+<td>Uniform over all codes (<code>:74-75</code>).</td>
+</tr>
+<tr>
+<td><code>smooth:0.1</code></td>
+<td>0.9 × table + 0.1 × uniform (<code>:76-78</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>Output pickle keys:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Mode</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idxs</code></td>
+<td>both</td>
+<td>Input indices of this shard (unconditional: 0 … N−1).</td>
+</tr>
+<tr>
+<td><code>hyps</code></td>
+<td>both</td>
+<td>Decoded output strings.</td>
+</tr>
+<tr>
+<td><code>refs</code></td>
+<td>both</td>
+<td>Reference strings (unconditional: empty strings).</td>
+</tr>
+<tr>
+<td><code>seeds</code></td>
+<td>unconditional</td>
+<td>Seed of each sample.</td>
+</tr>
+<tr>
+<td><code>toks</code></td>
+<td>unconditional</td>
+<td>Output re-encoded by the pre-tokenizer.</td>
+</tr>
+<tr>
+<td><code>raw_ids</code></td>
+<td>unconditional</td>
+<td>Token ids from <code>pick_tokens()</code> before EOS cut.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="scriptseval_mergepy"><code>scripts/eval_merge.py</code></h2>
+<p>Defined at <code>scripts/eval_merge.py:6-9</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Type</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--config</code></td>
+<td>path</td>
+<td>required</td>
+<td>Eval config. Its <code>eval.metric</code> selects the scorer (<code>:154</code>).</td>
+</tr>
+<tr>
+<td><code>--glob</code></td>
+<td>string</td>
+<td>required</td>
+<td>Pattern for the shard pickles, for example <code>eval/xsum/shard_*.pkl</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>It stops with <code>AssertionError: no shard files</code> when the pattern matches no file (<code>:13</code>).</p>
+<h2 id="environment-variables">Environment variables</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Read at</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NCM_ROOT</code></td>
+<td><code>scripts/eval_shard.py:4</code>, <code>scripts/eval_merge.py:4</code></td>
+<td>Folder added to <code>sys.path</code>. Default: the working directory.</td>
+</tr>
+<tr>
+<td><code>NCM_DATA_ROOT</code></td>
+<td><code>scripts/eval_shard.py:32</code></td>
+<td>Root for the default data folder. Default <code>data</code>.</td>
+</tr>
+<tr>
+<td><code>CUDA_VISIBLE_DEVICES</code></td>
+<td>set by <code>evaluate.py:30</code></td>
+<td>One GPU per shard.</td>
+</tr>
+<tr>
+<td><code>TOKENIZERS_PARALLELISM</code></td>
+<td>set to <code>false</code> by <code>evaluate.py:30</code></td>
+<td>Turns off Hugging Face tokenizer threads.</td>
+</tr>
+</tbody>
+</table>
+<footer>Generated from <code>reference/cli.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

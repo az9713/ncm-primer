@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>The tokenizer</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="the-tokenizer">The tokenizer</h1>
+<p>The tokenizer is a multiscale residual VQ-VAE. It changes L tokens into K levels of codes, and K levels of codes back into L token logits.</p>
+<p>This page tracks <code>models/vqvae.py</code>, <code>models/vae.py</code>, <code>models/quant.py</code>, <code>tokenization/vqvae_tokenizer.py</code> and <code>utils/registry.py</code>.</p>
+<h2 id="why-it-is-a-separate-stage">Why it is a separate stage</h2>
+<p>The generator does not predict tokens. It predicts codes. The tokenizer defines what the codes mean. Each released model has one frozen tokenizer (<code>tokenizer.pt</code>). The generator keeps the tokenizer in a tuple, so the tokenizer weights are not in <code>generator.pt</code> (<code>models/next_concept.py:80-81</code>).</p>
+<h2 id="components">Components</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Class</th>
+<th>Location</th>
+<th>Released configs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pre-tokenizer</td>
+<td><code>HFTokenizer</code>, <code>BPETokenizer</code>, <code>SudokuTokenizer</code></td>
+<td><code>tokenization/*.py</code>, selected at <code>utils/registry.py:4-9</code></td>
+<td>GPT-2, BERT uncased, Qwen3-0.6B, BPE 8,192, Sudoku 12</td>
+</tr>
+<tr>
+<td>Encoder</td>
+<td><code>Encoder</code></td>
+<td><code>models/vae.py:102-179</code></td>
+<td>Embedding lookup, plus a learned position embedding except LM1B (<code>enc_positional: false</code>)</td>
+</tr>
+<tr>
+<td>Pre-quant norm</td>
+<td><code>nn.GroupNorm(..., affine=False)</code></td>
+<td><code>models/vqvae.py:59-67</code></td>
+<td>4 groups (LM1B) or 8 groups</td>
+</tr>
+<tr>
+<td>Quantizer</td>
+<td><code>MultiscaleResidualVectorQuantizer</code></td>
+<td><code>models/quant.py:228</code></td>
+<td>K = 9 to 32 levels</td>
+</tr>
+<tr>
+<td>Decoder</td>
+<td><code>Decoder</code></td>
+<td><code>models/vae.py:198-258</code></td>
+<td>1 block, or 4 blocks for LM1B (<code>dec_layers: 4</code>)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> The config field <code>n_layers</code> is the attention head count of the encoder and decoder blocks, not a depth (<code>models/vae.py:132</code>, <code>:224</code>). The depth comes from <code>enc_layers</code> and <code>dec_layers</code>.</p>
+</blockquote>
+<h2 id="how-encoding-works">How encoding works</h2>
+<p><code>VQVAE.encode(x)</code> (<code>models/vqvae.py:98-101</code>) runs <code>_encode_pre_quant()</code> and then <code>vq.z_to_idx()</code> (<code>models/quant.py:573-632</code>). For each level k with ℓ_k positions:</p>
+<ol>
+<li>Shorten the residual to ℓ_k positions (<code>_down_for_quant</code>, <code>models/quant.py:395-402</code>). Level 1 uses a learned strided convolution when <code>learned_l1_sampling: true</code> (all released configs). The other levels use area pooling. Level K uses no shortening.</li>
+<li>Find the nearest codebook vector for each position by squared distance (<code>:388-393</code>, <code>:595-600</code>).</li>
+<li>Lengthen the selected vectors to L positions (<code>_up_to_full</code>, <code>:404-411</code>). Level 1 uses a learned transposed convolution. The other levels use linear interpolation.</li>
+<li>Apply Phi: <code>(1 - 0.5) * h + 0.5 * Conv1d(h)</code>, with a separate convolution for each level (<code>share_mode: 0</code>, <code>:108-143</code>, <code>:380-386</code>).</li>
+<li>Add the result to z_hat. Subtract it from the residual (<code>:609-610</code>).</li>
+</ol>
+<p>The output is one tensor of shape (B, ℓ_1 + … + ℓ_K). Level 1 is first.</p>
+<p>The learned level-1 resampler needs L to be a multiple of ℓ_1 (<code>models/quant.py:311-316</code>). With <code>learned_l1_cascade: true</code>, the stride L/ℓ_1 is split into factors of at most 4 (<code>:165-178</code>). For XSum, L/ℓ_1 = 48/4 = 12, so the cascade uses strides 4 and 3.</p>
+<blockquote>
+<p><strong>Warning:</strong> <code>encode()</code> accepts exactly <code>context_length</code> tokens. With 100 tokens on the TinyStories config (L = 128), the check on 2026-11-21 raised <code>RuntimeError: Calculated padded input size per channel: (1). Kernel size: (2)</code>. Pad the input to L. <code>VQVAETokenizer._adjust_length()</code> does this (<code>tokenization/vqvae_tokenizer.py:21-28</code>).</p>
+</blockquote>
+<h2 id="how-decoding-works">How decoding works</h2>
+<p>There are three decode paths. They give different lengths.</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Code</th>
+<th>Output length per level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full decode</td>
+<td><code>VQVAE.decode(idx)</code> → <code>vq.idx_to_z_q()</code> → <code>decoder</code> (<code>models/vqvae.py:108-111</code>, <code>models/quant.py:712-726</code>)</td>
+<td>L, final level only</td>
+</tr>
+<tr>
+<td>Eval decode</td>
+<td><code>vq.idx_to_zhats(g, return_zlevels=True)</code>, then <code>decoder(z_levels[-1])</code> (<code>scripts/eval_shard.py:143-144</code>)</td>
+<td>L, final level only</td>
+</tr>
+<tr>
+<td>Per-level decode</td>
+<td><code>VQVAETokenizer.decode_multiscales(idx)</code> (<code>tokenization/vqvae_tokenizer.py:75-86</code>)</td>
+<td>ℓ_k tokens at level k</td>
+</tr>
+</tbody>
+</table>
+<p><code>decode_multiscales</code> gives the decoder the area-pooled sum at ℓ_k positions (<code>models/quant.py:653-662</code>). The decoder has no fixed length, so it returns ℓ_k tokens. For a Sudoku board, the per-level outputs had lengths 1, 2, 4, 6, 9, … 89 on 2026-11-21.</p>
+<p>The training-mode forward gives the decoder the full-length sum (<code>models/quant.py:514</code>, <code>:525-531</code>). To decode a partial sum at full length L, use the <code>partial_decodes()</code> helper in <a href="../guides/use-ncm-from-python.html">Use NCM from Python</a>.</p>
+<blockquote>
+<p><strong>Warning:</strong> <code>idx_to_zhats()</code> returns a list <code>z_hats</code> whose entries are all the same tensor. The loop adds in place (<code>z_hat.add_()</code>) and appends the same object (<code>models/quant.py:651-652</code>). The check on 2026-11-21 found <code>zh[0] is zh[-1]</code> is <code>True</code>. Do not use <code>z_hats</code> for partial decodes. <code>z_to_idx(..., return_zhats=True)</code> does not have this problem (<code>:609-611</code>).</p>
+</blockquote>
+<h2 id="training-mode">Training mode</h2>
+<p>The training-mode forward is <code>MultiscaleResidualVectorQuantizer.forward(z)</code> (<code>models/quant.py:448-549</code>), called by <code>VQVAE.forward(x)</code> (<code>models/vqvae.py:91-95</code>). It returns <code>(z_hat, vq_loss, per_level_codebook_utilization, global_codebook_utilization, 0.1)</code>. The last value is a constant, not a perplexity (<code>:548</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Lines</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EMA codebook update</td>
+<td><code>:485-498</code></td>
+<td>Cluster size and vector sums with decay <code>decay</code> (0.99; 0.95 for TinyStories), Laplace smoothing with <code>epsilon</code>. Runs only when <code>self.training</code>.</td>
+</tr>
+<tr>
+<td>Dead-code restart</td>
+<td><code>:499-500</code>, <code>:437-446</code></td>
+<td>Replaces codes with EMA size under <code>restart_threshold</code>. Default 0.0, so off in all configs.</td>
+</tr>
+<tr>
+<td>Straight-through at level 1</td>
+<td><code>:503-505</code></td>
+<td>Only at level 1 and only with <code>learned_l1_sampling</code>. The comment says higher levels diverge within about 100 steps.</td>
+</tr>
+<tr>
+<td>Loss terms</td>
+<td><code>:519-524</code></td>
+<td>For each level: <code>commitment_cost * mse(z_hat.detach(), z) + mse(z_hat, z_no_grad)</code>, then the mean over all levels.</td>
+</tr>
+<tr>
+<td>Fine-level dropout</td>
+<td><code>:525-530</code></td>
+<td>With probability <code>fine_drop.prob</code>, replaces z_hat with the partial sum at a random level from <code>min_keep - 1</code> to K−2 (0-based).</td>
+</tr>
+<tr>
+<td>Final STE</td>
+<td><code>:531</code></td>
+<td><code>z_hat = z + (z_hat - z).detach()</code>, so the decoder gradient reaches the encoder.</td>
+</tr>
+</tbody>
+</table>
+<p>The loss terms are averaged over all levels before the fine-level cutoff. So the cutoff changes only the decoder input. It does not change <code>vq_loss</code>.</p>
+<p>The token reconstruction loss (cross-entropy of the decoder logits against the input tokens) is not in the repository. A training script must add it.</p>
+<h2 id="gotchas">Gotchas</h2>
+<ul>
+<li><code>VQVAE.reconstruct()</code> unpacks 3 values from <code>self.vq(z)</code>, but <code>forward</code> returns 5 (<code>models/vqvae.py:116</code>, <code>models/quant.py:543-549</code>). It raises <code>ValueError: too many values to unpack (expected 3)</code>. <code>VQVAETokenizer.reconstruct()</code> and <code>reconstruct_text_from_ids()</code> call it and fail too.</li>
+<li><code>reconstruct_multiscales()</code> works. It returns ℓ_k tokens per level, like <code>decode_multiscales</code>.</li>
+<li>The <code>__main__</code> blocks of <code>models/quant.py</code> and <code>models/vqvae.py</code> do not run. <code>quant.py:730-732</code> passes an int vocabulary size and a list of levels. The check on 2026-11-21 raised <code>AttributeError: 'list' object has no attribute 'use_manual_levels'</code>.</li>
+<li>The <code>quadratic</code> level scheduler divides by <code>(n-2)**2</code>, the other schedulers by <code>(n-1)</code> (<code>utils/registry.py:22</code>). No released config uses a scheduler; all use <code>manual_levels</code>.</li>
+</ul>
+<p>Related: <a href="generator.html">The generator</a>, <a href="../reference/config.html">Config reference</a>.</p>
+<footer>Generated from <code>concepts/tokenizer.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

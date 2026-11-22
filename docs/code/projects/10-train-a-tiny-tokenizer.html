@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Project 10: train a tiny tokenizer</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="project-10-train-a-tiny-tokenizer">Project 10: train a tiny tokenizer</h1>
+<p><strong>Goal:</strong> Train a multiscale residual VQ-VAE on Sudoku solutions with the existing training-mode forward. Compare its per-level reconstruction with the released Sudoku tokenizer.</p>
+<p><strong>Effort:</strong> about 60 lines. <strong>Status:</strong> the loop below ran 5 steps on random data on CPU with the <code>sudoku-hard</code> config (2026-11-21). The saved file loaded again with <code>strict=True</code>. A full training run was not done.</p>
+<h2 id="what-exists-and-what-you-must-write">What exists and what you must write</h2>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Status</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Training-mode forward with EMA codebooks, fine-level dropout, STE at level 1, final STE</td>
+<td>Exists</td>
+<td><code>models/quant.py:448-531</code>, <code>models/vqvae.py:91-95</code></td>
+</tr>
+<tr>
+<td>Commitment and codebook loss terms (<code>vq_loss</code>)</td>
+<td>Exists</td>
+<td><code>models/quant.py:519-524</code></td>
+</tr>
+<tr>
+<td>Codebook use per level</td>
+<td>Exists, returned by <code>forward</code></td>
+<td><code>models/quant.py:533-541</code></td>
+</tr>
+<tr>
+<td>k-means codebook start, dead-code restart</td>
+<td>Exist, off by default</td>
+<td><code>models/quant.py:345-378</code>, <code>:437-446</code></td>
+</tr>
+<tr>
+<td>Token reconstruction loss</td>
+<td>You write</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Optimizer, learning rate, loop</td>
+<td>You write</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Data loader</td>
+<td>You write</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Loss weights of the paper</td>
+<td>Not in the repository</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>fine_drop.dual</code>, <code>w_full</code>, <code>w_trunc</code> (LM1B)</td>
+<td>In the config, not read by any code</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>To train a generator too, you need more: the generator loss, the code-corruption step, and the input assembly for <code>query_level0</code>. <code>NextConceptTransformer.forward()</code> (<code>models/next_concept.py:376-406</code>) and <code>VQVAE.get_ncm_inputs()</code> (<code>models/vqvae.py:121-124</code>) exist. This project does not cover the generator.</p>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>
+<p>Download the Sudoku solutions for all three difficulties (0.002 GB).</p>
+<pre><code>  hf download hazyresearch/ncm-datasets --repo-type dataset --include "sudoku/*/solutions.pickle" --local-dir data
+</code></pre>
+</li>
+<li>
+<p>Write the training script. Each solution is a list of 89 ints, the input length of the Sudoku tokenizer.</p>
+<pre><code>  import sys; sys.path.insert(0, "/path/to/ncm")   # the repository root
+  import pickle, torch, torch.nn.functional as F
+  from omegaconf import OmegaConf
+  from models.vqvae import VQVAE
+
+  cfg = OmegaConf.load("config/eval/sudoku-hard.yaml")
+  data = torch.tensor(sum((pickle.load(open(f"data/sudoku/{d}/solutions.pickle", "rb"))
+                           for d in ("easy", "medium", "hard")), []))          # (6000, 89)
+  vq = VQVAE(**cfg.tokenizer.vqvae).cuda().train()
+  opt = torch.optim.AdamW([p for p in vq.parameters() if p.requires_grad], lr=3e-4)
+  for step in range(20000):
+      x = data[torch.randint(0, len(data), (128,))].cuda()
+      logits, vq_loss, util, gutil, _ = vq(x)
+      rec = F.cross_entropy(logits.reshape(-1, logits.size(-1)), x.reshape(-1))
+      loss = rec + vq_loss                    # 1:1 weights; the paper weights are not in the repository
+      opt.zero_grad(); loss.backward(); opt.step()
+      if step % 500 == 0:
+          print(step, round(rec.item(), 4), round(vq_loss.item(), 4), [round(u, 2) for u in util])
+  torch.save({"model": vq.state_dict()}, "my_tokenizer.pt")
+</code></pre>
+<p>The codebooks have <code>requires_grad=False</code> (<code>models/quant.py:300</code>), so the filter keeps them out of the optimizer. The EMA updates them in <code>forward</code>.</p>
+</li>
+<li>
+<p>Hold out 500 boards before step 2 if you want a fair test. The step-2 sketch uses all 6,000 for training.</p>
+</li>
+<li>Measure the per-level accuracy with the method of <a href="05-tokenizer-reconstruction.html">Project 5</a>, for your tokenizer and for the released <code>artifacts/sudoku/hard/tokenizer.pt</code>.</li>
+<li>Change one setting and train again: <code>fine_drop.prob</code> 0.0 against 0.5, or the level schedule. A new schedule needs a <code>vqvae_vocab_size</code> list of the same length (<code>models/quant.py:290-291</code>).</li>
+</ol>
+<blockquote>
+<p><strong>Note:</strong> <code>codebook_hit_*</code> buffers count use since construction, so the utilization values only increase (<code>models/quant.py:522</code>, <code>:533-536</code>).</p>
+</blockquote>
+<h2 id="cost-and-hardware">Cost and hardware</h2>
+<p>The Sudoku tokenizer has 14.90M parameters. 20,000 steps were not timed. On CPU, the 5 test steps with batch 8 completed.</p>
+<h2 id="how-to-measure-the-result">How to measure the result</h2>
+<ul>
+<li>Token accuracy per level on held-out boards, for both tokenizers.</li>
+<li>Codebook use per level at the end of training.</li>
+<li>The level at which accuracy passes 0.99, with and without fine-level dropout.</li>
+</ul>
+<footer>Generated from <code>projects/10-train-a-tiny-tokenizer.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

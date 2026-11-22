@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Quickstart</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="quickstart">Quickstart</h1>
+<p>Run the Sudoku-hard evaluation. It downloads 0.163 GB. On the test machine the run took 125 seconds.</p>
+<p>This procedure was run on 2026-11-21 on Windows 11 with an NVIDIA GeForce RTX 3050 Laptop GPU (4,096 MiB), Python 3.13.5 and <code>torch 2.11.0+cu128</code>.</p>
+<p>Before you start, complete the <a href="prerequisites.html">Prerequisites</a>.</p>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>
+<p>Go to the repository root.</p>
+<pre><code>  cd ncm
+</code></pre>
+</li>
+<li>
+<p>Download the Sudoku-hard checkpoints.</p>
+<pre><code>  hf download hazyresearch/ncm-checkpoints --include "sudoku/hard/*" --local-dir artifacts
+</code></pre>
+<p>The command writes <code>artifacts/sudoku/hard/config.yaml</code>, <code>generator.pt</code> (102,560,203 bytes) and <code>tokenizer.pt</code> (59,816,209 bytes).</p>
+</li>
+<li>
+<p>Download the Sudoku-hard test boards.</p>
+<pre><code>  hf download hazyresearch/ncm-datasets --repo-type dataset --include "sudoku/hard/*" --local-dir data
+</code></pre>
+<p>The command writes <code>data/sudoku/hard/puzzles.pickle</code> and <code>data/sudoku/hard/solutions.pickle</code>.</p>
+</li>
+<li>
+<p>Run the evaluation.</p>
+<blockquote>
+<p><strong>Warning:</strong> Use the folder <code>artifacts/sudoku/hard</code>, not <code>artifacts/sudoku-hard</code>. The README path <code>artifacts/&lt;task&gt;</code> does not match the Hugging Face folder layout.</p>
+</blockquote>
+<pre><code>  python evaluate.py --config config/eval/sudoku-hard.yaml --checkpoint-dir artifacts/sudoku/hard --data-dir data/sudoku/hard
+</code></pre>
+<p>Output of the run on 2026-11-21:</p>
+<pre><code>  [evaluate] 1 shard(s) on GPU(s) 0 -&gt; eval/sudoku-hard/
+
+  merged 1 shards -&gt; 2000 sudoku-hard outputs
+
+   solved %  solved  cell %  valid %
+      86.25 1725/2000   98.35    86.25
+</code></pre>
+<p>The test run added <code>--out</code> with an absolute path in a temporary folder. The first line above shows the default path <code>eval/sudoku-hard/</code> in place of that path. All other lines are as printed.</p>
+<p>The paper reports 86.1% for Sudoku hard. This run gave 86.25%.</p>
+</li>
+<li>
+<p>Read the shard log if a step fails.</p>
+<pre><code>  cat eval/sudoku-hard/shard_0.log
+</code></pre>
+</li>
+</ol>
+<h2 id="what-happened">What happened</h2>
+<p><code>evaluate.py</code> started one <code>scripts/eval_shard.py</code> process on GPU 0. The shard loaded the tokenizer (14.90M parameters) and the generator (25.46M parameters). It read 2,000 puzzles of 91 tokens. It ran <code>net.generate()</code> in batches of 128, with 12 passes per batch. It decoded the codes to 89 tokens per board and wrote <code>eval/sudoku-hard/shard_0.pkl</code>. Then <code>scripts/eval_merge.py</code> compared each board with its solution.</p>
+<p>The four numbers are: exact-match rate, exact-match count, mean per-cell agreement, and the rate of boards that obey all 27 Sudoku rules (<code>scripts/eval_merge.py:58-76</code>).</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="../guides/run-an-evaluation.html">Run an evaluation</a> for the other 9 configs and all flags.</li>
+<li><a href="onboarding.html">Onboarding</a> to learn what the 12 passes do.</li>
+<li><a href="../projects/index.html">Projects</a> for experiments with this model.</li>
+</ul>
+<footer>Generated from <code>getting-started/quickstart.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

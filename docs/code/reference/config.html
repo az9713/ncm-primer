@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Config reference</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="config-reference">Config reference</h1>
+<p>This page lists every field in <code>config/eval/*.yaml</code>. The "Read at" column gives the line that reads the field. "Not read" means that no Python file in the repository reads the field (searched with grep on 2026-11-21).</p>
+<p>This reference tracks <code>config/eval/*.yaml</code>, <code>scripts/eval_shard.py</code>, <code>scripts/eval_merge.py</code>, <code>evaluate.py</code>, <code>models/*.py</code> and <code>tokenization/*.py</code>. Update them together.</p>
+<p>The 9 config files for released models were compared with the <code>config.yaml</code> files on Hugging Face on 2026-11-21. All 9 were identical. The <code>owt</code> checkpoint folder had no <code>config.yaml</code>.</p>
+<h2 id="top-level">Top level</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Configs</th>
+<th>Read at</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>task</code></td>
+<td>string</td>
+<td>all</td>
+<td><code>evaluate.py:23</code>, <code>scripts/eval_merge.py:21</code></td>
+<td>Name for the default output folder <code>eval/&lt;task&gt;</code> and for printed messages.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="checkpoints"><code>checkpoints</code></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Configs</th>
+<th>Read at</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>generator</code></td>
+<td>path</td>
+<td>all</td>
+<td><code>scripts/eval_shard.py:52</code></td>
+<td>Generator file, relative to <code>--checkpoint-dir</code>.</td>
+</tr>
+<tr>
+<td><code>tokenizer</code></td>
+<td>path</td>
+<td>all</td>
+<td><code>scripts/eval_shard.py:45</code></td>
+<td>Tokenizer file, relative to <code>--checkpoint-dir</code>. LM1B uses <code>../tokenizer.pt</code>.</td>
+</tr>
+<tr>
+<td><code>bpe_vocab</code></td>
+<td>path</td>
+<td><code>tinystories</code></td>
+<td><code>scripts/eval_shard.py:46-48</code></td>
+<td>BPE vocabulary pickle. Overwrites <code>pre_tokenizer.vocab_file_path</code>.</td>
+</tr>
+<tr>
+<td><code>bpe_merges</code></td>
+<td>path</td>
+<td><code>tinystories</code></td>
+<td><code>scripts/eval_shard.py:46-48</code></td>
+<td>BPE merges pickle. Overwrites <code>pre_tokenizer.merges_file_path</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="data"><code>data</code></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Configs</th>
+<th>Read at</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code> (empty <code>{}</code>)</td>
+<td>map</td>
+<td><code>lm1b-*</code>, <code>owt</code>, <code>tinystories</code></td>
+<td><code>scripts/eval_shard.py:79</code></td>
+<td>No entry for the split, so the task is unconditional.</td>
+</tr>
+<tr>
+<td><code>test</code></td>
+<td>path</td>
+<td><code>xsum</code>, <code>wmt14</code>, <code>sudoku-*</code></td>
+<td><code>scripts/eval_shard.py:87</code></td>
+<td>Input pickle, relative to <code>--data-dir</code>.</td>
+</tr>
+<tr>
+<td><code>test_refs</code></td>
+<td>path</td>
+<td><code>xsum</code>, <code>wmt14</code>, <code>sudoku-*</code></td>
+<td><code>scripts/eval_shard.py:88</code></td>
+<td>Reference pickle. The key is <code>&lt;split&gt;_refs</code>.</td>
+</tr>
+<tr>
+<td><code>validation</code></td>
+<td>path</td>
+<td><code>xsum</code></td>
+<td>Not read with the default split</td>
+<td>With <code>--split validation</code>, the script also needs <code>validation_refs</code>, which no config has. It then raises a key error.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="model"><code>model</code></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Configs</th>
+<th>Read at</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n_layer</code></td>
+<td>int</td>
+<td>all</td>
+<td><code>models/next_concept.py:73</code>, <code>:204</code></td>
+<td>Number of transformer blocks.</td>
+</tr>
+<tr>
+<td><code>n_head</code></td>
+<td>int</td>
+<td>all</td>
+<td><code>models/common.py:59-69</code></td>
+<td>Attention heads.</td>
+</tr>
+<tr>
+<td><code>n_embd</code></td>
+<td>int</td>
+<td>all</td>
+<td><code>models/next_concept.py:72</code></td>
+<td>Width of the generator.</td>
+</tr>
+<tr>
+<td><code>bias</code></td>
+<td>bool</td>
+<td>all</td>
+<td><code>models/next_concept.py:75</code>, <code>models/common.py:65-66</code></td>
+<td>Bias in linear layers and norms.</td>
+</tr>
+<tr>
+<td><code>dropout</code></td>
+<td>float</td>
+<td>all</td>
+<td><code>models/next_concept.py:74</code>, <code>models/common.py:67-71</code></td>
+<td>Dropout. Inactive in eval mode.</td>
+</tr>
+<tr>
+<td><code>context_length</code></td>
+<td>int</td>
+<td>all</td>
+<td>Not read</td>
+<td></td>
+</tr>
+<tr>
+<td><code>prefix_len</code></td>
+<td>int</td>
+<td>all</td>
+<td><code>models/next_concept.py:92</code>, <code>scripts/eval_shard.py:55</code></td>
+<td>P, the prefix length. 1 for unconditional configs, 512 XSum, 96 WMT14, 91 Sudoku.</td>
+</tr>
+<tr>
+<td><code>raw_token_prefix</code></td>
+<td>bool</td>
+<td>all</td>
+<td><code>models/next_concept.py:549</code></td>
+<td><code>true</code>: embed the prefix with the tokenizer encoder <code>wte</code> only (<code>:555</code>).</td>
+</tr>
+<tr>
+<td><code>prefix_pad_token_id</code></td>
+<td>int</td>
+<td>all except <code>sudoku-*</code></td>
+<td><code>models/next_concept.py:246-247</code>, <code>:573-579</code>, <code>:531</code></td>
+<td>Pad id. Pad positions get −inf attention. Needed for guidance.</td>
+</tr>
+<tr>
+<td><code>vocab_size</code></td>
+<td>list of int</td>
+<td>all</td>
+<td><code>models/next_concept.py:76</code>, <code>:208-212</code></td>
+<td>Codebook size per predicted level. Length K−1, or K with <code>query_level0</code>.</td>
+</tr>
+<tr>
+<td><code>predict_level0</code></td>
+<td>bool</td>
+<td>7 configs</td>
+<td><code>models/next_concept.py:249</code></td>
+<td><code>true</code> (WMT14): a head on the prefix predicts level 1.</td>
+</tr>
+<tr>
+<td><code>query_level0</code></td>
+<td>bool</td>
+<td>9 configs</td>
+<td><code>models/next_concept.py:88-91</code></td>
+<td><code>true</code>: the model has learned level-1 queries and a head for level 1.</td>
+</tr>
+<tr>
+<td><code>attn_pattern</code></td>
+<td>enum</td>
+<td>all</td>
+<td><code>models/next_concept.py:77</code>, <code>:266-276</code></td>
+<td><code>block_diagonal</code> (all configs) or <code>block_causal</code>.</td>
+</tr>
+<tr>
+<td><code>use_positional_encoding</code></td>
+<td>bool</td>
+<td>all</td>
+<td>Not read</td>
+<td>Positions come from <code>use_rope</code>.</td>
+</tr>
+<tr>
+<td><code>use_level_encoding</code></td>
+<td>bool</td>
+<td>all</td>
+<td><code>models/next_concept.py:197</code>, <code>:562</code></td>
+<td>Add a learned vector per level.</td>
+</tr>
+<tr>
+<td><code>use_rope</code></td>
+<td>bool</td>
+<td>all</td>
+<td><code>models/next_concept.py:95</code></td>
+<td>Rotary positions, restarted per level.</td>
+</tr>
+<tr>
+<td><code>rope_base</code></td>
+<td>int</td>
+<td>all</td>
+<td><code>models/next_concept.py:96</code></td>
+<td>RoPE base: 10000 (LM1B, Sudoku) or 100000.</td>
+</tr>
+<tr>
+<td><code>use_qk_norm</code></td>
+<td>bool</td>
+<td>all</td>
+<td><code>models/common.py:77-81</code></td>
+<td>RMSNorm on queries and keys.</td>
+</tr>
+<tr>
+<td><code>use_flex_attention</code></td>
+<td>bool</td>
+<td>7 configs</td>
+<td><code>models/next_concept.py:294</code></td>
+<td><code>false</code> in all configs. Used only by <code>forward()</code>.</td>
+</tr>
+<tr>
+<td><code>ctx_encoder.enabled</code></td>
+<td>bool</td>
+<td>7 configs</td>
+<td><code>models/next_concept.py:135-136</code></td>
+<td><code>false</code> in all configs.</td>
+</tr>
+<tr>
+<td><code>ctx_encoder.n_layer</code></td>
+<td>int</td>
+<td>7 configs</td>
+<td><code>models/next_concept.py:154</code></td>
+<td>Read only when <code>enabled: true</code>.</td>
+</tr>
+<tr>
+<td><code>ctx_encoder.vocab_size</code></td>
+<td>int</td>
+<td>7 configs</td>
+<td><code>models/next_concept.py:155</code></td>
+<td>Read only when <code>enabled: true</code>.</td>
+</tr>
+<tr>
+<td><code>post_upsample_conv.enabled</code></td>
+<td>bool</td>
+<td><code>lm1b-*</code>, <code>owt</code></td>
+<td><code>models/next_concept.py:183-184</code></td>
+<td>Zero-initialized per-level <code>Conv1d</code> on the generator input.</td>
+</tr>
+<tr>
+<td><code>post_upsample_conv.kernel_size</code></td>
+<td>int</td>
+<td><code>lm1b-*</code>, <code>owt</code></td>
+<td><code>models/next_concept.py:186-187</code></td>
+<td>Must be odd. 3 in both.</td>
+</tr>
+<tr>
+<td><code>tie_heads_to_codebook</code></td>
+<td>bool</td>
+<td>6 configs</td>
+<td><code>models/next_concept.py:223</code>, <code>:257</code></td>
+<td><code>true</code>: distance-form head on the frozen codebook.</td>
+</tr>
+<tr>
+<td><code>tie_heads_learn_scale</code></td>
+<td>bool</td>
+<td><code>owt</code>, <code>tinystories</code>, <code>xsum</code></td>
+<td><code>models/next_concept.py:225</code></td>
+<td>Learned logit scale for the tied head.</td>
+</tr>
+<tr>
+<td><code>tie_heads_bias</code></td>
+<td>bool</td>
+<td><code>owt</code></td>
+<td><code>models/next_concept.py:227</code></td>
+<td>Bias per code on the tied head.</td>
+</tr>
+<tr>
+<td><code>shared_output_head</code></td>
+<td>bool</td>
+<td><code>lm1b-*</code></td>
+<td><code>models/next_concept.py:216</code></td>
+<td>One linear head for all levels. Needs equal sizes.</td>
+</tr>
+<tr>
+<td><code>shared_head_per_level_bias</code></td>
+<td>bool</td>
+<td><code>lm1b-*</code></td>
+<td><code>models/next_concept.py:219</code></td>
+<td>One bias per level on the shared head.</td>
+</tr>
+<tr>
+<td><code>untied_head_bias</code></td>
+<td>bool</td>
+<td><code>wmt14</code></td>
+<td><code>models/next_concept.py:220</code>, <code>:234</code></td>
+<td>Bias on untied heads. Default <code>true</code>; WMT14 sets <code>false</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tokenizerpre_tokenizer"><code>tokenizer.pre_tokenizer</code></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Configs</th>
+<th>Read at</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>enum</td>
+<td>all</td>
+<td><code>tokenization/vqvae_tokenizer.py:15</code>, <code>utils/registry.py:4-9</code></td>
+<td><code>hf</code>, <code>bpe</code> or <code>sudoku</code>.</td>
+</tr>
+<tr>
+<td><code>tokenizer</code></td>
+<td>string</td>
+<td>all</td>
+<td>Not read</td>
+<td></td>
+</tr>
+<tr>
+<td><code>model_id</code></td>
+<td>string</td>
+<td>6 configs</td>
+<td><code>tokenization/hf_tokenizer.py:30</code>, <code>scripts/eval_shard.py:91</code>, <code>scripts/eval_merge.py:116</code></td>
+<td>Hugging Face tokenizer: <code>gpt2</code>, <code>bert-base-uncased</code>, <code>Qwen/Qwen3-0.6B</code>.</td>
+</tr>
+<tr>
+<td><code>special_tokens.eos_token</code></td>
+<td>string</td>
+<td>7 configs</td>
+<td><code>tokenization/hf_tokenizer.py:11-12</code>; BPE by value at <code>tokenization/bpe_tokenizer.py:15-17</code></td>
+<td>EOS token. LM1B uses <code>[CLS]</code>, WMT14 <code>&lt;|im_end|&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>special_tokens.pad_token</code></td>
+<td>string</td>
+<td>7 configs</td>
+<td><code>tokenization/hf_tokenizer.py:13-19</code>; <code>tokenization/bpe_tokenizer.py:18</code></td>
+<td>Pad token. Added as a new token if it does not exist.</td>
+</tr>
+<tr>
+<td><code>vocab_file_path</code></td>
+<td>path</td>
+<td><code>tinystories</code></td>
+<td><code>tokenization/bpe_tokenizer.py:22</code></td>
+<td>Overwritten by <code>checkpoints.bpe_vocab</code>.</td>
+</tr>
+<tr>
+<td><code>merges_file_path</code></td>
+<td>path</td>
+<td><code>tinystories</code></td>
+<td><code>tokenization/bpe_tokenizer.py:24</code></td>
+<td>Overwritten by <code>checkpoints.bpe_merges</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tokenizervqvae"><code>tokenizer.vqvae</code></h2>
+<p>All fields go to <code>VQVAE(**config.vqvae)</code> (<code>tokenization/vqvae_tokenizer.py:17</code>, <code>models/vqvae.py:11-33</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Read at</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>in_vocab_size</code></td>
+<td>int</td>
+<td><code>models/vae.py:126</code>, <code>:233</code></td>
+<td>Pre-tokenizer vocabulary size (embedding and output layer).</td>
+</tr>
+<tr>
+<td><code>context_length</code></td>
+<td>int</td>
+<td><code>models/vqvae.py:39</code>, <code>models/vae.py:127</code></td>
+<td>L. Also the size of the position table.</td>
+</tr>
+<tr>
+<td><code>embed_dim</code></td>
+<td>int</td>
+<td><code>models/vqvae.py:36</code></td>
+<td>D, the size of codebook vectors: 384, or 256 for Sudoku.</td>
+</tr>
+<tr>
+<td><code>n_layers</code></td>
+<td>int</td>
+<td><code>models/vae.py:132</code>, <code>:224-227</code></td>
+<td>Attention head count in the encoder and decoder blocks. Not a depth.</td>
+</tr>
+<tr>
+<td><code>compression_factor</code></td>
+<td>int</td>
+<td><code>models/vae.py:147-157</code>, <code>:236-245</code></td>
+<td>1 in all configs: no extra length compression.</td>
+</tr>
+<tr>
+<td><code>dropout</code></td>
+<td>float</td>
+<td><code>models/vae.py:128</code>, <code>:220</code></td>
+<td>Dropout in the tokenizer. Inactive in eval mode.</td>
+</tr>
+<tr>
+<td><code>pre_quant_groupnorm</code></td>
+<td>int</td>
+<td><code>models/vqvae.py:60-67</code></td>
+<td>GroupNorm groups before quantization, no affine.</td>
+</tr>
+<tr>
+<td><code>pre_quant_dropout</code></td>
+<td>float</td>
+<td><code>models/vqvae.py:69-71</code></td>
+<td>Dropout before quantization. Inactive in eval mode.</td>
+</tr>
+<tr>
+<td><code>pre_quant_norm_type</code></td>
+<td>enum</td>
+<td><code>models/vqvae.py:62</code></td>
+<td><code>group</code> (Sudoku sets it, default too) or <code>layer</code>.</td>
+</tr>
+<tr>
+<td><code>use_qk_norm</code></td>
+<td>bool</td>
+<td><code>models/vae.py:40-44</code></td>
+<td>QK norm in tokenizer attention.</td>
+</tr>
+<tr>
+<td><code>enc_positional</code></td>
+<td>bool</td>
+<td><code>models/vqvae.py:47</code>, <code>models/vae.py:127</code></td>
+<td>Learned encoder positions. <code>false</code> for LM1B.</td>
+</tr>
+<tr>
+<td><code>dec_positional</code></td>
+<td>bool</td>
+<td><code>models/vqvae.py:56</code>, <code>models/vae.py:219</code></td>
+<td>Learned decoder positions. <code>true</code> for LM1B.</td>
+</tr>
+<tr>
+<td><code>dec_layers</code></td>
+<td>int</td>
+<td><code>models/vae.py:228-231</code></td>
+<td>Decoder blocks. 4 for LM1B, 1 otherwise.</td>
+</tr>
+<tr>
+<td><code>vqvae_vocab_size</code></td>
+<td>list of int</td>
+<td><code>models/quant.py:290-296</code></td>
+<td>Codebook size per level. Length must be K.</td>
+</tr>
+<tr>
+<td><code>checkpoint_path</code></td>
+<td>path</td>
+<td><code>tokenization/vqvae_tokenizer.py:18</code></td>
+<td>Set again by <code>scripts/eval_shard.py:45</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tokenizervqvaevector_quantizer_config"><code>tokenizer.vqvae.vector_quantizer_config</code></h2>
+<p>All fields except <code>clss</code> go to <code>MultiscaleResidualVectorQuantizer(...)</code> (<code>models/quant.py:226</code>, <code>:229-250</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Read at</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clss</code></td>
+<td>string</td>
+<td><code>models/vqvae.py:50</code>, <code>utils/registry.py:11-13</code></td>
+<td><code>multiscale_residual_vector_quantizer</code>.</td>
+</tr>
+<tr>
+<td><code>decay</code></td>
+<td>float</td>
+<td><code>models/quant.py:256-261</code></td>
+<td>EMA decay. 0.99, or 0.95 for TinyStories. Training only.</td>
+</tr>
+<tr>
+<td><code>epsilon</code></td>
+<td>float</td>
+<td><code>models/quant.py:254</code>, <code>:496</code></td>
+<td>Laplace smoothing in the EMA. Training only.</td>
+</tr>
+<tr>
+<td><code>commitment_cost</code></td>
+<td>float</td>
+<td><code>models/quant.py:253</code>, <code>:519</code></td>
+<td>Weight of the commitment term. Training only.</td>
+</tr>
+<tr>
+<td><code>learned_l1_sampling</code></td>
+<td>bool</td>
+<td><code>models/quant.py:271</code>, <code>:311-328</code></td>
+<td>Learned level-1 resample. <code>true</code> in all configs.</td>
+</tr>
+<tr>
+<td><code>learned_l1_cascade</code></td>
+<td>bool</td>
+<td><code>models/quant.py:272</code>, <code>:317-322</code></td>
+<td>Split the level-1 stride into factors. <code>false</code> for LM1B.</td>
+</tr>
+<tr>
+<td><code>learned_l1_cascade_base</code></td>
+<td>int</td>
+<td><code>models/quant.py:273</code></td>
+<td>Largest factor: 4.</td>
+</tr>
+<tr>
+<td><code>learned_l1_cascade_norm</code></td>
+<td>bool</td>
+<td><code>models/quant.py:274</code></td>
+<td>GroupNorm between cascade steps. <code>true</code> XSum, WMT14.</td>
+</tr>
+<tr>
+<td><code>learned_l1_cascade_norm_final</code></td>
+<td>bool</td>
+<td><code>models/quant.py:275</code></td>
+<td>GroupNorm after the last down step. <code>true</code> XSum, WMT14.</td>
+</tr>
+<tr>
+<td><code>learned_all_sampling</code></td>
+<td>bool</td>
+<td><code>models/quant.py:270</code>, <code>:330-342</code></td>
+<td>Learned refinement at levels 2 to K−1. <code>false</code> in all configs.</td>
+</tr>
+<tr>
+<td><code>ema_scale_by_world_size</code></td>
+<td>bool</td>
+<td><code>models/quant.py:255</code>, <code>:416-422</code></td>
+<td>Scale EMA decay by GPU count. <code>false</code>.</td>
+</tr>
+<tr>
+<td><code>quant_resi.enabled</code></td>
+<td>bool</td>
+<td><code>models/quant.py:109</code></td>
+<td>Use Phi. <code>true</code>.</td>
+</tr>
+<tr>
+<td><code>quant_resi.ratio</code></td>
+<td>float</td>
+<td><code>models/quant.py:112</code></td>
+<td>r in <code>(1 − r) h + r Conv1d(h)</code>. 0.5.</td>
+</tr>
+<tr>
+<td><code>quant_resi.share_mode</code></td>
+<td>int</td>
+<td><code>models/quant.py:113</code>, <code>:139-143</code></td>
+<td>0: one Phi per level.</td>
+</tr>
+<tr>
+<td><code>quant_resi.learnable_ratio</code></td>
+<td>bool</td>
+<td><code>models/quant.py:114</code></td>
+<td>Learn r. <code>false</code>.</td>
+</tr>
+<tr>
+<td><code>aux.fine_drop.prob</code></td>
+<td>float</td>
+<td><code>models/quant.py:264</code></td>
+<td>Probability of fine-level dropout. 0.5, or 1.0 for LM1B. Training only.</td>
+</tr>
+<tr>
+<td><code>aux.fine_drop.min_keep</code></td>
+<td>int</td>
+<td><code>models/quant.py:265</code>, <code>:526</code></td>
+<td>Lowest kept level, 1-based. 1.</td>
+</tr>
+<tr>
+<td><code>aux.fine_drop.dual</code></td>
+<td>bool</td>
+<td>Not read</td>
+<td>LM1B only.</td>
+</tr>
+<tr>
+<td><code>aux.fine_drop.w_full</code></td>
+<td>float</td>
+<td>Not read</td>
+<td>LM1B only, 0.7.</td>
+</tr>
+<tr>
+<td><code>aux.fine_drop.w_trunc</code></td>
+<td>float</td>
+<td>Not read</td>
+<td>LM1B only, 0.3.</td>
+</tr>
+<tr>
+<td><code>aux.code_corruption.enabled</code></td>
+<td>bool</td>
+<td>Not read</td>
+<td>LM1B only.</td>
+</tr>
+<tr>
+<td><code>aux.code_corruption.mode</code></td>
+<td>string</td>
+<td>Not read</td>
+<td>LM1B only, <code>uniform</code>.</td>
+</tr>
+<tr>
+<td><code>aux.code_corruption.random_rate</code></td>
+<td>bool</td>
+<td>Not read</td>
+<td>LM1B only.</td>
+</tr>
+<tr>
+<td><code>aux.code_corruption.low</code></td>
+<td>float</td>
+<td>Not read</td>
+<td>LM1B only, 0.0.</td>
+</tr>
+<tr>
+<td><code>aux.code_corruption.high</code></td>
+<td>float</td>
+<td>Not read</td>
+<td>LM1B only, 1.0.</td>
+</tr>
+<tr>
+<td><code>aux.code_corruption.skip_level0</code></td>
+<td>bool</td>
+<td>Not read</td>
+<td>LM1B only.</td>
+</tr>
+<tr>
+<td><code>levels.use_manual_levels</code></td>
+<td>bool</td>
+<td><code>models/quant.py:285</code></td>
+<td><code>true</code> in all configs.</td>
+</tr>
+<tr>
+<td><code>levels.manual_levels</code></td>
+<td>list of int</td>
+<td><code>models/quant.py:286</code></td>
+<td>The level schedule ℓ_1 … ℓ_K.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="generation"><code>generation</code></h2>
+<p>All fields are read in <code>scripts/eval_shard.py</code>. A command-line flag overrides each one (<a href="cli.html">CLI reference</a>).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Read at</th>
+<th>Default if absent</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>temperature</code></td>
+<td>float</td>
+<td><code>:34</code></td>
+<td>1.0</td>
+<td>Sampling temperature. 0 gives argmax.</td>
+</tr>
+<tr>
+<td><code>top_k</code></td>
+<td>int</td>
+<td><code>:35</code></td>
+<td>1</td>
+<td>Keep the k largest logits. 0 turns it off.</td>
+</tr>
+<tr>
+<td><code>top_p</code></td>
+<td>float</td>
+<td><code>:36</code></td>
+<td>0.0</td>
+<td>Nucleus threshold. 1.0 keeps all.</td>
+</tr>
+<tr>
+<td><code>cfg_scale</code></td>
+<td>float</td>
+<td><code>:37</code></td>
+<td>0.0</td>
+<td>Guidance weight at the last level.</td>
+</tr>
+<tr>
+<td><code>frequency_penalty</code></td>
+<td>float</td>
+<td><code>:38</code></td>
+<td>0.0</td>
+<td>Token frequency penalty in <code>pick_tokens()</code>.</td>
+</tr>
+<tr>
+<td><code>frequency_deficit</code></td>
+<td>float</td>
+<td><code>:39</code></td>
+<td>0.0</td>
+<td>Bonus for tokens under their allowance.</td>
+</tr>
+<tr>
+<td><code>adjacency_penalty</code></td>
+<td>string <code>"a,w,d"</code></td>
+<td><code>:40</code>, <code>:80</code>, <code>:105-107</code></td>
+<td>empty</td>
+<td>Penalty for recent tokens.</td>
+</tr>
+<tr>
+<td><code>frequency_allowance</code></td>
+<td><code>file:key.key</code></td>
+<td><code>:69</code>, <code>:59-66</code></td>
+<td>none</td>
+<td>Token unigram in <code>generator.pt</code> at <code>inference.token_unigram</code>.</td>
+</tr>
+<tr>
+<td><code>level0_unigram</code></td>
+<td><code>file:key.key</code></td>
+<td><code>:71</code></td>
+<td>none</td>
+<td>Level-1 code table at <code>inference.level0_unigram</code>.</td>
+</tr>
+<tr>
+<td><code>cut_at_eos</code></td>
+<td>bool</td>
+<td><code>:127</code></td>
+<td><code>true</code></td>
+<td>Cut the token row at the first EOS. OWT sets <code>false</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="eval"><code>eval</code></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Read at</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>split</code></td>
+<td>string</td>
+<td><code>scripts/eval_shard.py:41</code></td>
+<td>Data split. Default <code>test</code>.</td>
+</tr>
+<tr>
+<td><code>n_docs</code></td>
+<td>int</td>
+<td><code>scripts/eval_shard.py:42</code></td>
+<td>Inputs to evaluate: 11334 XSum, 3003 WMT14, 2000 Sudoku.</td>
+</tr>
+<tr>
+<td><code>n_samples</code></td>
+<td>int</td>
+<td><code>scripts/eval_shard.py:84</code></td>
+<td>Samples per seed: 256.</td>
+</tr>
+<tr>
+<td><code>seeds</code></td>
+<td>list of int</td>
+<td><code>scripts/eval_shard.py:83</code></td>
+<td><code>42 0 1 2 3</code>. Split across shards.</td>
+</tr>
+<tr>
+<td><code>batch_size</code></td>
+<td>int</td>
+<td><code>scripts/eval_shard.py:43</code></td>
+<td>Batch size per shard.</td>
+</tr>
+<tr>
+<td><code>n_shards</code></td>
+<td>int</td>
+<td>Not read</td>
+<td><code>evaluate.py:20</code> uses the GPU count.</td>
+</tr>
+<tr>
+<td><code>metric</code></td>
+<td>enum</td>
+<td><code>scripts/eval_merge.py:154</code></td>
+<td><code>exact</code>, <code>rouge</code>, <code>bleu</code>, <code>genppl</code>, <code>genppl_flm</code>.</td>
+</tr>
+<tr>
+<td><code>ref_model</code></td>
+<td>string</td>
+<td><code>scripts/eval_merge.py:86</code>, <code>:117</code></td>
+<td>Scoring model: <code>gpt2-large</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="values-per-config">Values per config</h2>
+<table>
+<thead>
+<tr>
+<th>Config</th>
+<th>K</th>
+<th><code>manual_levels</code></th>
+<th>P</th>
+<th>Codebook</th>
+<th>Generator <code>n_layer</code>/<code>n_embd</code>/<code>n_head</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lm1b-small</code></td>
+<td>12</td>
+<td><code>1 8 16 24 32 40 52 64 76 92 108 128</code></td>
+<td>1</td>
+<td>8192</td>
+<td>12 / 768 / 12</td>
+</tr>
+<tr>
+<td><code>tinystories</code></td>
+<td>12</td>
+<td><code>1 8 16 24 32 40 52 64 76 92 108 128</code></td>
+<td>1</td>
+<td>4096</td>
+<td>12 / 768 / 12</td>
+</tr>
+<tr>
+<td><code>owt</code></td>
+<td>32</td>
+<td>k² for k = 1 … 32</td>
+<td>1</td>
+<td>8192</td>
+<td>16 / 1024 / 16</td>
+</tr>
+<tr>
+<td><code>xsum</code></td>
+<td>9</td>
+<td><code>4 6 10 14 20 26 32 40 48</code></td>
+<td>512</td>
+<td>4096</td>
+<td>12 / 768 / 12</td>
+</tr>
+<tr>
+<td><code>wmt14</code></td>
+<td>11</td>
+<td><code>1 4 8 14 20 26 32 40 48 56 64</code></td>
+<td>96</td>
+<td>4096</td>
+<td>12 / 768 / 12</td>
+</tr>
+<tr>
+<td><code>sudoku-*</code></td>
+<td>12</td>
+<td><code>1 2 4 6 9 13 18 26 37 50 67 89</code></td>
+<td>91</td>
+<td>16</td>
+<td>8 / 512 / 8</td>
+</tr>
+</tbody>
+</table>
+<p>The values for <code>lm1b-medium</code> and <code>lm1b-large</code> are in their files. On 2026-11-21 their generators had 316.11M and 724.29M non-embedding parameters (random weights, counted by the constructor).</p>
+<footer>Generated from <code>reference/config.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

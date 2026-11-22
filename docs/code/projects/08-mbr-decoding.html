@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Project 8: add MBR decoding for WMT14</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="project-8-add-mbr-decoding-for-wmt14">Project 8: add MBR decoding for WMT14</h1>
+<p><strong>Goal:</strong> Generate M sampled translations per source and keep the one with the highest mean BLEU against the other candidates. The paper reports BLEU 22.6 without MBR and 25.2 with MBR over 12 candidates (132 NFE).</p>
+<p><strong>Effort:</strong> about 50 lines. <strong>Status:</strong> the selection function was run on three short strings. The WMT14 run was not done.</p>
+<h2 id="background">Background</h2>
+<ul>
+<li>The WMT14 config is greedy (<code>top_k: 1</code>, <code>top_p: 0.0</code>). Greedy runs give M equal candidates, so you must enable sampling.</li>
+<li>One WMT14 generation is 11 passes. 12 candidates are 12 × 11 = 132 passes, the paper NFE.</li>
+<li>The conditional eval path sets no seed. Set one seed per candidate.</li>
+<li>The sources are strings. The shard tokenizes them with <code>AutoTokenizer.from_pretrained("Qwen/Qwen3-0.6B")</code> and pads to P = 96 (<code>scripts/eval_shard.py:91</code>, <code>:94-96</code>).</li>
+</ul>
+<h2 id="what-exists-and-what-you-write">What exists and what you write</h2>
+<ul>
+<li>Exists: <code>generate()</code>, the eval decode path, <code>sacrebleu</code>.</li>
+<li>You write: the candidate loop, the MBR selection, the corpus score.</li>
+</ul>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>Download WMT14 (1.127 GB) as in <a href="../guides/run-an-evaluation.html">Run an evaluation</a>.</li>
+<li>
+<p>Write the script.</p>
+<pre><code>  import pickle, torch, sacrebleu
+  from transformers import AutoTokenizer
+  from ncm_helpers import load
+  cfg, tk, net, sd = load("config/eval/wmt14.yaml", "artifacts/wmt14")
+  P = int(cfg.model.prefix_len)
+  EOS, PAD = tk.pre_tokenizer.eos_token_id, tk.pre_tokenizer.pad_token_id
+  src_tok = AutoTokenizer.from_pretrained(str(cfg.tokenizer.pre_tokenizer.model_id))
+  srcs = pickle.load(open("data/wmt14/sources.pickle", "rb"))
+  refs = pickle.load(open("data/wmt14/reference_translations.pickle", "rb"))
+
+  def to_text(row):
+      row = row[:row.index(EOS)] if EOS in row else row
+      return tk.pre_tokenizer.decode([t for t in row if t not in (EOS, PAD)], skip_special_tokens=True)
+
+  def translate(batch, seed, **kw):
+      torch.manual_seed(seed)
+      x = torch.tensor([(src_tok(s)["input_ids"][:P] + [PAD] * P)[:P] for s in batch], device="cuda")
+      with torch.no_grad():
+          g = net.generate(None, x, **kw)
+          _, zl = tk.vqvae.vq.idx_to_zhats(g, return_zlevels=True)
+          return [to_text(r) for r in tk.vqvae.decoder(zl[-1]).argmax(-1).tolist()]
+
+  def mbr_pick(cands):
+      score = lambda i: sum(sacrebleu.sentence_bleu(cands[i], [c]).score for j, c in enumerate(cands) if j != i)
+      return cands[max(range(len(cands)), key=score)]
+
+  M, BS, N = 12, 32, 500
+  hyps = []
+  for s in range(0, N, BS):
+      batch = srcs[s:s + BS]
+      cands = [translate(batch, m, temperature=0.8, top_k=0, top_p=0.9) for m in range(M)]
+      hyps += [mbr_pick([cands[m][b] for m in range(M)]) for b in range(len(batch))]
+  greedy = sum((translate(srcs[s:s + BS], 0, temperature=1.0, top_k=1, top_p=0.0) for s in range(0, N, BS)), [])
+  print("greedy", sacrebleu.corpus_bleu(greedy, [refs[:N]]).score)
+  print("MBR   ", sacrebleu.corpus_bleu(hyps, [refs[:N]]).score)
+</code></pre>
+</li>
+<li>
+<p>Run with N = 500 first. Then run with all 3,003 sources.</p>
+</li>
+<li>Repeat with M = 4 and M = 8.</li>
+</ol>
+<h2 id="cost-and-hardware">Cost and hardware</h2>
+<p>M = 12 costs 12 times the greedy run, plus M × (M − 1) = 132 sentence-BLEU calls per source. The time was not measured.</p>
+<h2 id="how-to-measure-the-result">How to measure the result</h2>
+<table>
+<thead>
+<tr>
+<th>M</th>
+<th>Passes per source</th>
+<th>BLEU</th>
+<th>chrF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (greedy)</td>
+<td>11</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>44</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>88</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>12</td>
+<td>132</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Compare with the paper values 22.6 and 25.2. Report the temperature and top-p, because the paper sampler settings for MBR are not in the config.</p>
+<footer>Generated from <code>projects/08-mbr-decoding.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

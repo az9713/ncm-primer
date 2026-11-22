@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Run an evaluation</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="run-an-evaluation">Run an evaluation</h1>
+<p>Use this guide to evaluate any released config and to change generation settings from the command line.</p>
+<p>Prerequisites: <a href="../getting-started/prerequisites.html">Prerequisites</a>. Run all commands from the repository root.</p>
+<h2 id="status-of-each-command">Status of each command</h2>
+<p>Only the Sudoku-hard command was run (2026-11-21, result 86.25% solved). The other commands were not run. They use the Hugging Face folder layout that was listed on 2026-11-21.</p>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>
+<p>Find the folders for your config in this table.</p>
+<table>
+<thead>
+<tr>
+<th>Config</th>
+<th><code>--include</code> for checkpoints</th>
+<th><code>--checkpoint-dir</code></th>
+<th><code>--data-dir</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sudoku-easy</code></td>
+<td><code>sudoku/easy/*</code></td>
+<td><code>artifacts/sudoku/easy</code></td>
+<td><code>data/sudoku/easy</code></td>
+</tr>
+<tr>
+<td><code>sudoku-medium</code></td>
+<td><code>sudoku/medium/*</code></td>
+<td><code>artifacts/sudoku/medium</code></td>
+<td><code>data/sudoku/medium</code></td>
+</tr>
+<tr>
+<td><code>sudoku-hard</code></td>
+<td><code>sudoku/hard/*</code></td>
+<td><code>artifacts/sudoku/hard</code></td>
+<td><code>data/sudoku/hard</code></td>
+</tr>
+<tr>
+<td><code>xsum</code></td>
+<td><code>xsum/*</code></td>
+<td><code>artifacts/xsum</code></td>
+<td><code>data/xsum</code></td>
+</tr>
+<tr>
+<td><code>wmt14</code></td>
+<td><code>wmt14/*</code></td>
+<td><code>artifacts/wmt14</code></td>
+<td><code>data/wmt14</code></td>
+</tr>
+<tr>
+<td><code>lm1b-small</code></td>
+<td><code>lm1b/tokenizer.pt</code> and <code>lm1b/small/*</code></td>
+<td><code>artifacts/lm1b/small</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>lm1b-medium</code></td>
+<td><code>lm1b/tokenizer.pt</code> and <code>lm1b/medium/*</code></td>
+<td><code>artifacts/lm1b/medium</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>lm1b-large</code></td>
+<td><code>lm1b/tokenizer.pt</code> and <code>lm1b/large/*</code></td>
+<td><code>artifacts/lm1b/large</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>tinystories</code></td>
+<td><code>tinystories/*</code></td>
+<td><code>artifacts/tinystories</code></td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>owt</code></td>
+<td>not released on 2026-11-21</td>
+<td>—</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p>The LM1B configs name the tokenizer <code>../tokenizer.pt</code> (<code>config/eval/lm1b-small.yaml:4</code>). Thus <code>artifacts/lm1b/small</code> finds the shared file <code>artifacts/lm1b/tokenizer.pt</code>.</p>
+</li>
+<li>
+<p>Download the checkpoints. This example is for XSum.</p>
+<pre><code>  hf download hazyresearch/ncm-checkpoints --include "xsum/*" --local-dir artifacts
+</code></pre>
+</li>
+<li>
+<p>Download the data. Only <code>xsum</code>, <code>wmt14</code> and <code>sudoku-*</code> need data.</p>
+<pre><code>  hf download hazyresearch/ncm-datasets --repo-type dataset --include "xsum/*" --local-dir data
+</code></pre>
+</li>
+<li>
+<p>Run the evaluation. Status: not run.</p>
+<pre><code>  python evaluate.py --config config/eval/xsum.yaml --checkpoint-dir artifacts/xsum --data-dir data/xsum
+</code></pre>
+<p>For an unconditional config, omit <code>--data-dir</code>. Status: not run.</p>
+<pre><code>  python evaluate.py --config config/eval/lm1b-small.yaml --checkpoint-dir artifacts/lm1b/small
+</code></pre>
+</li>
+<li>
+<p>Read the result. The merge prints a header line and one result line. The columns for each metric are in <a href="../concepts/evaluation-pipeline.html">The evaluation pipeline</a>.</p>
+</li>
+</ol>
+<h2 id="change-generation-settings">Change generation settings</h2>
+<p><code>evaluate.py</code> passes each unknown flag to every shard (<code>evaluate.py:17</code>, <code>:26-27</code>). Thus you can add <code>scripts/eval_shard.py</code> flags to the <code>evaluate.py</code> command.</p>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Add</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evaluate the first 200 inputs only</td>
+<td><code>--n 200</code></td>
+</tr>
+<tr>
+<td>Use GPUs 0 and 2</td>
+<td><code>--gpus 0,2</code></td>
+</tr>
+<tr>
+<td>Smaller batches</td>
+<td><code>--bs 16</code></td>
+</tr>
+<tr>
+<td>Guidance on XSum or WMT14 (the README guided WMT14 row)</td>
+<td><code>--cfg 1.0</code></td>
+</tr>
+<tr>
+<td>Turn off the frequency penalty</td>
+<td><code>--freq 0</code></td>
+</tr>
+<tr>
+<td>Turn off the adjacency penalty</td>
+<td><code>--adj ""</code></td>
+</tr>
+<tr>
+<td>Sample codes with temperature 0.8 and top-p 0.9</td>
+<td><code>--temp 0.8 --top_k 0 --top_p 0.9</code></td>
+</tr>
+<tr>
+<td>Uniform level-1 codes in place of the unigram table</td>
+<td><code>--l0 uniform</code></td>
+</tr>
+<tr>
+<td>Write to a different folder</td>
+<td><code>--out eval/xsum-cfg1</code></td>
+</tr>
+</tbody>
+</table>
+<p>Example (not run):</p>
+<pre><code class="language-bash">python evaluate.py --config config/eval/wmt14.yaml --checkpoint-dir artifacts/wmt14 --data-dir data/wmt14 --cfg 1.0 --out eval/wmt14-cfg1
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> For an unconditional config, <code>--n</code> sets the samples per seed, not the total (<code>scripts/eval_shard.py:84</code>). With 5 seeds and <code>--n 64</code>, the total is 320.</p>
+</blockquote>
+<h2 id="verification">Verification</h2>
+<ol>
+<li>Examine that <code>OUT/shard_k.pkl</code> exists for each GPU.</li>
+<li>Examine the line <code>merged N shards -&gt; M &lt;task&gt; outputs</code>. M must equal the input count: 2,000 (Sudoku), 11,334 (XSum), 3,003 (WMT14), or <code>n_samples × 5</code> = 1,280 (unconditional).</li>
+</ol>
+<h2 id="troubleshooting-for-this-task">Troubleshooting for this task</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FileNotFoundError</code> for <code>artifacts/sudoku-hard/tokenizer.pt</code></td>
+<td>The README path does not match the Hugging Face layout.</td>
+<td>Use <code>artifacts/sudoku/hard</code> (table in step 1).</td>
+</tr>
+<tr>
+<td><code>no GPU visible; pass --gpus</code></td>
+<td><code>torch.cuda.device_count()</code> is 0 (<code>evaluate.py:21-22</code>).</td>
+<td>Install a CUDA build of PyTorch.</td>
+</tr>
+<tr>
+<td><code>shard(s) [0] failed; see .../shard_*.log</code></td>
+<td>A shard raised an error.</td>
+<td>Read <code>OUT/shard_0.log</code>.</td>
+</tr>
+<tr>
+<td><code>ValueError: cfg_scale needs prefix_pad_id ...</code></td>
+<td><code>--cfg</code> on a Sudoku config.</td>
+<td>Do not use <code>--cfg</code> with Sudoku.</td>
+</tr>
+</tbody>
+</table>
+<p>More issues: <a href="../troubleshooting/common-issues.html">Common issues</a>.</p>
+<footer>Generated from <code>guides/run-an-evaluation.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

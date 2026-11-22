@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Project 4: show the coarse-to-fine trajectory</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="project-4-show-the-coarse-to-fine-trajectory">Project 4: show the coarse-to-fine trajectory</h1>
+<p><strong>Goal:</strong> Make an HTML page that shows one sample after each level, from level 1 to level K, as in <code>assets/coarse_to_fine.gif</code>.</p>
+<p><strong>Effort:</strong> about 20 lines. <strong>Status:</strong> code run on Sudoku hard on 2026-11-21. Not run on text configs.</p>
+<h2 id="background">Background</h2>
+<p>There are two ways to decode a level. They answer two different questions.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Function</th>
+<th>Length at level k</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><code>tk.decode_multiscales(codes)</code> (<code>tokenization/vqvae_tokenizer.py:75-86</code>)</td>
+<td>ℓ_k tokens</td>
+<td>A short version of the output at the length of the level</td>
+</tr>
+<tr>
+<td>B</td>
+<td><code>partial_decodes(tk.vqvae, codes)</code> (<a href="index.html">shared setup</a>)</td>
+<td>L tokens</td>
+<td>The full-length output if generation stopped after level k</td>
+</tr>
+</tbody>
+</table>
+<p>The repository does not say which method made the GIF.</p>
+<h2 id="what-exists-and-what-you-write">What exists and what you write</h2>
+<ul>
+<li>Exists: <code>generate()</code>, <code>decode_multiscales()</code>.</li>
+<li>You write: <code>partial_decodes()</code> (10 lines, given in the guide) and the HTML output.</li>
+</ul>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>Load a model with <code>load()</code> and generate codes as in <a href="../guides/use-ncm-from-python.html">Use NCM from Python</a>.</li>
+<li>
+<p>Decode each level with both methods.</p>
+<pre><code>  per_level_a = tk.decode_multiscales(codes, skip_special_tokens=True)       # list[B][K] strings
+  per_level_b = [[tk.pre_tokenizer.decode(r, skip_special_tokens=True) for r in t.tolist()]
+                 for t in partial_decodes(tk.vqvae, codes)]                 # list[K][B] strings
+</code></pre>
+</li>
+<li>
+<p>Write a table for one sample.</p>
+<pre><code>  import html
+  levels = tk.vqvae.vq.levels
+  rows = "".join(f"&lt;tr&gt;&lt;td&gt;{k+1}&lt;/td&gt;&lt;td&gt;{l}&lt;/td&gt;&lt;td&gt;{html.escape(per_level_a[0][k])}&lt;/td&gt;"
+                 f"&lt;td&gt;{html.escape(per_level_b[k][0])}&lt;/td&gt;&lt;/tr&gt;" for k, l in enumerate(levels))
+  open("trajectory.html", "w", encoding="utf-8").write(
+      f"&lt;table border=1&gt;&lt;tr&gt;&lt;th&gt;level&lt;/th&gt;&lt;th&gt;l_k&lt;/th&gt;&lt;th&gt;method A&lt;/th&gt;&lt;th&gt;method B&lt;/th&gt;&lt;/tr&gt;{rows}&lt;/table&gt;")
+</code></pre>
+</li>
+</ol>
+<h2 id="example-output-sudoku-hard-first-puzzle-2026-11-21">Example output (Sudoku hard, first puzzle, 2026-11-21)</h2>
+<p>Method A, levels 1 to 4 and 12:</p>
+<pre><code class="language-text">6
+86
+8886
+224666
+...
+921647385|764835291|583912764|452369178|179458623|836721549|217584936|698173452|345296817
+</code></pre>
+<h2 id="cost-and-hardware">Cost and hardware</h2>
+<p>One <code>generate()</code> call and K decoder calls. For Sudoku hard, one batch of 128 took 3.73 s on an RTX 3050 Laptop GPU.</p>
+<h2 id="how-to-measure-the-result">How to measure the result</h2>
+<ul>
+<li>For text: the token edit distance between level k and level K, for each k. Plot it against k.</li>
+<li>For text: the level at which the first sentence stops changing.</li>
+<li>Compare methods A and B at the same level.</li>
+</ul>
+<footer>Generated from <code>projects/04-coarse-to-fine-viewer.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Project 3: probe what level-1 codes encode</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="project-3-probe-what-level-1-codes-encode">Project 3: probe what level-1 codes encode</h1>
+<p><strong>Goal:</strong> Find out what one level-1 code controls in TinyStories samples. TinyStories has ℓ_1 = 1, so one code out of 4,096 starts each story.</p>
+<p><strong>Effort:</strong> about 30 lines. <strong>Status:</strong> not run.</p>
+<h2 id="background">Background</h2>
+<p>For TinyStories, the eval draws the level-1 code from a stored unigram table (<code>scripts/eval_shard.py:71</code>, <code>:156</code>). The generator then makes levels 2 to 12 from that code and one EOS prefix. If you fix the code, you fix the start of the coarse-to-fine path.</p>
+<h2 id="what-exists-and-what-you-write">What exists and what you write</h2>
+<ul>
+<li>Exists: <code>generate(idx, prefix)</code> accepts your own level-1 codes. The table is in <code>sd["inference"]["level0_unigram"]</code>. The <code>--l0</code> flag changes the table (<code>unigram</code>, <code>active</code>, <code>uniform</code>, <code>smooth:&lt;eps&gt;</code>).</li>
+<li>You write: a loop that fixes the code, generates, decodes and groups the samples.</li>
+</ul>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>Download TinyStories (0.578 GB) as in <a href="../guides/run-an-evaluation.html">Run an evaluation</a>.</li>
+<li>
+<p>Run the flag-only part. It compares level-1 draws.</p>
+<pre><code>  python evaluate.py --config config/eval/tinystories.yaml --checkpoint-dir artifacts/tinystories --l0 uniform --out eval/p3-uniform
+  python evaluate.py --config config/eval/tinystories.yaml --checkpoint-dir artifacts/tinystories --l0 smooth:0.1 --out eval/p3-smooth
+</code></pre>
+</li>
+<li>
+<p>Write the probe script. It uses <code>load()</code> from the <a href="index.html">shared setup</a>.</p>
+<pre><code>  import torch
+  from ncm_helpers import load
+  cfg, tk, net, sd = load("config/eval/tinystories.yaml", "artifacts/tinystories")
+  p = sd["inference"]["level0_unigram"].float()
+  EOS, PAD = tk.pre_tokenizer.eos_token_id, tk.pre_tokenizer.pad_token_id
+  B = 32
+
+  def to_text(row):                                  # same rule as eval_shard.py:130-134
+      row = row[:row.index(EOS)] if EOS in row else row
+      return tk.pre_tokenizer.decode([t for t in row if t not in (EOS, PAD)], skip_special_tokens=True)
+
+  groups = {}
+  for code in p.topk(10).indices.tolist():          # the 10 most frequent level-1 codes
+      torch.manual_seed(0)
+      l1 = torch.full((B, 1), code, device="cuda")
+      prefix = torch.full((B, 1), EOS, device="cuda")
+      with torch.no_grad():
+          g = net.generate(l1, prefix, temperature=1.0, top_k=0, top_p=1.0)
+          _, zl = tk.vqvae.vq.idx_to_zhats(g, return_zlevels=True)
+          ids = tk.vqvae.decoder(zl[-1]).argmax(-1).tolist()
+      groups[code] = [to_text(r) for r in ids]
+  for code, texts in groups.items():
+      print(code, round(float(p[code]), 4), texts[0][:120])
+</code></pre>
+</li>
+<li>
+<p>For each code, compute simple statistics: the most frequent words, the first word, the mean length, the names of characters.</p>
+</li>
+<li>Compare the variation inside one group with the variation between groups.</li>
+</ol>
+<h2 id="cost-and-hardware">Cost and hardware</h2>
+<p>10 codes × 32 samples × 11 passes. The time was not measured. The model has 88.61M parameters.</p>
+<h2 id="how-to-measure-the-result">How to measure the result</h2>
+<ul>
+<li>Within-group similarity against between-group similarity, for example the mean pairwise ROUGE-L or a sentence-embedding cosine.</li>
+<li>If the within-group similarity is higher, the level-1 code controls a part of the story. Name the part (topic, first word, length) from the statistics of step 4.</li>
+<li>Report the genPPL of the <code>--l0 uniform</code> and <code>--l0 smooth:0.1</code> runs against the default.</li>
+</ul>
+<footer>Generated from <code>projects/03-level1-probe.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

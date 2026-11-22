@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Project 6: measure wall-clock time against pass count</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="project-6-measure-wall-clock-time-against-pass-count">Project 6: measure wall-clock time against pass count</h1>
+<p><strong>Goal:</strong> Measure the time of each generator pass and the quality after each level. The result is a curve of quality against time, without changes to <code>generate()</code>.</p>
+<p><strong>Effort:</strong> about 30 lines. <strong>Status:</strong> the timing code was run on Sudoku hard on 2026-11-21.</p>
+<h2 id="background">Background</h2>
+<p><code>generate()</code> always runs all levels. But the first k levels of a run do not depend on the later levels. So the output of a run stopped after level k equals <code>partial_decodes(...)[k-1]</code> of the full run. Its cost is the sum of the first k pass times.</p>
+<p>The KV cache (<code>use_kv_cache=True</code>) computes the prefix once (<code>models/next_concept.py:649-657</code>). It is allowed only for configs without <code>query_level0</code>: <code>tinystories</code> and <code>wmt14</code> of the released models (<code>:523-524</code>). It ignores the prefix pad mask (<code>:654</code>, <code>:683</code>).</p>
+<h2 id="what-exists-and-what-you-write">What exists and what you write</h2>
+<ul>
+<li>Exists: <code>generate()</code> with and without KV cache.</li>
+<li>You write: CUDA-event hooks and a timing loop.</li>
+</ul>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>Load a model and build a batch as in <a href="../guides/use-ncm-from-python.html">Use NCM from Python</a>.</li>
+<li>
+<p>Time the whole call. Synchronize before you read the clock.</p>
+<pre><code>  import time, torch
+  def time_generate(net, l1, prefix, n=5, **kw):
+      with torch.no_grad():
+          net.generate(l1, prefix, **kw)                  # warm-up
+          torch.cuda.synchronize(); t = time.perf_counter()
+          for _ in range(n):
+              net.generate(l1, prefix, **kw)
+          torch.cuda.synchronize()
+      return (time.perf_counter() - t) / n
+</code></pre>
+</li>
+<li>
+<p>Time each pass. Each pass starts at the first block and ends at <code>ln_f</code>.</p>
+<pre><code>  starts, ends = [], []
+  def mark(lst):
+      ev = torch.cuda.Event(enable_timing=True); ev.record(); lst.append(ev)
+  h1 = net.transformer.blocks[0].register_forward_pre_hook(lambda m, a: mark(starts))
+  h2 = net.transformer.ln_f.register_forward_hook(lambda m, a, o: mark(ends))
+  with torch.no_grad():
+      codes = net.generate(l1, prefix, temperature=0.0)
+  torch.cuda.synchronize(); h1.remove(); h2.remove()
+  per_pass_ms = [s.elapsed_time(e) for s, e in zip(starts, ends)]
+</code></pre>
+</li>
+<li>
+<p>Compute the quality after each level with <code>partial_decodes(tk.vqvae, codes)</code> and the metric of the task.</p>
+</li>
+<li>For <code>tinystories</code> and <code>wmt14</code>, repeat step 2 with <code>use_kv_cache=True</code>. Use unpadded prefixes for WMT14.</li>
+<li>Repeat for batch sizes 1, 16 and 128.</li>
+</ol>
+<h2 id="measured-example-sudoku-hard-2026-11-21">Measured example (Sudoku hard, 2026-11-21)</h2>
+<p>NVIDIA GeForce RTX 3050 Laptop GPU, batch 128, argmax, eager path.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full <code>generate()</code> (mean of 5)</td>
+<td>3.73 s</td>
+</tr>
+<tr>
+<td>Pass times, levels 1 to 12 (ms)</td>
+<td>236.69, 238.17, 243.91, 250.32, 255.58, 267.85, 278.54, 296.88, 323.40, 372.81, 410.32, 478.58</td>
+</tr>
+</tbody>
+</table>
+<p>Pass 12 (91 + 89 rows) took 478.58 / 236.69 = 2.02 times as long as pass 1 (91 + 1 rows).</p>
+<h2 id="cost-and-hardware">Cost and hardware</h2>
+<p>Minutes on one GPU. Pass times depend on the GPU, the batch size and P.</p>
+<h2 id="how-to-measure-the-result">How to measure the result</h2>
+<ul>
+<li>Plot quality against cumulative time, one point per level.</li>
+<li>Report the time per output token: total time / (B × L).</li>
+<li>Report the KV-cache speedup for <code>tinystories</code> and <code>wmt14</code>.</li>
+</ul>
+<footer>Generated from <code>projects/06-wall-clock-vs-passes.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

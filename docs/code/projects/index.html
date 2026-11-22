@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Projects</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="projects">Projects</h1>
+<p>This section gives 10 projects that use the released code and checkpoints. They are in order of effort, from flags only to new training code.</p>
+<blockquote>
+<p><strong>Note:</strong> The repository evaluates released models only. It has no optimizer loop, no data loader, no generator loss and no code-corruption code. Projects 1 to 9 use the released weights. Project 10 trains a small tokenizer and needs a training loop that you write.</p>
+</blockquote>
+<h2 id="what-exists-and-what-you-must-write">What exists and what you must write</h2>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>In the repository</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Load tokenizer and generator</td>
+<td>Yes</td>
+<td><code>scripts/eval_shard.py:45-54</code></td>
+</tr>
+<tr>
+<td>Generate codes, level by level</td>
+<td>Yes</td>
+<td><code>models/next_concept.py:521</code></td>
+</tr>
+<tr>
+<td>Decode codes, final level</td>
+<td>Yes</td>
+<td><code>scripts/eval_shard.py:143-144</code></td>
+</tr>
+<tr>
+<td>Decode each level, ℓ_k tokens</td>
+<td>Yes</td>
+<td><code>tokenization/vqvae_tokenizer.py:75-86</code></td>
+</tr>
+<tr>
+<td>Decode each level, L tokens</td>
+<td>No; 10 lines</td>
+<td><code>partial_decodes()</code> in <a href="../guides/use-ncm-from-python.html">Use NCM from Python</a></td>
+</tr>
+<tr>
+<td>Sampler: temperature, top-k, top-p</td>
+<td>Yes</td>
+<td><code>models/next_concept.py:487-499</code></td>
+</tr>
+<tr>
+<td>Guidance</td>
+<td>Yes</td>
+<td><code>models/next_concept.py:477-485</code></td>
+</tr>
+<tr>
+<td>Metrics: exact, ROUGE, BLEU, genPPL</td>
+<td>Yes</td>
+<td><code>scripts/eval_merge.py</code></td>
+</tr>
+<tr>
+<td>Timing</td>
+<td>No</td>
+<td>Project 6</td>
+</tr>
+<tr>
+<td>MBR decoding</td>
+<td>No</td>
+<td>Project 8</td>
+</tr>
+<tr>
+<td>Autoregressive baseline</td>
+<td>No</td>
+<td>Project 9</td>
+</tr>
+<tr>
+<td>Tokenizer training-mode forward (EMA, fine-level dropout, STE)</td>
+<td>Yes</td>
+<td><code>models/quant.py:448-531</code></td>
+</tr>
+<tr>
+<td>Tokenizer reconstruction loss, optimizer loop, data loader</td>
+<td>No</td>
+<td>Project 10</td>
+</tr>
+<tr>
+<td>Generator training-mode forward</td>
+<td>Yes</td>
+<td><code>models/next_concept.py:376-406</code></td>
+</tr>
+<tr>
+<td>Generator loss, code corruption, query input assembly</td>
+<td>No</td>
+<td>Not covered</td>
+</tr>
+</tbody>
+</table>
+<h2 id="projects-in-order-of-effort">Projects in order of effort</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Project</th>
+<th>New code</th>
+<th>Download</th>
+<th>Status on 2026-11-21</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="01-decode-time-penalties.html">Measure the effect of the decode-time penalties</a></td>
+<td>None (flags)</td>
+<td>0.988 GB (LM1B small) or 0.674 GB (XSum)</td>
+<td>Not run</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="02-guidance-and-sampler-sweep.html">Sweep the guidance weight and the sampler</a></td>
+<td>None (flags), a shell loop</td>
+<td>1.127 GB (WMT14) or 0.674 GB (XSum)</td>
+<td>Not run</td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="03-level1-probe.html">Probe what level-1 codes encode</a></td>
+<td>About 30 lines</td>
+<td>0.578 GB (TinyStories)</td>
+<td>Not run</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="04-coarse-to-fine-viewer.html">Show the coarse-to-fine trajectory</a></td>
+<td>About 20 lines</td>
+<td>any model</td>
+<td>Code run on Sudoku</td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="05-tokenizer-reconstruction.html">Measure tokenizer reconstruction per level</a></td>
+<td>About 20 lines</td>
+<td>any tokenizer</td>
+<td>Code run with random weights</td>
+</tr>
+<tr>
+<td>6</td>
+<td><a href="06-wall-clock-vs-passes.html">Measure wall-clock time against pass count</a></td>
+<td>About 30 lines</td>
+<td>any model</td>
+<td>Run on Sudoku</td>
+</tr>
+<tr>
+<td>7</td>
+<td><a href="07-sudoku-constraint-trace.html">Trace Sudoku rule violations per level</a></td>
+<td>About 40 lines</td>
+<td>0.163 GB</td>
+<td>Run on Sudoku hard</td>
+</tr>
+<tr>
+<td>8</td>
+<td><a href="08-mbr-decoding.html">Add MBR decoding for WMT14</a></td>
+<td>About 50 lines</td>
+<td>1.127 GB</td>
+<td>Not run</td>
+</tr>
+<tr>
+<td>9</td>
+<td><a href="09-ar-kv-cache-baseline.html">Time an autoregressive model with a KV cache</a></td>
+<td>About 50 lines</td>
+<td>0.988 GB + GPT-2</td>
+<td>Not run</td>
+</tr>
+<tr>
+<td>10</td>
+<td><a href="10-train-a-tiny-tokenizer.html">Train a tiny tokenizer</a></td>
+<td>About 60 lines</td>
+<td>0.001 GB (Sudoku solutions)</td>
+<td>Loop run 5 steps on random data</td>
+</tr>
+</tbody>
+</table>
+<h2 id="shared-setup-code">Shared setup code</h2>
+<p>Projects 3 to 9 use the <code>load()</code> function and the <code>partial_decodes()</code> function. Both are in <a href="../guides/use-ncm-from-python.html">Use NCM from Python</a>, steps 2 and 6. Copy them into a file <code>ncm_helpers.py</code> outside the repository, and import them:</p>
+<pre><code class="language-python">from ncm_helpers import load, partial_decodes
+</code></pre>
+<p>The file must also contain the <code>sys.path.insert(0, NCM)</code> line of step 1. The sketches use paths such as <code>config/eval/...</code> and <code>artifacts/...</code>, so run them with the repository root as the working directory.</p>
+<p>Set <code>PYTHONDONTWRITEBYTECODE=1</code> to keep <code>__pycache__</code> folders out of the repository.</p>
+<h2 id="rules-for-all-projects">Rules for all projects</h2>
+<ul>
+<li>Report the GPU, the batch size, the config, and the number of inputs with each result.</li>
+<li>Run each sampled measurement with at least 3 seeds, and report the mean and the spread.</li>
+<li>Compare against the config defaults first. Change one setting at a time.</li>
+</ul>
+<footer>Generated from <code>projects/index.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

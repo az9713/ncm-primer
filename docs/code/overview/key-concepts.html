@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Key concepts</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="key-concepts">Key concepts</h1>
+<p>These docs use each term below with one meaning only.</p>
+<p><strong>Area pooling</strong> — Shortening of a sequence of vectors by averaging, with <code>F.interpolate(..., mode="area")</code>. The tokenizer uses it to go from L positions to ℓ_k positions (<code>models/quant.py:399</code>).
+Example: 128 vectors pooled to 8 positions; each output is the average of 16 inputs.</p>
+<p><strong>Block-diagonal mask</strong> — The attention mask of the generator. A target position sees the prefix and the positions of its own level only (<code>models/next_concept.py:274</code>).</p>
+<p><strong>Codebook</strong> — The table of vectors for one level. Each level has its own codebook (<code>models/quant.py:294-296</code>).
+Example: TinyStories has 12 codebooks of 4,096 vectors of size 384.</p>
+<p><strong>Code</strong> — One integer that selects one row of a codebook. Level k has ℓ_k codes.</p>
+<p><strong>Classifier-free guidance (CFG)</strong> — A mix of the logits from the real prefix and from a null prefix: <code>(1 + t) * logits_cond - t * logits_null</code> (<code>models/next_concept.py:482</code>). The weight t increases with the level (<code>:481</code>).</p>
+<p><strong>Cumulative reconstruction (z_hat)</strong> — The sum of the upsampled codebook vectors of all levels up to now. Shape (B, L, D). Its pooled form is the generator input for the next level.</p>
+<p><strong>EMA codebook update</strong> — The training-mode update of a codebook by an exponential moving average of the assigned encoder vectors. Gradients do not change the codebooks (<code>models/quant.py:297-300</code>, <code>:485-498</code>).</p>
+<p><strong>Fine-level dropout (nested cutoff)</strong> — In training mode, with probability <code>fine_drop.prob</code>, the decoder gets z_hat cut at a random level (<code>models/quant.py:525-530</code>). The decoder thus learns to decode partial sums.</p>
+<p><strong>Frequency and adjacency penalties</strong> — Decode-time changes to the token logits of the tokenizer decoder (<code>scripts/eval_shard.py:99-124</code>). They reduce repeated tokens. They do not change the generator.</p>
+<p><strong>Generator</strong> — <code>NextConceptTransformer</code> in <code>models/next_concept.py</code>. The file <code>generator.pt</code> holds its weights.</p>
+<p><strong>Level</strong> — One scale of the code hierarchy. Level k has ℓ_k positions. These docs number levels from 1 to K. The code numbers them from 0 (<code>level_idx</code>). Level 1 in these docs is index 0 in the code.</p>
+<p><strong>Level schedule</strong> — The list ℓ_1 … ℓ_K in <code>manual_levels</code> of a config.
+Example: LM1B <code>1 8 16 24 32 40 52 64 76 92 108 128</code>.</p>
+<p><strong>Level-1 mode</strong> — How the generator gets the level-1 codes: unigram table, learned queries, or prefix head. See <a href="../concepts/generator.html">the generator</a>.</p>
+<p><strong>MBR (minimum Bayes risk) decoding</strong> — Generate M candidates. Keep the candidate with the highest mean similarity to the other candidates. The paper uses it for WMT14. The code does not contain it.</p>
+<p><strong>NFE (number of function evaluations)</strong> — The number of network passes for one output. These docs use the word "pass" for one generator NFE.</p>
+<p><strong>Pass</strong> — One forward evaluation of all generator blocks.</p>
+<p><strong>Phi (quant_resi)</strong> — A per-level residual convolution after upsampling: <code>(1 - r) * h + r * Conv1d(h)</code>, with r = 0.5 in all configs (<code>models/quant.py:10-38</code>, applied at <code>:380-386</code>).</p>
+<p><strong>Prefix</strong> — The conditioning tokens: the source text (XSum, WMT14), the puzzle (Sudoku), or one EOS token (unconditional tasks). Its length is <code>model.prefix_len</code>.</p>
+<p><strong>Pre-tokenizer</strong> — The text tokenizer under the VQ-VAE: GPT-2, BERT, Qwen3, an 8,192-token BPE, or the Sudoku tokenizer. It changes text into token ids.</p>
+<p><strong>Shard</strong> — One <code>scripts/eval_shard.py</code> process on one GPU. Shard k of n handles inputs k, k+n, k+2n, and so on.</p>
+<p><strong>Straight-through estimator (STE)</strong> — A gradient method. The forward pass uses the quantized value. The backward pass copies the gradient to the input. The code uses it at level 1 only (<code>models/quant.py:503-505</code>) and once on the final sum (<code>:531</code>).</p>
+<p><strong>Tokenizer</strong> — The multiscale residual VQ-VAE and its pre-tokenizer: <code>VQVAETokenizer</code> in <code>tokenization/vqvae_tokenizer.py</code>. The file <code>tokenizer.pt</code> holds its weights.</p>
+<p><strong>Unigram table</strong> — A probability vector over the level-1 codebook, stored in <code>generator.pt</code> at <code>inference.level0_unigram</code>. The eval script draws level-1 codes from it (<code>scripts/eval_shard.py:71</code>, <code>:156</code>).</p>
+<p><strong>Symbols</strong> — ℓ_k: positions at level k. L = ℓ_K: sequence length in tokens. K: number of levels. B: batch size. D: tokenizer vector size (<code>embed_dim</code>). P: prefix length. V: vocabulary size.</p>
+<footer>Generated from <code>overview/key-concepts.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

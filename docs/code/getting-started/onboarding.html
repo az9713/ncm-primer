@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Onboarding</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="onboarding">Onboarding</h1>
+<p>This page explains NCM from zero. It needs no earlier knowledge of NCM. It assumes that you know what a transformer and a token are.</p>
+<h2 id="what-does-an-autoregressive-model-do">What does an autoregressive model do?</h2>
+<p>An autoregressive model writes token 1, then token 2, then token 3. Each token needs one network pass. A 128-token sentence needs 128 passes. The passes cannot run at the same time, because each pass needs the earlier tokens.</p>
+<h2 id="what-does-ncm-do-differently">What does NCM do differently?</h2>
+<p>NCM writes the whole sequence many times, each time at a longer length. The first version has 1 position (LM1B). The next versions have 8, 16, 24, … positions. The last version has 128 positions, one for each token. Each version is a "level". One pass makes one complete level. All positions in a level are made in parallel.</p>
+<p>So LM1B needs 12 levels and 11 or 12 passes, not 128 passes.</p>
+<h2 id="what-is-at-one-position-of-a-coarse-level">What is at one position of a coarse level?</h2>
+<p>At a coarse level, a position does not hold a token. It holds a code: an integer that selects one vector from a codebook. At level 1 of LM1B, one code must describe the whole sentence. At level 2, 8 codes describe 8 parts of the sentence.</p>
+<p>The tokenizer makes these codes. It is a VQ-VAE (vector-quantized autoencoder) with K levels.</p>
+<h2 id="how-does-the-tokenizer-make-codes">How does the tokenizer make codes?</h2>
+<ol>
+<li>The encoder changes each of the L tokens into a vector of size D. In all released configs, the encoder is an embedding lookup only (0 transformer blocks, <code>models/vqvae.py:41</code>).</li>
+<li>A GroupNorm without learned scale normalizes the vectors (<code>models/vqvae.py:59-67</code>).</li>
+<li>For level 1, the quantizer shortens the L vectors to ℓ_1 vectors. It finds the nearest codebook vector for each (<code>models/quant.py:587-600</code>).</li>
+<li>It lengthens the selected vectors back to L, applies Phi, and subtracts them from the input. The remainder is the residual.</li>
+<li>It repeats steps 3 and 4 on the residual for levels 2 to K. Level K has ℓ_K = L positions, so it needs no shortening.</li>
+</ol>
+<p>The sum of all K levels is z_hat. The decoder changes z_hat back into L tokens.</p>
+<h2 id="how-does-the-generator-use-the-codes">How does the generator use the codes?</h2>
+<p>The generator gets the sum of levels 1 to k, shortened to ℓ_{k+1} positions. From this input, it predicts the ℓ_{k+1} codes of level k+1. It sees the prefix too: the source text, the puzzle, or one EOS token.</p>
+<p>The generator never sees the actual tokens of the output. It sees only the running sum of codebook vectors.</p>
+<h2 id="how-does-level-1-start">How does level 1 start?</h2>
+<p>Level 1 has no earlier level. The configs use three different methods:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Configs</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unigram table</td>
+<td><code>lm1b-*</code>, <code>tinystories</code>, <code>owt</code></td>
+<td>The eval script draws level-1 codes from a stored frequency table. No network pass.</td>
+</tr>
+<tr>
+<td>Learned queries</td>
+<td><code>xsum</code>, <code>sudoku-*</code></td>
+<td>Learned vectors take the place of the input. One pass makes level 1.</td>
+</tr>
+<tr>
+<td>Prefix head</td>
+<td><code>wmt14</code></td>
+<td>A separate head reads the last prefix positions. One pass makes level 1.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="a-complete-example-one-sudoku-board">A complete example: one Sudoku board</h2>
+<p>This example follows one puzzle through <code>python evaluate.py --config config/eval/sudoku-hard.yaml ...</code>.</p>
+<p>The puzzle is 91 tokens: <code>&lt;BOS&gt;</code>, 81 cells with <code>_</code> for a blank, 8 <code>|</code> row separators, and <code>&lt;BOS&gt;</code> again. This is the first test puzzle, as decoded on 2026-11-21:</p>
+<pre><code class="language-text">&lt;BOS&gt;_216_7_85|76____2__|__3__27__|_523_____|_________|8_67_____|2___84_36|6_81__4__|_4__9___7&lt;BOS&gt;
+</code></pre>
+<p>The shard puts the 91 tokens into the prefix (<code>prefix_len: 91</code>). The generator runs 12 passes. Pass 1 uses the learned queries and makes 1 code. Passes 2 to 12 make 2, 4, 6, 9, 13, 18, 26, 37, 50, 67 and 89 codes. The decoder changes the sum of all 322 codes into 89 tokens. For this puzzle the result is the correct solution:</p>
+<pre><code class="language-text">921647385|764835291|583912764|452369178|179458623|836721549|217584936|698173452|345296817
+</code></pre>
+<p>You can decode the partial sum after each level. On the first 128 hard puzzles, the mean count of Sudoku rule violations per board was 95.19 after level 1 and 35.20 after level 11. After level 12 it was 0.55. <a href="../projects/07-sudoku-constraint-trace.html">Project 7</a> shows the method.</p>
+<h2 id="why-does-the-code-work-this-way">Why does the code work this way?</h2>
+<p><strong>Why does each level have its own codebook and head?</strong> Each level holds a different kind of residual. A level-1 code describes a whole sequence, and a level-12 code describes one token. The code gives each level its own codebook (<code>models/quant.py:294-296</code>) and its own output head (<code>models/next_concept.py:233-237</code>). Thus a released checkpoint works with one level schedule only.</p>
+<p><strong>Why does the mask block other levels?</strong> In training, all levels go through the generator in one pass. Each level must predict its codes from its own input only. The block-diagonal mask (<code>models/next_concept.py:274</code>) makes training match generation, where one pass sees one level.</p>
+<p><strong>Why are the codebooks not trained by gradients?</strong> The code sets <code>requires_grad_(False)</code> on the codebooks (<code>models/quant.py:297-300</code>). It updates them with an EMA of the assigned encoder vectors (<code>:485-498</code>). The code gives no reason. EMA updates are a common VQ-VAE method to keep codebook vectors near the encoder outputs.</p>
+<h2 id="where-to-go-next">Where to go next</h2>
+<ol>
+<li><a href="../overview/what-is-this.html">What is NCM</a> for the system diagram.</li>
+<li><a href="../concepts/tokenizer.html">The tokenizer</a> and <a href="../concepts/generator.html">the generator</a> for the details.</li>
+<li><a href="../guides/use-ncm-from-python.html">Use NCM from Python</a> to call the models in your own script.</li>
+<li><a href="../projects/index.html">Projects</a> for 10 experiments.</li>
+</ol>
+<footer>Generated from <code>getting-started/onboarding.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

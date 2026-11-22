@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>What is NCM</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="what-is-ncm">What is NCM</h1>
+<p>NCM generates a sequence of L tokens in K network passes, one pass per level, from a coarse level to a fine level.</p>
+<h2 id="the-problem-it-addresses">The problem it addresses</h2>
+<p>An autoregressive model makes one network pass for each token. For L = 128 tokens, that is 128 passes. NCM makes one pass for each level. The LM1B configs have K = 12 levels for L = 128 tokens, so generation needs 11 or 12 passes, not 128.</p>
+<p>The paper reports the results below. This repository does not contain these measurements.</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Paper result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LM1B</td>
+<td>Gen. PPL 93.05 at 12 NFE. DUO: 97.30 at 128 NFE. Wall-clock 21× less (1,024 sequences, batch 16, one H100).</td>
+</tr>
+<tr>
+<td>XSum</td>
+<td>ROUGE-L 28.0 at 8 NFE. 31× faster than AURORA-LM.</td>
+</tr>
+<tr>
+<td>Sudoku (hard)</td>
+<td>86.1% solved with 12 NFE, 25M parameters.</td>
+</tr>
+<tr>
+<td>WMT14 De–En</td>
+<td>BLEU 22.6. With MBR over 12 candidates (132 NFE): 25.2.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> The paper has no wall-clock comparison against an autoregressive model with a KV cache. <a href="../projects/09-ar-kv-cache-baseline.html">Project 9</a> tells you how to make that measurement.</p>
+</blockquote>
+<h2 id="how-it-works">How it works</h2>
+<p>NCM has two stages. Each released model has one file for each stage: <code>tokenizer.pt</code> and <code>generator.pt</code>.</p>
+<ol>
+<li><strong>Stage 1, the tokenizer.</strong> A multiscale residual VQ-VAE (<code>models/vqvae.py</code>, <code>models/quant.py</code>) changes L tokens into K levels of discrete codes. Level k has ℓ_k codes, with ℓ_1 &lt; … &lt; ℓ_K = L. Level 1 is a short, coarse summary. Each next level adds a correction (a residual) at a longer length.</li>
+<li><strong>Stage 2, the generator.</strong> <code>NextConceptTransformer</code> (<code>models/next_concept.py</code>) predicts the codes one level at a time. In one pass, it predicts all ℓ_k codes of level k in parallel. Its input is the sum of all earlier levels, pooled to ℓ_k positions.</li>
+</ol>
+<p>At the end, the tokenizer decoder changes the sum of all K levels back into L token logits. The argmax gives the tokens.</p>
+<h2 id="architecture-overview">Architecture overview</h2>
+<pre><code class="language-text">                 prefix tokens (source text, puzzle, or one EOS token)
+                                   |
++----------------------------------v-----------------------------------+
+| NextConceptTransformer.generate()        models/next_concept.py:521  |
+|                                                                      |
+|  level-1 codes  &lt;- unigram table, learned queries, or prefix head    |
+|      |                                                               |
+|      v   for k = 1 ... K-1   (loop at next_concept.py:660)           |
+|  z_hat += Phi(upsample(codebook_k[codes_k]))   quant.py:697-709      |
+|  input = area_pool(z_hat, l_(k+1))                                   |
+|  one transformer pass over [prefix ; input]  -&gt;  l_(k+1) codes       |
++----------------------------------+-----------------------------------+
+                                   | all codes, shape (B, l_1 + ... + l_K)
++----------------------------------v-----------------------------------+
+| Tokenizer decode                                                     |
+|  idx_to_zhats() -&gt; full z_hat (B, L, D) -&gt; decoder -&gt; logits (B,L,V) |
+|  argmax, or argmax with frequency and adjacency penalties            |
++----------------------------------+-----------------------------------+
+                                   v
+                     L tokens -&gt; text -&gt; metric
+</code></pre>
+<h2 id="how-the-pieces-fit-together">How the pieces fit together</h2>
+<p><code>evaluate.py</code> starts one <code>scripts/eval_shard.py</code> process for each visible GPU. Each shard loads the tokenizer and the generator, and reads its part of the inputs. It calls <code>net.generate()</code>, decodes the codes to tokens, and writes a pickle file. Then <code>evaluate.py</code> starts <code>scripts/eval_merge.py</code>. The merge script reads all pickle files and prints the metric of the task.</p>
+<h2 id="released-models-and-pass-counts">Released models and pass counts</h2>
+<p>The pass count is the number of transformer passes in one <code>generate()</code> call. It was counted on 2026-11-21 with random weights and a forward hook on the first block. The released weights were not loaded.</p>
+<table>
+<thead>
+<tr>
+<th>Config</th>
+<th>K</th>
+<th>L</th>
+<th>How level 1 is made</th>
+<th>Passes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lm1b-small</code>, <code>lm1b-medium</code>, <code>lm1b-large</code></td>
+<td>12</td>
+<td>128</td>
+<td>Drawn from a stored unigram table</td>
+<td>11</td>
+</tr>
+<tr>
+<td><code>tinystories</code></td>
+<td>12</td>
+<td>128</td>
+<td>Drawn from a stored unigram table</td>
+<td>11</td>
+</tr>
+<tr>
+<td><code>owt</code></td>
+<td>32</td>
+<td>1024</td>
+<td>Drawn from a stored unigram table</td>
+<td>31</td>
+</tr>
+<tr>
+<td><code>xsum</code></td>
+<td>9</td>
+<td>48</td>
+<td>Learned queries, one pass</td>
+<td>9</td>
+</tr>
+<tr>
+<td><code>wmt14</code></td>
+<td>11</td>
+<td>64</td>
+<td>A head on the prefix, one pass</td>
+<td>11</td>
+</tr>
+<tr>
+<td><code>sudoku-easy</code>, <code>sudoku-medium</code>, <code>sudoku-hard</code></td>
+<td>12</td>
+<td>89</td>
+<td>Learned queries, one pass</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-this-is-not">What this is not</h2>
+<ul>
+<li>It is not a training codebase. There is no optimizer loop and no data loader. The generator loss and the code-corruption step of the paper are not in the code.</li>
+<li>It is not a library with a stable API. The names come from research code.</li>
+<li>It has no autoregressive baseline and no timing code.</li>
+<li>It does not download files. You download the checkpoints and the data with the <code>hf</code> command.</li>
+</ul>
+<p>Next: <a href="key-concepts.html">Key concepts</a>, then <a href="../getting-started/quickstart.html">Quickstart</a>.</p>
+<footer>Generated from <code>overview/what-is-this.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

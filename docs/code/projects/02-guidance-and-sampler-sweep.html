@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Project 2: sweep the guidance weight and the sampler</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="project-2-sweep-the-guidance-weight-and-the-sampler">Project 2: sweep the guidance weight and the sampler</h1>
+<p><strong>Goal:</strong> Plot the BLEU (WMT14) or ROUGE-L (XSum) score as a function of the guidance weight and of the sampler settings.</p>
+<p><strong>Effort:</strong> flags and a shell loop. <strong>Status:</strong> not run.</p>
+<h2 id="background">Background</h2>
+<ul>
+<li>Guidance mixes conditional and null-prefix logits with weight <code>t = cfg_scale × level / (K − 1)</code> (<code>models/next_concept.py:481-482</code>). At level 1 the weight is 0. The README guided WMT14 row uses <code>--cfg 1.0</code>.</li>
+<li>Both configs are greedy by default: <code>top_k: 1</code>, <code>top_p: 0.0</code> (<code>config/eval/wmt14.yaml:109-110</code>, <code>config/eval/xsum.yaml:107-108</code>).</li>
+<li>Each guided pass doubles the batch (<code>models/next_concept.py:536</code>), so it costs more GPU time per pass.</li>
+</ul>
+<h2 id="what-exists-and-what-you-write">What exists and what you write</h2>
+<ul>
+<li>Exists: <code>--cfg</code>, <code>--temp</code>, <code>--top_k</code>, <code>--top_p</code>.</li>
+<li>You write: a loop over values.</li>
+</ul>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>Download WMT14 (1.127 GB) as in <a href="../guides/run-an-evaluation.html">Run an evaluation</a>.</li>
+<li>
+<p>Run the guidance sweep.</p>
+<pre><code>  for c in 0 0.5 1.0 1.5 2.0 3.0; do
+    python evaluate.py --config config/eval/wmt14.yaml --checkpoint-dir artifacts/wmt14 --data-dir data/wmt14 --cfg $c --out eval/p2-cfg$c
+  done
+</code></pre>
+</li>
+<li>
+<p>Run the sampler sweep at the best guidance weight. Repeat each setting 3 times, because the conditional path sets no seed.</p>
+<pre><code>  for t in 0.6 0.8 1.0; do
+    python evaluate.py --config config/eval/wmt14.yaml --checkpoint-dir artifacts/wmt14 --data-dir data/wmt14 --cfg 1.0 --temp $t --top_k 0 --top_p 0.9 --out eval/p2-t$t
+  done
+</code></pre>
+</li>
+<li>
+<p>For Sudoku, sweep <code>--temp</code> only, with <code>--top_k</code> 16 or less. Guidance does not work for Sudoku (no <code>prefix_pad_token_id</code>).</p>
+</li>
+</ol>
+<h2 id="cost-and-hardware">Cost and hardware</h2>
+<p>WMT14 has 3,003 sources with 11 passes each. The time was not measured. Use <code>--n 500</code> for a first sweep.</p>
+<h2 id="how-to-measure-the-result">How to measure the result</h2>
+<ul>
+<li>Record BLEU, lowercased BLEU, chrF and length ratio for each run.</li>
+<li>Plot BLEU against <code>cfg_scale</code>. Mark the value 1.0 from the README.</li>
+<li>For sampled runs, report the mean and the range of 3 runs.</li>
+</ul>
+<footer>Generated from <code>projects/02-guidance-and-sampler-sweep.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Use NCM from Python</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="use-ncm-from-python">Use NCM from Python</h1>
+<p>Use this guide to load a released model in your own script, generate codes, and decode them to text. The <a href="../projects/index.html">projects</a> use the functions on this page.</p>
+<p>Prerequisites: the packages in <a href="../getting-started/prerequisites.html">Prerequisites</a>, one downloaded model (see <a href="run-an-evaluation.html">Run an evaluation</a>).</p>
+<p>Status: <code>load()</code>, the <code>generate()</code> call, the decode in step 5 and <code>partial_decodes()</code> were run on 2026-11-21 with the <code>sudoku-hard</code> checkpoint on a GPU. The parts for text configs (unigram table, <code>to_text()</code> on text) were not run.</p>
+<blockquote>
+<p><strong>Warning:</strong> <code>torch.load(..., weights_only=False)</code> unpickles Python objects, and a pickle can run code. <code>scripts/eval_shard.py:52</code> uses the same call. Load only checkpoint files from a source that you trust.</p>
+</blockquote>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>
+<p>Put the repository root on the import path. Set <code>PYTHONDONTWRITEBYTECODE=1</code> if you do not want <code>__pycache__</code> folders in the repository.</p>
+<pre><code>  import os, sys
+  NCM = "/path/to/ncm"          # the repository root
+  sys.path.insert(0, NCM)
+</code></pre>
+</li>
+<li>
+<p>Load the tokenizer and the generator. This function copies <code>scripts/eval_shard.py:45-54</code>.</p>
+<pre><code>  import torch
+  from omegaconf import OmegaConf
+  from models.next_concept import NextConceptTransformer
+  from tokenization.vqvae_tokenizer import VQVAETokenizer
+
+  def load(config_path, ck):
+      cfg = OmegaConf.load(config_path)
+      cfg.tokenizer.vqvae.checkpoint_path = os.path.join(ck, cfg.checkpoints.tokenizer)
+      for key, name in (("vocab_file_path", "bpe_vocab"), ("merges_file_path", "bpe_merges")):
+          if cfg.checkpoints.get(name):
+              cfg.tokenizer.pre_tokenizer[key] = os.path.join(ck, cfg.checkpoints[name])
+      tk = VQVAETokenizer.from_config(cfg.tokenizer)
+      tk.vqvae = tk.vqvae.cuda().eval()
+      net = NextConceptTransformer(vqvae_local=tk.vqvae, config=cfg.model).cuda()
+      sd = torch.load(os.path.join(ck, cfg.checkpoints.generator), map_location="cpu", weights_only=False)
+      net.load_state_dict(sd["model"], strict=True)
+      return cfg, tk, net.eval(), sd
+
+  cfg, tk, net, sd = load(f"{NCM}/config/eval/sudoku-hard.yaml", f"{NCM}/artifacts/sudoku/hard")
+</code></pre>
+<p>The Sudoku <code>generator.pt</code> has only the key <code>model</code>. For configs with <code>level0_unigram</code> or <code>frequency_allowance</code>, <code>sd["inference"]</code> holds the tables (<code>scripts/eval_shard.py:59-66</code>).</p>
+</li>
+<li>
+<p>Build the prefix and the level-1 codes. The method depends on the level-1 mode.</p>
+<pre><code>  P = int(cfg.model.prefix_len)
+  EOS, PAD = tk.pre_tokenizer.eos_token_id, tk.pre_tokenizer.pad_token_id
+  B = 8
+
+  # Conditional (xsum, wmt14, sudoku): P tokens per row, padded on the right with PAD.
+  # For WMT14 the inputs are strings; tokenize them with AutoTokenizer first (eval_shard.py:91, :95).
+  # prefix = torch.tensor([(ids[:P] + [PAD] * P)[:P] for ids in rows], device="cuda")
+
+  # Unconditional (lm1b, tinystories): one EOS token per row (eval_shard.py:157).
+  prefix = torch.full((B, 1), EOS, device="cuda")
+
+  # Level 1 from the unigram table (lm1b, tinystories), as eval_shard.py:156.
+  p = sd["inference"]["level0_unigram"].float().cpu()
+  l1 = torch.multinomial(p, B * tk.vqvae.vq.levels[0], replacement=True).view(B, -1).cuda()
+  # For xsum, wmt14 and sudoku, use l1 = None.
+</code></pre>
+</li>
+<li>
+<p>Generate the codes.</p>
+<pre><code>  with torch.no_grad():
+      codes = net.generate(l1, prefix, temperature=1.0, top_k=0, top_p=1.0)
+  # codes.shape == (B, sum(tk.vqvae.vq.levels))
+</code></pre>
+<p>Use the config values <code>cfg.generation.temperature</code>, <code>top_k</code>, <code>top_p</code> to match the eval. For Sudoku, use <code>temperature=0.0</code>.</p>
+</li>
+<li>
+<p>Decode the codes to tokens and text. This copies the eval path without penalties (<code>scripts/eval_shard.py:130-134</code>, <code>:143-144</code>).</p>
+<pre><code>  with torch.no_grad():
+      _, z_levels = tk.vqvae.vq.idx_to_zhats(codes, return_zlevels=True)
+      ids = tk.vqvae.decoder(z_levels[-1]).argmax(-1).tolist()
+
+  def to_text(row):
+      if EOS is not None and EOS in row and cfg.generation.get("cut_at_eos", True):
+          row = row[:row.index(EOS)]
+      return tk.pre_tokenizer.decode([t for t in row if t not in (EOS, PAD)], skip_special_tokens=True)
+
+  texts = [to_text(r) for r in ids]
+</code></pre>
+<p>The LM1B and XSum evals use <code>pick_tokens()</code> with penalties in place of <code>argmax</code>. Your text can thus differ from the eval output for these configs.</p>
+</li>
+<li>
+<p>Decode each level. There are two methods.</p>
+<pre><code>  # Method A: l_k tokens per level (tokenization/vqvae_tokenizer.py:75-86).
+  per_level = tk.decode_multiscales(codes, skip_special_tokens=True)   # per_level[b][k] is a string
+
+  # Method B: L tokens per level, from the partial sum of levels 1..k.
+  @torch.no_grad()
+  def partial_decodes(vqvae, codes):
+      vq = vqvae.vq
+      L, K = vq.levels[-1], len(vq.levels)
+      z_hat = torch.zeros(codes.shape[0], L, vq.embed_dim, device=codes.device)
+      out, a = [], 0
+      for k, l in enumerate(vq.levels):
+          e = vq.embeddings[k](codes[:, a:a + l])
+          q = vq._up_to_full(e, k, L) if k &lt; K - 1 else e
+          z_hat = z_hat + vq._apply_quant_resi(q, k)   # a new tensor: no aliasing
+          out.append(vqvae.decoder(z_hat).argmax(-1))
+          a += l
+      return out                                        # K tensors of shape (B, L)
+</code></pre>
+<p>Method B does not use <code>idx_to_zhats()</code>'s <code>z_hats</code> list, because all its entries are the same tensor (<code>models/quant.py:651-652</code>).</p>
+</li>
+</ol>
+<h2 id="verification">Verification</h2>
+<ul>
+<li>On 2026-11-21, <code>partial_decodes(...)[-1]</code> was equal to <code>decoder(z_levels[-1]).argmax(-1)</code> for 4 Sudoku boards (<code>torch.equal</code> gave <code>True</code>).</li>
+<li><code>codes.shape[1]</code> must equal <code>sum(levels)</code>: 641 (LM1B, TinyStories), 200 (XSum), 313 (WMT14), 322 (Sudoku).</li>
+</ul>
+<h2 id="troubleshooting-for-this-task">Troubleshooting for this task</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RuntimeError: selected index k out of range</code></td>
+<td><code>top_k</code> is larger than the codebook size (16 for Sudoku). The default of <code>generate()</code> is 50.</td>
+<td>Pass <code>top_k=0</code> or a value of 16 or less.</td>
+</tr>
+<tr>
+<td><code>AssertionError: query_level0 generation supports the eager path only</code></td>
+<td><code>use_kv_cache=True</code> with <code>xsum</code>, <code>sudoku-*</code> or <code>lm1b-*</code>.</td>
+<td>Use <code>use_kv_cache=False</code>.</td>
+</tr>
+<tr>
+<td><code>ValueError: too many values to unpack (expected 3)</code></td>
+<td>You called <code>vqvae.reconstruct()</code> or <code>tk.reconstruct()</code>, which are broken (<code>models/vqvae.py:116</code>).</td>
+<td>Use <code>tk.vqvae.encode()</code> and the decode steps above.</td>
+</tr>
+<tr>
+<td><code>RuntimeError: Calculated padded input size per channel ...</code></td>
+<td>The input to <code>encode()</code> is not <code>context_length</code> tokens long.</td>
+<td>Pad to <code>context_length</code>.</td>
+</tr>
+</tbody>
+</table>
+<footer>Generated from <code>guides/use-ncm-from-python.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Prerequisites</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="prerequisites">Prerequisites</h1>
+<p>Install these items before you start the <a href="quickstart.html">Quickstart</a>.</p>
+<h2 id="python-310-or-newer">Python 3.10 or newer</h2>
+<p>The README recommends Python 3.10 or newer.</p>
+<pre><code class="language-bash">python --version
+</code></pre>
+<p>The check on 2026-11-21 used Python 3.13.5 on Windows 11.</p>
+<h2 id="pytorch-with-cuda">PyTorch with CUDA</h2>
+<p>The eval scripts move every model to the GPU with <code>.cuda()</code> (<code>scripts/eval_shard.py:50-51</code>). <code>evaluate.py</code> stops when it finds no GPU (<code>evaluate.py:20-22</code>). A CPU-only installation cannot run the eval scripts.</p>
+<pre><code class="language-bash">python -c &quot;import torch; print(torch.__version__, torch.cuda.is_available())&quot;
+</code></pre>
+<p>The output must end with <code>True</code>. Install PyTorch from <a href="https://pytorch.org/get-started/locally/">pytorch.org</a> for your CUDA version. The check on 2026-11-21 used <code>torch 2.11.0+cu128</code>.</p>
+<h2 id="python-packages">Python packages</h2>
+<p><code>requirements.txt</code> lists 9 packages: <code>torch</code>, <code>numpy</code>, <code>omegaconf</code>, <code>hydra-core</code>, <code>transformers&gt;=4.51</code>, <code>huggingface_hub[cli]</code>, <code>regex</code>, <code>rouge_score</code>, <code>sacrebleu</code>.</p>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<p>Verify:</p>
+<pre><code class="language-bash">python -c &quot;import omegaconf, hydra, transformers, sacrebleu, rouge_score; print('ok')&quot;
+hf --version
+</code></pre>
+<h2 id="gpu-memory">GPU memory</h2>
+<p>The repository does not state a memory requirement. Measured values do not exist except for one run:</p>
+<table>
+<thead>
+<tr>
+<th>Config</th>
+<th>GPU</th>
+<th>Batch size</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sudoku-hard</code></td>
+<td>NVIDIA GeForce RTX 3050 Laptop GPU, 4,096 MiB</td>
+<td>128 (config default)</td>
+<td>Completed, 2026-11-21</td>
+</tr>
+</tbody>
+</table>
+<p>The other configs were not run. Their generator sizes (total parameters, counted from the configs with random weights) are 97.07M (<code>lm1b-small</code>), 88.61M (<code>tinystories</code>), 88.02M (<code>xsum</code>), 119.96M (<code>wmt14</code>). The <code>lm1b-medium</code> and <code>lm1b-large</code> generators have 316.11M and 724.29M non-embedding parameters. If a run fails with an out-of-memory error, lower the batch size with <code>--bs</code>.</p>
+<h2 id="disk-space">Disk space</h2>
+<p>Sizes are from the Hugging Face file lists on 2026-11-21.</p>
+<table>
+<thead>
+<tr>
+<th>Download</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All checkpoints (<code>hazyresearch/ncm-checkpoints</code>)</td>
+<td>8.003 GB</td>
+</tr>
+<tr>
+<td>All datasets (<code>hazyresearch/ncm-datasets</code>)</td>
+<td>22.741 GB</td>
+</tr>
+<tr>
+<td><code>sudoku/hard</code> checkpoints + data</td>
+<td>0.162 GB + 0.0007 GB</td>
+</tr>
+<tr>
+<td><code>xsum</code> checkpoints + data</td>
+<td>0.654 GB + 0.020 GB</td>
+</tr>
+<tr>
+<td><code>wmt14</code> checkpoints + data</td>
+<td>1.126 GB + 0.0008 GB</td>
+</tr>
+<tr>
+<td><code>lm1b</code> shared tokenizer + <code>small</code> generator</td>
+<td>0.598 GB + 0.390 GB</td>
+</tr>
+<tr>
+<td><code>lm1b/medium</code>, <code>lm1b/large</code> generators</td>
+<td>1.268 GB, 2.901 GB</td>
+</tr>
+<tr>
+<td><code>tinystories</code> checkpoints</td>
+<td>0.578 GB</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> 18.144 GB of the datasets is the OpenWebText training stream. The unconditional evaluations (LM1B, TinyStories, OWT) need no data files. Download only the folders you need with <code>--include</code>.</p>
+<p><strong>Warning:</strong> On 2026-11-21 the <code>owt/</code> checkpoint folder holds only a file <code>TODO.md</code>. The OWT generator and tokenizer are not released, so the <code>owt</code> config cannot run.</p>
+</blockquote>
+<h2 id="network-access-to-hugging-face">Network access to Hugging Face</h2>
+<p>The scripts download pre-tokenizers and scoring models from Hugging Face at run time: <code>gpt2</code> (XSum), <code>Qwen/Qwen3-0.6B</code> (WMT14 tokenizer), <code>bert-base-uncased</code> (LM1B), <code>gpt2-large</code> (LM1B, TinyStories, OWT scoring). Sudoku needs none of them.</p>
+<footer>Generated from <code>getting-started/prerequisites.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

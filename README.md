@@ -4,6 +4,8 @@ An interactive, single-page primer on **Next-Concept Modeling (NCM)** for a read
 
 **Read the page:** https://az9713.github.io/ncm-primer/
 
+**Code documentation:** https://az9713.github.io/ncm-primer/code/ — reference, guides and 10 project ideas for the released NCM evaluation code.
+
 ## Sources
 
 - Paper: Kumbong, Khare, et al., *Next-Concept Modeling: Fast, Parallel Coarse-to-Fine Text Generation*, arXiv:2610.14162 (9 Oct 2026). Source of all claims and numbers.
@@ -13,6 +15,7 @@ An interactive, single-page primer on **Next-Concept Modeling (NCM)** for a read
 ## Layout
 
 - `docs/index.html` — the page (served by GitHub Pages from `/docs`).
+- `docs/code/` — documentation for `ncm-main/` (Markdown sources with generated HTML).
 - `ncm-main/` — the released code, unchanged, with its `LICENSE`.
 
 No model was run for this page.

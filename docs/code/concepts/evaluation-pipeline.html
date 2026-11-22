@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>The evaluation pipeline</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="the-evaluation-pipeline">The evaluation pipeline</h1>
+<p>Three scripts make one evaluation: <code>evaluate.py</code> starts the work, <code>scripts/eval_shard.py</code> generates, <code>scripts/eval_merge.py</code> scores.</p>
+<p>This page tracks <code>evaluate.py</code>, <code>scripts/eval_shard.py</code>, <code>scripts/eval_merge.py</code> and <code>evaluation/gen_ppl.py</code>.</p>
+<h2 id="data-flow">Data flow</h2>
+<pre><code class="language-text">evaluate.py --config C --checkpoint-dir CK [--data-dir DD] [extra flags]
+   |  one process per GPU id, CUDA_VISIBLE_DEVICES=&lt;id&gt;        evaluate.py:29-35
+   v
+scripts/eval_shard.py --shard k --nshards n --out OUT/shard_k.pkl
+   |  load tokenizer + generator                               eval_shard.py:45-54
+   |  read inputs k, k+n, ...  (or seeds k, k+n, ...)          eval_shard.py:82-91
+   |  net.generate() -&gt; codes -&gt; decoder logits -&gt; pick_tokens  eval_shard.py:140-146
+   v
+OUT/shard_k.pkl   {idxs, hyps, refs, [seeds, toks, raw_ids]}   eval_shard.py:162, :169
+   |
+   v
+scripts/eval_merge.py --config C --glob &quot;OUT/shard_*.pkl&quot;     evaluate.py:41-42
+   -&gt; prints the metric named by eval.metric                   eval_merge.py:154
+</code></pre>
+<h2 id="step-1-start-the-shards">Step 1: start the shards</h2>
+<p><code>evaluate.py</code> reads the GPU list from <code>--gpus</code>, or uses all visible GPUs (<code>evaluate.py:20</code>). It does not read <code>eval.n_shards</code> from the config. It passes unknown flags through to every shard (<code>:17</code>, <code>:26-27</code>). Each shard writes its log to <code>OUT/shard_k.log</code>. If a shard exits with a non-zero code, <code>evaluate.py</code> stops and names it (<code>:37-39</code>).</p>
+<blockquote>
+<p><strong>Warning:</strong> The shards and the merge run with the working directory set to the repository root (<code>cwd=ROOT</code>, <code>evaluate.py:35</code>, <code>:42</code>). The log files open relative to your own working directory (<code>:31</code>). Run <code>evaluate.py</code> from the repository root, or give absolute paths to <code>--checkpoint-dir</code>, <code>--data-dir</code> and <code>--out</code>.</p>
+</blockquote>
+<h2 id="step-2-generate">Step 2: generate</h2>
+<p>Each shard does these steps:</p>
+<ol>
+<li>Read the generation settings. A command-line flag wins over the config value. A missing config value takes the default of <code>pick()</code> (<code>scripts/eval_shard.py:33-40</code>).</li>
+<li>Load the tokenizer and the generator with <code>strict=True</code> (<code>:45-54</code>).</li>
+<li>Load the frequency allowance and the level-1 unigram table from <code>generator.pt</code> if the config names them (<code>:59-78</code>).</li>
+<li>Choose the mode. A task is unconditional when the config has no <code>data</code> entry for the split (<code>:79</code>).</li>
+<li>Unconditional: for each seed of this shard, call <code>torch.manual_seed(seed)</code>, then make <code>n_samples</code> samples in batches. The prefix is one EOS token (<code>:150-159</code>).</li>
+<li>Conditional: read the inputs and the references. Cut or pad each input to P tokens with PAD on the right (<code>:94-96</code>). Generate in batches (<code>:164-169</code>).</li>
+<li>Decode: <code>idx_to_zhats()</code> → <code>decoder(z_levels[-1])</code> → <code>pick_tokens()</code> (<code>:143-144</code>). Cut at the first EOS when <code>cut_at_eos</code> is true (<code>:127-134</code>).</li>
+</ol>
+<blockquote>
+<p><strong>Note:</strong> The conditional path sets no random seed. With sampling enabled, two runs give different outputs.</p>
+</blockquote>
+<h2 id="decode-time-token-penalties">Decode-time token penalties</h2>
+<p><code>pick_tokens()</code> (<code>scripts/eval_shard.py:99-124</code>) works on the decoder token logits, after the generator has finished. Without penalties it returns the argmax (<code>:100-101</code>). With penalties it walks the L positions left to right:</p>
+<ul>
+<li>Frequency penalty: subtract <code>freq × max(count − allowance, 0)</code> for each token (<code>:113-115</code>). The allowance is the stored token unigram × L (<code>:104</code>).</li>
+<li>Frequency deficit: add <code>mu × (L − t)/L × max(allowance − count, 0)</code> (<code>:116-117</code>).</li>
+<li>Adjacency penalty <code>"a,w,d"</code>: subtract <code>a × d^j</code> from the token chosen j+1 positions back, for the last w positions (<code>:105-107</code>, <code>:118-119</code>).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Config</th>
+<th><code>frequency_penalty</code></th>
+<th><code>frequency_deficit</code></th>
+<th><code>adjacency_penalty</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lm1b-*</code></td>
+<td>11.5</td>
+<td>2.0</td>
+<td><code>10,4,0.5</code></td>
+</tr>
+<tr>
+<td><code>xsum</code></td>
+<td>2.0</td>
+<td>1.0</td>
+<td><code>5,4,0.5</code></td>
+</tr>
+<tr>
+<td>others</td>
+<td>not set (0)</td>
+<td>not set</td>
+<td>not set</td>
+</tr>
+</tbody>
+</table>
+<p>This loop makes L small steps on logits. It runs no network pass.</p>
+<h2 id="step-3-merge-and-score">Step 3: merge and score</h2>
+<p><code>eval_merge.py</code> loads all <code>shard_*.pkl</code> files and sorts the rows by input index (<code>scripts/eval_merge.py:12-20</code>). Then it calls the function named by <code>eval.metric</code> (<code>:154</code>).</p>
+<table>
+<thead>
+<tr>
+<th><code>eval.metric</code></th>
+<th>Configs</th>
+<th>Printed columns</th>
+<th>Lines</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exact</code></td>
+<td><code>sudoku-*</code></td>
+<td><code>solved %</code>, <code>solved</code>, <code>cell %</code>, <code>valid %</code></td>
+<td><code>:58-76</code></td>
+</tr>
+<tr>
+<td><code>rouge</code></td>
+<td><code>xsum</code></td>
+<td><code>R-1</code>, <code>R-2</code>, <code>R-L</code>, <code>genPPL</code> (GPT-2), <code>words</code></td>
+<td><code>:35-55</code></td>
+</tr>
+<tr>
+<td><code>bleu</code></td>
+<td><code>wmt14</code></td>
+<td><code>BLEU</code>, <code>BLEU(lc)</code>, <code>chrF</code>, <code>len ratio</code>, sacreBLEU signature</td>
+<td><code>:24-32</code></td>
+</tr>
+<tr>
+<td><code>genppl</code></td>
+<td><code>tinystories</code>, <code>owt</code></td>
+<td>per seed: <code>genPPL</code>, <code>entropy</code>; then mean ± sample std</td>
+<td><code>:79-107</code></td>
+</tr>
+<tr>
+<td><code>genppl_flm</code></td>
+<td><code>lm1b-*</code></td>
+<td>same columns, FLM protocol</td>
+<td><code>:110-151</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>genppl</code> scores each seed with <code>generation_perplexity()</code> under <code>eval.ref_model</code> (<code>gpt2-large</code>). The perplexity is the exponent of total NLL over total tokens (<code>evaluation/gen_ppl.py:137-140</code>). The entropy is the unigram entropy of the re-encoded tokens of each sample, then the mean.</p>
+<p><code>genppl_flm</code> decodes the raw token ids with special tokens kept, truncates to 128 GPT-2 tokens, and computes corpus perplexity with batch 16. It counts the first EOS and all non-EOS tokens (<code>scripts/eval_merge.py:111-135</code>).</p>
+<blockquote>
+<p><strong>Note:</strong> For the genPPL metrics the merge reads the samples in shard order, not sorted order (<code>hyps_by_part</code>, <code>:18</code>). The seed list makes the groups (<code>:95-96</code>).</p>
+</blockquote>
+<p>Related: <a href="../guides/run-an-evaluation.html">Run an evaluation</a>, <a href="../reference/cli.html">Command-line reference</a>.</p>
+<footer>Generated from <code>concepts/evaluation-pipeline.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

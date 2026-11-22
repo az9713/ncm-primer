@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Common issues</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="common-issues">Common issues</h1>
+<p>Each item gives the symptom, the cause and the fix. Items marked "checked" were reproduced on 2026-11-21. The other items come from reading the code.</p>
+<p>This page tracks <code>evaluate.py</code>, <code>scripts/*.py</code> and <code>models/*.py</code>.</p>
+<h2 id="setup-and-paths">Setup and paths</h2>
+<h3 id="the-readme-checkpoint-path-does-not-exist">The README checkpoint path does not exist</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>FileNotFoundError</code> for <code>artifacts/sudoku-hard/tokenizer.pt</code> or <code>artifacts/lm1b-small/generator.pt</code>.</li>
+<li><strong>Cause:</strong> The README uses <code>artifacts/&lt;task&gt;</code>. The Hugging Face layout is <code>sudoku/hard/</code>, <code>lm1b/small/</code> (listed 2026-11-21).</li>
+<li><strong>Fix:</strong> Use <code>--checkpoint-dir artifacts/sudoku/hard --data-dir data/sudoku/hard</code>, or <code>--checkpoint-dir artifacts/lm1b/small</code>. Checked for Sudoku hard.</li>
+</ul>
+<h3 id="the-owt-evaluation-cannot-start">The OWT evaluation cannot start</h3>
+<ul>
+<li><strong>Symptom:</strong> No <code>generator.pt</code> or <code>tokenizer.pt</code> in <code>artifacts/owt/</code>.</li>
+<li><strong>Cause:</strong> On 2026-11-21 the Hugging Face folder <code>owt/</code> holds only <code>TODO.md</code>.</li>
+<li><strong>Fix:</strong> None. Wait for the release.</li>
+</ul>
+<h3 id="the-data-download-is-22741-gb">The data download is 22.741 GB</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>hf download hazyresearch/ncm-datasets ...</code> from the README downloads training streams.</li>
+<li><strong>Cause:</strong> The dataset repository holds training data too, for example 18.144 GB for OWT.</li>
+<li><strong>Fix:</strong> Add <code>--include "xsum/*"</code> (or the folder you need). Unconditional configs need no data.</li>
+</ul>
+<h3 id="output-files-go-to-two-different-folders">Output files go to two different folders</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>shard_0.log</code> is in one folder, <code>shard_0.pkl</code> in another, or the merge prints <code>no shard files</code>.</li>
+<li><strong>Cause:</strong> Shards run with <code>cwd</code> set to the repository root (<code>evaluate.py:35</code>). The log opens relative to your working directory (<code>evaluate.py:31</code>).</li>
+<li><strong>Fix:</strong> Run from the repository root, or pass absolute paths to <code>--out</code>, <code>--checkpoint-dir</code> and <code>--data-dir</code>.</li>
+</ul>
+<h3 id="no-gpu">No GPU</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>no GPU visible; pass --gpus</code>.</li>
+<li><strong>Cause:</strong> <code>torch.cuda.device_count()</code> returned 0 (<code>evaluate.py:20-22</code>). The shards also call <code>.cuda()</code> (<code>scripts/eval_shard.py:50-51</code>).</li>
+<li><strong>Fix:</strong> Install a CUDA build of PyTorch. The scripts have no CPU mode.</li>
+</ul>
+<h3 id="missing-omegaconf-or-hydra">Missing <code>omegaconf</code> or <code>hydra</code></h3>
+<ul>
+<li><strong>Symptom:</strong> <code>ModuleNotFoundError: No module named 'omegaconf'</code>. Checked.</li>
+<li><strong>Fix:</strong> <code>pip install -r requirements.txt</code>.</li>
+</ul>
+<h2 id="generation">Generation</h2>
+<h3 id="top_k-larger-than-the-codebook"><code>top_k</code> larger than the codebook</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>RuntimeError: selected index k out of range</code>. Checked with <code>sudoku-hard</code>.</li>
+<li><strong>Cause:</strong> <code>torch.topk</code> with k = 50 (default of <code>generate()</code>) over 16 codes (<code>models/next_concept.py:492</code>).</li>
+<li><strong>Fix:</strong> Pass <code>top_k=0</code> or a value up to 16 for Sudoku.</li>
+</ul>
+<h3 id="guidance-on-sudoku">Guidance on Sudoku</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>ValueError: cfg_scale needs prefix_pad_id to build the null prefix</code>. Checked.</li>
+<li><strong>Cause:</strong> The Sudoku configs have no <code>prefix_pad_token_id</code> (<code>models/next_concept.py:531-532</code>).</li>
+<li><strong>Fix:</strong> Do not use <code>--cfg</code> with Sudoku.</li>
+</ul>
+<h3 id="guidance-has-no-effect-on-unconditional-configs">Guidance has no effect on unconditional configs</h3>
+<ul>
+<li><strong>Symptom:</strong> The same scores with <code>--cfg 0</code> and <code>--cfg 1</code>.</li>
+<li><strong>Cause:</strong> With P = 1, the real prefix and the null prefix are both one EOS token (<code>scripts/eval_shard.py:157</code>, <code>models/next_concept.py:534-535</code>).</li>
+<li><strong>Fix:</strong> Use guidance only with XSum and WMT14.</li>
+</ul>
+<h3 id="kv-cache-refused">KV cache refused</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>AssertionError: query_level0 generation supports the eager path only</code>.</li>
+<li><strong>Cause:</strong> <code>use_kv_cache=True</code> with <code>xsum</code>, <code>sudoku-*</code> or <code>lm1b-*</code> (<code>models/next_concept.py:523-524</code>).</li>
+<li><strong>Fix:</strong> Use the eager path. Of the released models, only <code>tinystories</code> and <code>wmt14</code> allow the KV cache.</li>
+</ul>
+<h3 id="kv-cache-gives-different-output-on-wmt14">KV cache gives different output on WMT14</h3>
+<ul>
+<li><strong>Symptom:</strong> Cached and eager outputs differ for inputs shorter than 96 tokens. Checked with random weights: 49.4% of codes agreed with a half-padded prefix, 100% with no padding.</li>
+<li><strong>Cause:</strong> The cached path does not add the pad mask (<code>models/next_concept.py:654</code>, <code>:683</code>).</li>
+<li><strong>Fix:</strong> Use the eager path for padded prefixes.</li>
+</ul>
+<h3 id="sampled-runs-are-not-repeatable-on-conditional-tasks">Sampled runs are not repeatable on conditional tasks</h3>
+<ul>
+<li><strong>Symptom:</strong> Two runs of XSum with <code>--top_k 0 --top_p 0.9</code> give different scores.</li>
+<li><strong>Cause:</strong> The conditional path sets no seed (<code>scripts/eval_shard.py:164-169</code>).</li>
+<li><strong>Fix:</strong> Call <code>torch.manual_seed()</code> in your own script before each <code>generate()</code> call.</li>
+</ul>
+<h2 id="known-code-defects">Known code defects</h2>
+<h3 id="reconstruct-fails"><code>reconstruct()</code> fails</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>ValueError: too many values to unpack (expected 3)</code>. Checked.</li>
+<li><strong>Cause:</strong> <code>models/vqvae.py:116</code> unpacks 3 values; <code>vq.forward</code> returns 5 (<code>models/quant.py:543-549</code>). <code>VQVAETokenizer.reconstruct()</code> and <code>reconstruct_text_from_ids()</code> call it.</li>
+<li><strong>Fix:</strong> Use <code>encode()</code> and then <code>decode()</code>, or the method in <a href="../projects/05-tokenizer-reconstruction.html">Project 5</a>.</li>
+</ul>
+<h3 id="all-partial-sums-from-idx_to_zhats-are-equal">All partial sums from <code>idx_to_zhats()</code> are equal</h3>
+<ul>
+<li><strong>Symptom:</strong> Decodes of <code>z_hats[0]</code> and <code>z_hats[-1]</code> are the same. Checked: <code>zh[0] is zh[-1]</code> is <code>True</code>.</li>
+<li><strong>Cause:</strong> In-place <code>z_hat.add_()</code> and <code>append(z_hat)</code> of one tensor (<code>models/quant.py:651-652</code>).</li>
+<li><strong>Fix:</strong> Use <code>partial_decodes()</code> from <a href="../guides/use-ncm-from-python.html">Use NCM from Python</a>, or <code>z_to_idx(..., return_zhats=True)</code>.</li>
+</ul>
+<h3 id="wrong-input-length-to-encode">Wrong input length to <code>encode()</code></h3>
+<ul>
+<li><strong>Symptom:</strong> <code>RuntimeError: Calculated padded input size per channel: (1). Kernel size: (2). Kernel size can't be greater than actual input size</code>. Checked with 100 tokens on TinyStories.</li>
+<li><strong>Cause:</strong> The learned level-1 resampler has a fixed stride L/ℓ_1.</li>
+<li><strong>Fix:</strong> Pad each row to <code>context_length</code> tokens with the pad id.</li>
+</ul>
+<h3 id="the-__main__-blocks-fail">The <code>__main__</code> blocks fail</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>python models/quant.py</code> raises <code>AttributeError: 'list' object has no attribute 'use_manual_levels'</code>. Checked.</li>
+<li><strong>Cause:</strong> <code>models/quant.py:730-732</code> passes an int vocabulary size and a list of levels. <code>models/vqvae.py:146-158</code> passes an int vocabulary size too.</li>
+<li><strong>Fix:</strong> Use the configs in <code>config/eval/</code>. The blocks are not needed for evaluation.</li>
+</ul>
+<h3 id="evaln_shards-has-no-effect"><code>eval.n_shards</code> has no effect</h3>
+<ul>
+<li><strong>Cause:</strong> <code>evaluate.py:20</code> uses the GPU count. No file reads <code>n_shards</code>.</li>
+<li><strong>Fix:</strong> Use <code>--gpus</code>.</li>
+</ul>
+<footer>Generated from <code>troubleshooting/common-issues.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

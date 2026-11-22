@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Project 7: trace Sudoku rule violations per level</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="project-7-trace-sudoku-rule-violations-per-level">Project 7: trace Sudoku rule violations per level</h1>
+<p><strong>Goal:</strong> Count the Sudoku rule violations of the full-length partial decode after each of the 12 levels. Find the level where the board becomes valid.</p>
+<p><strong>Effort:</strong> about 40 lines. <strong>Status:</strong> run on 2026-11-21 on the first 128 Sudoku-hard puzzles.</p>
+<h2 id="background">Background</h2>
+<p>A board is 89 tokens: 81 cells and 8 <code>|</code> separators. The puzzle prefix is 91 tokens: <code>&lt;BOS&gt;</code>, the 89-token board with <code>_</code> for blanks, <code>&lt;BOS&gt;</code>. The 2,000 hard puzzles are lists of ints. The solutions are lists of 89 ints. The eval counts a board as valid when all 9 rows, 9 columns and 9 boxes hold <code>1</code> to <code>9</code> once (<code>scripts/eval_merge.py:62-69</code>).</p>
+<h2 id="what-exists-and-what-you-write">What exists and what you write</h2>
+<ul>
+<li>Exists: the checkpoint, the data, <code>generate()</code>.</li>
+<li>You write: <code>partial_decodes()</code>, a violation counter, a loop.</li>
+</ul>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>Download Sudoku hard (0.163 GB) as in the <a href="../getting-started/quickstart.html">Quickstart</a>.</li>
+<li>
+<p>Load the model and 128 puzzles.</p>
+<pre><code>  import pickle, torch
+  from ncm_helpers import load, partial_decodes
+  cfg, tk, net, sd = load("config/eval/sudoku-hard.yaml", "artifacts/sudoku/hard")
+  items = pickle.load(open("data/sudoku/hard/puzzles.pickle", "rb"))
+  sols = pickle.load(open("data/sudoku/hard/solutions.pickle", "rb"))
+  B = 128
+  x = torch.tensor([list(it)[:91] for it in items[:B]], device="cuda")
+  with torch.no_grad():
+      codes = net.generate(None, x, temperature=0.0, top_k=0, top_p=1.0)
+</code></pre>
+</li>
+<li>
+<p>Count violations. A violation is a repeated digit in a row, column or box.</p>
+<pre><code>  def violations(text):
+      g = text.replace("|", "")
+      if len(g) != 81:
+          return None
+      rows = [g[i*9:(i+1)*9] for i in range(9)]
+      cols = ["".join(r[j] for r in rows) for j in range(9)]
+      boxes = ["".join(rows[r][c] for r in range(br, br+3) for c in range(bc, bc+3))
+               for br in (0, 3, 6) for bc in (0, 3, 6)]
+      return sum(len([ch for ch in u if ch != "_"]) - len(set(ch for ch in u if ch != "_"))
+                 for u in rows + cols + boxes)
+
+  for k, p in enumerate(partial_decodes(tk.vqvae, codes)):
+      texts = [tk.pre_tokenizer.decode(r) for r in p.tolist()]
+      v = [violations(t) for t in texts]
+      ok = [t for t in v if t is not None]
+      exact = sum(t == tk.pre_tokenizer.decode(s) for t, s in zip(texts, sols[:B]))
+      print(f"level {k+1:2d}  mean violations {sum(ok)/max(len(ok),1):6.2f}  exact {exact}/{B}")
+</code></pre>
+</li>
+<li>
+<p>Add a count of changed clues: the cells where the puzzle has a digit and the decode has a different digit.</p>
+</li>
+</ol>
+<h2 id="measured-result-2026-11-21">Measured result (2026-11-21)</h2>
+<p>First 128 hard puzzles, argmax, RTX 3050 Laptop GPU. All 128 decodes parsed to 81 cells at every level.</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>ℓ_k</th>
+<th>Mean violations per board</th>
+<th>Exact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>95.19</td>
+<td>0/128</td>
+</tr>
+<tr>
+<td>4</td>
+<td>6</td>
+<td>85.02</td>
+<td>0/128</td>
+</tr>
+<tr>
+<td>8</td>
+<td>26</td>
+<td>73.32</td>
+<td>0/128</td>
+</tr>
+<tr>
+<td>10</td>
+<td>50</td>
+<td>44.47</td>
+<td>0/128</td>
+</tr>
+<tr>
+<td>11</td>
+<td>67</td>
+<td>35.20</td>
+<td>0/128</td>
+</tr>
+<tr>
+<td>12</td>
+<td>89</td>
+<td>0.55</td>
+<td>109/128</td>
+</tr>
+</tbody>
+</table>
+<p>From level 11 to level 12, the mean dropped from 35.20 to 0.55. No board was exact before level 12. The full run on 2,000 puzzles gave 1,725 exact (86.25%).</p>
+<h2 id="cost-and-hardware">Cost and hardware</h2>
+<p>One batch of 128 took 3.73 s for <code>generate()</code> on the RTX 3050 Laptop GPU.</p>
+<h2 id="how-to-measure-the-result">How to measure the result</h2>
+<ul>
+<li>Plot the mean violations against the level, with one line for each difficulty (easy, medium, hard).</li>
+<li>Report the number of changed clues per level.</li>
+<li>For the 19 unsolved boards in the measured batch, find the level where their violation count stops falling.</li>
+</ul>
+<footer>Generated from <code>projects/07-sudoku-constraint-trace.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

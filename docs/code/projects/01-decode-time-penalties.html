@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Project 1: measure the effect of the decode-time penalties</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="project-1-measure-the-effect-of-the-decode-time-penalties">Project 1: measure the effect of the decode-time penalties</h1>
+<p><strong>Goal:</strong> Find how much of the LM1B and XSum scores comes from the token penalties in <code>pick_tokens()</code>. Algorithm 2 of the paper does not have them.</p>
+<p><strong>Effort:</strong> flags only. <strong>Status:</strong> not run.</p>
+<h2 id="background">Background</h2>
+<p>After generation, <code>scripts/eval_shard.py:99-124</code> changes the token logits of the decoder. LM1B uses a frequency penalty of 11.5, a deficit bonus of 2.0 and an adjacency penalty <code>10,4,0.5</code>. XSum uses 2.0, 1.0 and <code>5,4,0.5</code>. With all three at zero, the script takes the argmax (<code>:100-101</code>), as Algorithm 2 does.</p>
+<h2 id="what-exists-and-what-you-write">What exists and what you write</h2>
+<ul>
+<li>Exists: the flags <code>--freq</code>, <code>--mu</code>, <code>--adj</code> (<code>scripts/eval_shard.py:22-24</code>), passed through by <code>evaluate.py</code>.</li>
+<li>You write: nothing. A shell loop is optional.</li>
+</ul>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>Download LM1B small (0.988 GB) as in <a href="../guides/run-an-evaluation.html">Run an evaluation</a>.</li>
+<li>
+<p>Run the default.</p>
+<pre><code>  python evaluate.py --config config/eval/lm1b-small.yaml --checkpoint-dir artifacts/lm1b/small --out eval/p1-default
+</code></pre>
+</li>
+<li>
+<p>Run with all penalties off.</p>
+<pre><code>  python evaluate.py --config config/eval/lm1b-small.yaml --checkpoint-dir artifacts/lm1b/small --freq 0 --mu 0 --adj "" --out eval/p1-argmax
+</code></pre>
+</li>
+<li>
+<p>Run with one penalty at a time: <code>--freq 0 --mu 0</code> (adjacency only), then <code>--adj ""</code> (frequency only).</p>
+</li>
+<li>Repeat steps 2 to 4 for XSum with <code>--data-dir data/xsum</code>. Use <code>--n 1000</code> first to reduce the cost.</li>
+</ol>
+<h2 id="cost-and-hardware">Cost and hardware</h2>
+<p>One run is 5 seeds × 256 samples = 1,280 samples with 11 passes each, then scoring with <code>gpt2-large</code>. The time was not measured. With <code>--n 64</code> per seed, the run makes 320 samples.</p>
+<h2 id="how-to-measure-the-result">How to measure the result</h2>
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th>genPPL (mean ± std over 5 seeds)</th>
+<th>entropy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>default</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>argmax</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>adjacency only</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frequency only</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Report genPPL and unigram entropy together. A lower genPPL with a lower entropy can mean more repetition, not better text. For XSum, report ROUGE-1/2/L and the mean word count.</p>
+<footer>Generated from <code>projects/01-decode-time-penalties.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

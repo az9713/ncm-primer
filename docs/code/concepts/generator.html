@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>The generator</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="the-generator">The generator</h1>
+<p><code>NextConceptTransformer</code> predicts the codes of one level per pass. All codes of a level come from the same pass, in parallel.</p>
+<p>This page tracks <code>models/next_concept.py</code> and <code>models/common.py</code>.</p>
+<h2 id="inputs-and-outputs">Inputs and outputs</h2>
+<p>The constructor is <code>NextConceptTransformer(vqvae_local, config)</code> (<code>models/next_concept.py:67-70</code>). <code>vqvae_local</code> is the loaded <code>VQVAE</code>. <code>config</code> is the <code>model:</code> section of a config.</p>
+<p><code>generate(idx, prefix_tokens, temperature=1.0, top_k=50, top_p=0.9, use_kv_cache=False, cfg_scale=0.0, cfg_null_eos=50256)</code> (<code>:521-522</code>) returns a tensor of shape (B, ℓ_1 + … + ℓ_K) with the codes of all levels, level 1 first (<code>:699-703</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>idx</code></td>
+<td>Level-1 codes, shape (B, ℓ_1), or <code>None</code>. With <code>None</code>, the model makes level 1 itself.</td>
+</tr>
+<tr>
+<td><code>prefix_tokens</code></td>
+<td>Pre-tokenizer ids, shape (B, P).</td>
+</tr>
+<tr>
+<td><code>temperature</code>, <code>top_k</code>, <code>top_p</code></td>
+<td>Sampler settings, see <a href="#sampling">Sampling</a>.</td>
+</tr>
+<tr>
+<td><code>use_kv_cache</code></td>
+<td>Compute the prefix keys and values once. Forbidden with <code>query_level0</code> (<code>:523-524</code>).</td>
+</tr>
+<tr>
+<td><code>cfg_scale</code></td>
+<td>Guidance weight. Needs <code>prefix_pad_token_id</code> (<code>:531-532</code>).</td>
+</tr>
+<tr>
+<td><code>cfg_null_eos</code></td>
+<td>Token at position 0 of the null prefix (<code>:535</code>).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-model-stack">The model stack</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Lines</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input projection <code>wte</code></td>
+<td><code>:131-133</code></td>
+<td>A linear map from the tokenizer size D (384 or 256) to <code>n_embd</code>.</td>
+</tr>
+<tr>
+<td>Prefix embedding</td>
+<td><code>:546-560</code></td>
+<td>With <code>raw_token_prefix: true</code> (all configs), the prefix goes through the tokenizer encoder embedding <code>wte</code> only.</td>
+</tr>
+<tr>
+<td>Positions</td>
+<td><code>:95-127</code></td>
+<td>With <code>use_rope: true</code> (all configs), RoPE restarts at 0 for each level (<code>:110-117</code>). The prefix has positions 0 to P−1.</td>
+</tr>
+<tr>
+<td>Level embedding <code>wle</code></td>
+<td><code>:197-200</code></td>
+<td>One learned vector per level.</td>
+</tr>
+<tr>
+<td>Post-upsample convolution</td>
+<td><code>:183-195</code></td>
+<td>A zero-initialized per-level <code>Conv1d</code> on the input. LM1B and OWT only.</td>
+</tr>
+<tr>
+<td>Blocks</td>
+<td><code>:202-206</code>, <code>models/common.py:167-213</code></td>
+<td>Pre-norm transformer blocks with QK norm (<code>use_qk_norm: true</code>).</td>
+</tr>
+<tr>
+<td>Output heads</td>
+<td><code>:208-237</code></td>
+<td>One per predicted level. Three kinds, see below.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Head kind</th>
+<th>Config</th>
+<th>Lines</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tied to the codebook: logits are <code>(2 z·E − ‖E‖²) / mean‖E‖²</code> times a learned scale</td>
+<td><code>tie_heads_to_codebook: true</code> (OWT, TinyStories, XSum)</td>
+<td><code>:9-34</code>, <code>:223-232</code></td>
+</tr>
+<tr>
+<td>One shared linear head with a bias for each level</td>
+<td><code>shared_output_head: true</code> (LM1B)</td>
+<td><code>:48-62</code>, <code>:216-222</code></td>
+</tr>
+<tr>
+<td>One linear head for each level</td>
+<td>default (WMT14, Sudoku)</td>
+<td><code>:233-237</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-attention-mask">The attention mask</h2>
+<p>The mask has shape (P + T, P + T). T is the total target length (<code>:268-292</code>).</p>
+<ul>
+<li>Prefix rows see the prefix only (<code>:282-283</code>).</li>
+<li>Target rows see the full prefix (<code>:284</code>).</li>
+<li>With <code>attn_pattern: block_diagonal</code> (all configs), a target row sees only the rows of its own level (<code>:274</code>).</li>
+<li>With <code>block_causal</code>, a target row sees its own level and all earlier levels (<code>:276</code>).</li>
+</ul>
+<p>In <code>generate()</code>, each pass has its own small mask (<code>:507-510</code>): prefix rows see the prefix, level rows see everything.</p>
+<h2 id="level-1-modes">Level-1 modes</h2>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Config fields</th>
+<th>Configs</th>
+<th>Where</th>
+<th>Passes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unigram table</td>
+<td><code>query_level0: false</code> + <code>generation.level0_unigram</code></td>
+<td><code>tinystories</code>, <code>owt</code></td>
+<td><code>scripts/eval_shard.py:71</code>, <code>:156</code></td>
+<td>K−1</td>
+</tr>
+<tr>
+<td>Unigram table, learned queries not used</td>
+<td><code>query_level0: true</code> + <code>generation.level0_unigram</code></td>
+<td><code>lm1b-*</code></td>
+<td>Same; the eval passes <code>idx</code>, so <code>:581</code> is skipped</td>
+<td>K−1 = 11</td>
+</tr>
+<tr>
+<td>Learned queries</td>
+<td><code>query_level0: true</code>, no unigram</td>
+<td><code>xsum</code>, <code>sudoku-*</code></td>
+<td><code>:239-242</code>, one pass at <code>:581-627</code></td>
+<td>K</td>
+</tr>
+<tr>
+<td>Prefix head</td>
+<td><code>predict_level0: true</code></td>
+<td><code>wmt14</code></td>
+<td><code>:249-264</code>, prefix pass at <code>:629-641</code></td>
+<td>K</td>
+</tr>
+</tbody>
+</table>
+<p>With <code>predict_level0</code>, the head reads the last ℓ_1 non-pad prefix positions (<code>_level0_slice</code>, <code>:427-435</code>). For WMT14, ℓ_1 = 1.</p>
+<h2 id="the-generation-loop">The generation loop</h2>
+<p>After level 1, the loop at <code>:660-694</code> runs K−1 times. At step k (0-based <code>level_idx</code>):</p>
+<ol>
+<li>Look up the codebook vectors of the newest codes (<code>:664</code>).</li>
+<li>Lengthen them to L, apply Phi, add them to z_hat, and pool z_hat to ℓ_{k+1} positions (<code>vq.get_next_autoregressive_input</code>, <code>models/quant.py:697-709</code>).</li>
+<li>Project the input, add the level and position embeddings (<code>:670</code>).</li>
+<li>Run one pass over <code>[prefix ; input]</code> and apply the head of this level (<code>:689-691</code> eager, <code>:680-688</code> cached).</li>
+<li>Sample the ℓ_{k+1} codes (<code>_sample_level</code>).</li>
+</ol>
+<p>In the eager path, each pass recomputes the prefix (P + ℓ_{k+1} rows). The prefix rows see only the prefix, so their values are the same at each level. The KV-cache path computes the prefix once (<code>:649-657</code>) and reuses its keys and values (<code>:681-682</code>).</p>
+<blockquote>
+<p><strong>Warning:</strong> The KV-cache path does not add the prefix pad mask (<code>:654</code>, <code>:683</code>). On 2026-11-21, with random weights and a half-padded WMT14 prefix, the cached and eager codes agreed at 49.4% of positions. With an unpadded prefix they agreed at 100%. <code>scripts/eval_shard.py:142</code> never sets <code>use_kv_cache</code>.</p>
+</blockquote>
+<h2 id="sampling">Sampling</h2>
+<p><code>_sample_level_raw</code> (<code>:487-499</code>):</p>
+<ul>
+<li><code>temperature == 0</code>: argmax.</li>
+<li>Otherwise: divide by temperature. Keep the <code>top_k</code> largest logits if <code>top_k &gt; 0</code>. Keep the smallest set with cumulative probability above <code>top_p</code>. Draw one sample.</li>
+<li>The top-p step always runs. <code>top_p: 1.0</code> keeps all tokens. <code>top_p: 0.0</code> keeps the top token only.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Config</th>
+<th>temperature</th>
+<th>top_k</th>
+<th>top_p</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>xsum</code>, <code>wmt14</code></td>
+<td>1.0</td>
+<td>1</td>
+<td>0.0</td>
+<td>Top token only (greedy)</td>
+</tr>
+<tr>
+<td><code>sudoku-*</code></td>
+<td>0.0</td>
+<td>0</td>
+<td>1.0</td>
+<td>Argmax</td>
+</tr>
+<tr>
+<td><code>lm1b-*</code>, <code>tinystories</code>, <code>owt</code></td>
+<td>1.0</td>
+<td>0</td>
+<td>1.0</td>
+<td>Full sampling</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Warning:</strong> The default <code>top_k=50</code> of <code>generate()</code> fails on Sudoku, where the vocabulary has 16 codes. The check on 2026-11-21 raised <code>RuntimeError: selected index k out of range</code>. Set <code>top_k</code> to 16 or less.</p>
+</blockquote>
+<h2 id="classifier-free-guidance">Classifier-free guidance</h2>
+<p>With <code>cfg_scale &gt; 0</code>, <code>generate()</code> doubles the batch. The second half has a null prefix: <code>prefix_pad_id</code> everywhere, <code>cfg_null_eos</code> at position 0 (<code>:530-540</code>). At each level, <code>_sample_level</code> mixes the two halves (<code>:477-485</code>):</p>
+<pre><code class="language-text">t = cfg_scale * level / (K - 1)
+logits = (1 + t) * logits_cond - t * logits_null
+</code></pre>
+<p>The weight t is 0 at level 1 and <code>cfg_scale</code> at level K (<code>:481-482</code>). Both halves get the same sampled codes (<code>:484</code>).</p>
+<ul>
+<li>Sudoku has no <code>prefix_pad_token_id</code>. <code>cfg_scale &gt; 0</code> raises <code>ValueError: cfg_scale needs prefix_pad_id to build the null prefix</code>.</li>
+<li>For the unconditional configs, P = 1 and the prefix is one EOS token. The null prefix is also one EOS token, so guidance has no effect.</li>
+</ul>
+<h2 id="training-mode-forward">Training-mode forward</h2>
+<p><code>forward(x, prefix_ids=None, prefix_pad_mask=None)</code> (<code>:376-406</code>) runs all levels in one pass with the full mask. <code>x</code> is <code>[prefix vectors ; target inputs]</code>. <code>VQVAE.get_ncm_inputs()</code> (<code>models/vqvae.py:121-124</code>) builds the target inputs and targets for configs without <code>query_level0</code>. The forward returns logits padded to the largest vocabulary (<code>:467-471</code>). The repository has no loss and no optimizer for it.</p>
+<p>Related: <a href="tokenizer.html">The tokenizer</a>, <a href="../architecture/system-design.html">System design</a>.</p>
+<footer>Generated from <code>concepts/generator.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Python API reference</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0f172a; color: #cbd5e1; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+nav.top { font-size: 14px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+h1, h2, h3, h4 { color: #e2e8f0; line-height: 1.3; }
+h1 { font-size: 2em; margin-top: 0; }
+h2 { border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-top: 2em; }
+a { color: #2dd4bf; }
+a:hover { color: #fb923c; }
+strong { color: #e2e8f0; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: 0.9em; background: #1e293b; color: #fb923c; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 14px; overflow-x: auto; line-height: 1.45; }
+pre code { background: none; color: #e2e8f0; padding: 0; overflow-wrap: normal; }
+table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid #334155; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #1e293b; color: #e2e8f0; }
+tr:nth-child(even) td { background: #131c31; }
+blockquote { margin: 1em 0; padding: 8px 16px; background: #1e293b; border-left: 4px solid #fb923c; border-radius: 0 8px 8px 0; color: #cbd5e1; }
+hr { border: 0; border-top: 1px solid #334155; margin: 2em 0; }
+footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+<main>
+<nav class="top"><a href="../index.html">Docs home</a></nav>
+<h1 id="python-api-reference">Python API reference</h1>
+<p>This page lists the classes and methods that a script can call. It tracks <code>models/*.py</code>, <code>tokenization/*.py</code> and <code>evaluation/gen_ppl.py</code>. Shapes use B (batch), L (tokens), D (<code>embed_dim</code>), K (levels), S = ℓ_1 + … + ℓ_K.</p>
+<h2 id="tokenizationvqvae_tokenizervqvaetokenizer"><code>tokenization.vqvae_tokenizer.VQVAETokenizer</code></h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Lines</th>
+<th>Input</th>
+<th>Output</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>from_config(config)</code></td>
+<td><code>:13-19</code></td>
+<td><code>cfg.tokenizer</code> with <code>vqvae.checkpoint_path</code> set</td>
+<td><code>VQVAETokenizer</code>; weights loaded with <code>strict=True</code></td>
+<td>Works</td>
+</tr>
+<tr>
+<td><code>encode(text)</code></td>
+<td><code>:31-33</code></td>
+<td>string</td>
+<td>flat list of codes, S per block of L tokens</td>
+<td>Not tested</td>
+</tr>
+<tr>
+<td><code>encode_pre_tokenized(ids)</code></td>
+<td><code>:36-39</code></td>
+<td>list of token ids</td>
+<td>flat list of codes; pads to a multiple of L</td>
+<td>Not tested</td>
+</tr>
+<tr>
+<td><code>encode_pre_tokenized_idx(idx)</code></td>
+<td><code>:42-45</code></td>
+<td>tensor (B, L)</td>
+<td>tensor (B, S)</td>
+<td>Not tested</td>
+</tr>
+<tr>
+<td><code>decode(ids)</code></td>
+<td><code>:47-52</code></td>
+<td>list of S codes</td>
+<td>string</td>
+<td>Not tested</td>
+</tr>
+<tr>
+<td><code>reconstruct(text)</code></td>
+<td><code>:54-59</code></td>
+<td>string</td>
+<td>string</td>
+<td>Broken: calls <code>VQVAE.reconstruct</code></td>
+</tr>
+<tr>
+<td><code>reconstruct_text_from_ids(ids)</code></td>
+<td><code>:61-66</code></td>
+<td>list of token ids</td>
+<td>string</td>
+<td>Broken: calls <code>VQVAE.reconstruct</code></td>
+</tr>
+<tr>
+<td><code>reconstruct_multiscales(text)</code></td>
+<td><code>:68-73</code></td>
+<td>string</td>
+<td>per row, K strings of ℓ_k tokens</td>
+<td>Not tested</td>
+</tr>
+<tr>
+<td><code>decode_multiscales(idx, skip_special_tokens=False)</code></td>
+<td><code>:75-86</code></td>
+<td>tensor (B, S)</td>
+<td><code>list[B][K]</code> strings of ℓ_k tokens</td>
+<td>Works (Sudoku, 2026-11-21)</td>
+</tr>
+</tbody>
+</table>
+<p>Attributes: <code>vqvae</code> (the <code>VQVAE</code>), <code>pre_tokenizer</code> (an <code>HFTokenizer</code>, <code>BPETokenizer</code> or <code>SudokuTokenizer</code>).</p>
+<h2 id="modelsvqvaevqvae"><code>models.vqvae.VQVAE</code></h2>
+<p><code>VQVAE(in_vocab_size, context_length, embed_dim, vqvae_vocab_size, n_layers, vector_quantizer_config, compression_factor=4, dropout=0.1, pre_quant_groupnorm=None, pre_quant_dropout=None, use_qk_norm=False, enc_layers=0, enc_attn_window=0, enc_conv_layers=0, enc_conv_kernel=3, dec_layers=1, pre_quant_norm_type='group', enc_positional=True, dec_positional=False, **kwargs)</code> (<code>models/vqvae.py:11-33</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Lines</th>
+<th>Input</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>forward(x)</code></td>
+<td><code>:91-95</code></td>
+<td>tokens (B, L)</td>
+<td><code>(logits (B, L, V), vq_loss, per_level_util, global_util, 0.1)</code></td>
+</tr>
+<tr>
+<td><code>encode(x)</code></td>
+<td><code>:98-101</code></td>
+<td>tokens (B, L)</td>
+<td>codes (B, S)</td>
+</tr>
+<tr>
+<td><code>encode_z(x)</code></td>
+<td><code>:104-105</code></td>
+<td>tokens (B, L)</td>
+<td>pre-quant vectors (B, L, D)</td>
+</tr>
+<tr>
+<td><code>decode(idx)</code></td>
+<td><code>:108-111</code></td>
+<td>codes (B, S)</td>
+<td>logits (B, L, V)</td>
+</tr>
+<tr>
+<td><code>reconstruct(x)</code></td>
+<td><code>:114-118</code></td>
+<td>tokens (B, L)</td>
+<td>Broken: <code>ValueError: too many values to unpack (expected 3)</code> (<code>:116</code>)</td>
+</tr>
+<tr>
+<td><code>get_ncm_inputs(ids)</code></td>
+<td><code>:121-124</code></td>
+<td>tokens (B, L)</td>
+<td><code>(inputs (B, S − ℓ_1, D), targets (B, S − ℓ_1))</code></td>
+</tr>
+<tr>
+<td><code>reconstruct_multiscales(idx)</code></td>
+<td><code>:127-141</code></td>
+<td>tokens (B, L)</td>
+<td><code>list[B][K]</code> lists of ℓ_k token ids</td>
+</tr>
+</tbody>
+</table>
+<p>Attributes: <code>encoder</code>, <code>decoder</code>, <code>vq</code> (the quantizer), <code>context_length</code>, <code>embed_dim</code>, <code>in_vocab_size</code>.</p>
+<h2 id="modelsquantmultiscaleresidualvectorquantizer"><code>models.quant.MultiscaleResidualVectorQuantizer</code></h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Lines</th>
+<th>Input</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>forward(z)</code></td>
+<td><code>:448-549</code></td>
+<td>vectors (B, L, D)</td>
+<td><code>(z_hat, vq_loss, per_level_util, global_util, 0.1)</code>; EMA update when training</td>
+</tr>
+<tr>
+<td><code>z_to_idx(z, return_zhats=False, return_zlevels=False)</code></td>
+<td><code>:573-632</code></td>
+<td>vectors (B, L, D)</td>
+<td>codes (B, S); with flags, a tuple with K full-length partial sums and/or K pooled sums</td>
+</tr>
+<tr>
+<td><code>idx_to_zhats(idx, return_zlevels=True)</code></td>
+<td><code>:635-668</code></td>
+<td>codes (B, S)</td>
+<td><code>(z_hats, z_levels)</code>; all <code>z_hats</code> entries are one tensor (<code>:651-652</code>)</td>
+</tr>
+<tr>
+<td><code>idx_to_ncm_input(idx)</code></td>
+<td><code>:671-694</code></td>
+<td>codes (B, S)</td>
+<td>generator inputs (B, S − ℓ_1, D)</td>
+</tr>
+<tr>
+<td><code>get_next_autoregressive_input(level_idx, z_hat, z_q_level)</code></td>
+<td><code>:697-709</code></td>
+<td>z_hat (B, L, D), level vectors</td>
+<td><code>(z_hat, input for next level)</code>; adds in place</td>
+</tr>
+<tr>
+<td><code>idx_to_z_q(indices)</code></td>
+<td><code>:712-726</code></td>
+<td>codes (B, S)</td>
+<td>z_hat (B, L, D)</td>
+</tr>
+<tr>
+<td><code>set_stochastic_encode(enabled, temperature=0.5, top_k=10, top_p=0.95)</code></td>
+<td><code>:552-556</code></td>
+<td>—</td>
+<td><code>z_to_idx</code> then samples codes from <code>−distance / temperature</code></td>
+</tr>
+<tr>
+<td><code>kmeans_init_level(level_idx, samples, n_iters=20)</code></td>
+<td><code>:345-378</code></td>
+<td>vectors (N, D)</td>
+<td>sets a codebook by k-means</td>
+</tr>
+</tbody>
+</table>
+<p>Attributes: <code>levels</code> (list ℓ_1 … ℓ_K), <code>embeddings</code> (K <code>nn.Embedding</code> codebooks), <code>vqvae_vocab_sizes</code>, <code>embed_dim</code>. Private helpers <code>_down_for_quant</code>, <code>_up_to_full</code>, <code>_apply_quant_resi</code> (<code>:380-411</code>) do one shorten, lengthen and Phi step.</p>
+<h2 id="modelsnext_conceptnextconcepttransformer"><code>models.next_concept.NextConceptTransformer</code></h2>
+<p><code>NextConceptTransformer(vqvae_local, config)</code> (<code>models/next_concept.py:67-70</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Lines</th>
+<th>Input</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>generate(idx, prefix_tokens, temperature=1.0, top_k=50, top_p=0.9, use_kv_cache=False, cfg_scale=0.0, cfg_null_eos=50256)</code></td>
+<td><code>:521-703</code></td>
+<td>level-1 codes (B, ℓ_1) or <code>None</code>; prefix (B, P)</td>
+<td>codes (B, S)</td>
+</tr>
+<tr>
+<td><code>forward(x, prefix_ids=None, prefix_pad_mask=None)</code></td>
+<td><code>:376-406</code></td>
+<td><code>[prefix vectors ; inputs]</code> (B, P + T, D)</td>
+<td>logits (B, T', V_max); T' adds ℓ_1 with <code>predict_level0</code></td>
+</tr>
+<tr>
+<td><code>build_l0_query_input(batch_size, dtype=None)</code></td>
+<td><code>:408-410</code></td>
+<td>—</td>
+<td>learned level-1 queries (B, ℓ_1, D)</td>
+</tr>
+</tbody>
+</table>
+<p>Attributes: <code>levels</code>, <code>L</code> (S, the total code count; not the token length), <code>prefix_len</code>, <code>query_level0</code>, <code>predict_level0</code>, <code>lm_heads</code>, <code>transformer</code> (<code>wte</code>, <code>wle</code>, <code>drop</code>, <code>blocks</code>, <code>ln_f</code>).</p>
+<h2 id="pre-tokenizers">Pre-tokenizers</h2>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Lines</th>
+<th><code>eos_token_id</code> / <code>pad_token_id</code></th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HFTokenizer(model_id="gpt2", pad_token=None, eos_token=None, **kwargs)</code></td>
+<td><code>tokenization/hf_tokenizer.py:5-36</code></td>
+<td>from the Hugging Face tokenizer</td>
+<td>Adds the pad token if it is missing (<code>:13-19</code>).</td>
+</tr>
+<tr>
+<td><code>BPETokenizer(vocab, merges, special_tokens=None)</code></td>
+<td><code>tokenization/bpe_tokenizer.py:6-99</code></td>
+<td>ids of <code>&lt;|endoftext|&gt;</code>, <code>&lt;|pad|&gt;</code></td>
+<td>Byte-level BPE with a GPT-2 split pattern.</td>
+</tr>
+<tr>
+<td><code>SudokuTokenizer</code></td>
+<td><code>tokenization/sudoku_tokenizer.py:4-26</code></td>
+<td><code>None</code> / <code>None</code></td>
+<td>12 ids: <code>_</code>=0, <code>1</code>–<code>9</code>, <code>|</code>=10, <code>&lt;BOS&gt;</code>=11. <code>seq_len</code> 89, <code>prompt_len</code> 91.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="evaluationgen_pplgeneration_perplexity"><code>evaluation.gen_ppl.generation_perplexity</code></h2>
+<p><code>generation_perplexity(ref_model, tokenizer, prompts, generated_texts, *, device=None, score_only_generated=True, batch_size=8, max_length=None)</code> (<code>evaluation/gen_ppl.py:20-30</code>) returns <code>GenPPLResult(nll_sum, token_count, ppl, mean_nll, mean_ppl)</code> (<code>:10-16</code>). <code>mean_ppl</code> is <code>exp(total NLL / total tokens)</code> (<code>:137-140</code>). Inputs are cut at 1,024 tokens when <code>max_length</code> is <code>None</code> (<code>:56</code>).</p>
+<h2 id="level-schedulers">Level schedulers</h2>
+<p><code>utils/registry.py:15-23</code> defines <code>linear</code>, <code>cubic</code>, <code>exp</code>, <code>sqrt</code>, <code>sine</code>, <code>log</code>, <code>quadratic</code>. A config selects one with <code>levels.use_manual_levels: false</code>, <code>scheduler</code>, <code>start</code>, <code>end</code>, <code>num_levels</code> (<code>models/quant.py:287-288</code>). No released config does this.</p>
+<footer>Generated from <code>reference/python-api.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
+</main>
+</body>
+</html>
