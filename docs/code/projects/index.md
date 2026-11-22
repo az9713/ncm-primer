@@ -4,6 +4,8 @@ This section gives 10 projects that use the released code and checkpoints. They 
 
 > **Note:** The repository evaluates released models only. It has no optimizer loop, no data loader, no generator loss and no code-corruption code. Projects 1 to 9 use the released weights. Project 10 trains a small tokenizer and needs a training loop that you write.
 
+> **Note:** The downloads, helper models, hardware and code that each project needs are in one table: [Requirements for each project](../index.md#requirements-for-each-project).
+
 ## What exists and what you must write
 
 | Piece | In the repository | Location |

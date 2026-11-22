@@ -38,6 +38,155 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <p><strong>Note:</strong> In the <a href="https://github.com/az9713/ncm-primer">ncm-primer repository</a>, the code is in the folder <code>ncm-main/</code>, copied unchanged from <a href="https://github.com/HazyResearch/ncm">HazyResearch/ncm</a>. In these docs, "repository root" means that folder.</p>
 <p><strong>Note:</strong> The repository contains no training loop, no data pipeline, no generator loss and no code-corruption code. It evaluates released models. To train a model, you must write more code. <a href="projects/index.html">Projects</a> tells you which parts exist.</p>
 </blockquote>
+<h2 id="requirements-and-external-dependencies">Requirements and external dependencies</h2>
+<p>Every task, quickstart and project needs the items in this table. Details and verify commands are in <a href="getting-started/prerequisites.html">Prerequisites</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>What you need</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>3.10 or newer</td>
+<td>Checked with 3.13.5</td>
+</tr>
+<tr>
+<td>PyTorch</td>
+<td>A CUDA build that matches your driver</td>
+<td>Install it before the other packages (<a href="https://pytorch.org/get-started/locally/">pytorch.org</a>)</td>
+</tr>
+<tr>
+<td>Python packages</td>
+<td>The 9 packages of <code>requirements.txt</code>: <code>torch</code>, <code>numpy</code>, <code>omegaconf</code>, <code>hydra-core</code>, <code>transformers&gt;=4.51</code>, <code>huggingface_hub[cli]</code>, <code>regex</code>, <code>rouge_score</code>, <code>sacrebleu</code></td>
+<td><code>pip install -r requirements.txt</code>. No project needs a package outside this list</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>One NVIDIA GPU with CUDA</td>
+<td>Only <code>sudoku-hard</code> was run: batch 128 on a 4,096 MiB GPU. Memory for the text models was not measured. Project 10 runs on CPU for a test, but its full run was not timed</td>
+</tr>
+<tr>
+<td>Checkpoints</td>
+<td>Hugging Face repo <code>hazyresearch/ncm-checkpoints</code> (8.003 GB for all)</td>
+<td>Download only the task you need. The OWT checkpoints are not released: the <code>owt/</code> folder holds only <code>TODO.md</code></td>
+</tr>
+<tr>
+<td>Datasets</td>
+<td>Hugging Face dataset <code>hazyresearch/ncm-datasets</code> (22.741 GB for all)</td>
+<td>The evaluation inputs are about 0.02 GB. Do not download the full repo; see <a href="troubleshooting/common-issues.html">Common issues</a></td>
+</tr>
+<tr>
+<td>Network at run time</td>
+<td>Access to the Hugging Face Hub</td>
+<td>The scripts download helper models: <code>gpt2</code> (XSum), <code>Qwen/Qwen3-0.6B</code> (WMT14 tokenizer), <code>bert-base-uncased</code> (LM1B), <code>gpt2-large</code> (genPPL scoring for LM1B, TinyStories, OWT). Sudoku needs none</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>The folder <code>ncm-main/</code> of this repository</td>
+<td>Run commands from that folder</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirements-for-each-project">Requirements for each project</h3>
+<p>All projects need the base requirements above. The table gives what each project adds. "Helpers" means <code>load()</code> and <code>partial_decodes()</code> from <a href="guides/use-ncm-from-python.html">Use NCM from Python</a>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Project</th>
+<th>Model download</th>
+<th>Helper models downloaded at run time</th>
+<th>Hardware</th>
+<th>Code you write</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="projects/01-decode-time-penalties.html">Decode-time penalties</a></td>
+<td>LM1B small 0.988 GB, or XSum 0.674 GB</td>
+<td>LM1B: <code>bert-base-uncased</code>, <code>gpt2-large</code>. XSum: <code>gpt2</code></td>
+<td>GPU</td>
+<td>None (flags)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="projects/02-guidance-and-sampler-sweep.html">Guidance and sampler sweep</a></td>
+<td>WMT14 1.127 GB, or XSum 0.674 GB</td>
+<td>WMT14: <code>Qwen/Qwen3-0.6B</code>. XSum: <code>gpt2</code></td>
+<td>GPU; guidance doubles the batch of each pass</td>
+<td>A shell loop</td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="projects/03-level1-probe.html">Level-1 probe</a></td>
+<td>TinyStories 0.578 GB</td>
+<td>None for the probe; <code>gpt2-large</code> only if you score genPPL</td>
+<td>GPU</td>
+<td>About 30 lines + helpers</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="projects/04-coarse-to-fine-viewer.html">Coarse-to-fine viewer</a></td>
+<td>Any one task; Sudoku hard is the smallest (0.163 GB)</td>
+<td>Those of the task you select</td>
+<td>GPU</td>
+<td>About 20 lines + helpers</td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="projects/05-tokenizer-reconstruction.html">Tokenizer reconstruction per level</a></td>
+<td>Any one tokenizer</td>
+<td>Those of the task you select</td>
+<td>GPU</td>
+<td>About 20 lines + helpers</td>
+</tr>
+<tr>
+<td>6</td>
+<td><a href="projects/06-wall-clock-vs-passes.html">Wall-clock against pass count</a></td>
+<td>Any one task</td>
+<td>Those of the task you select</td>
+<td>GPU; report its name with the result</td>
+<td>About 30 lines + helpers</td>
+</tr>
+<tr>
+<td>7</td>
+<td><a href="projects/07-sudoku-constraint-trace.html">Sudoku rule violations per level</a></td>
+<td>Sudoku hard 0.163 GB</td>
+<td>None</td>
+<td>GPU (run on 4,096 MiB)</td>
+<td>About 40 lines + helpers</td>
+</tr>
+<tr>
+<td>8</td>
+<td><a href="projects/08-mbr-decoding.html">MBR decoding for WMT14</a></td>
+<td>WMT14 1.127 GB</td>
+<td><code>Qwen/Qwen3-0.6B</code></td>
+<td>GPU; M candidates multiply the generation time by M</td>
+<td>About 50 lines + helpers</td>
+</tr>
+<tr>
+<td>9</td>
+<td><a href="projects/09-ar-kv-cache-baseline.html">Autoregressive KV-cache baseline</a></td>
+<td>LM1B small 0.988 GB</td>
+<td><code>bert-base-uncased</code>, <code>gpt2</code> (124M)</td>
+<td>GPU that holds both models</td>
+<td>About 50 lines + helpers</td>
+</tr>
+<tr>
+<td>10</td>
+<td><a href="projects/10-train-a-tiny-tokenizer.html">Train a tiny tokenizer</a></td>
+<td>Sudoku solutions 0.001 GB (no checkpoint)</td>
+<td>None</td>
+<td>CPU for a 5-step test; GPU for the full run</td>
+<td>About 60 lines: optimizer loop, data loader, reconstruction loss</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="documentation">Documentation</h2>
 <table>
