@@ -2,7 +2,16 @@
 
 **Goal:** Measure the wall-clock time of an autoregressive model with a KV cache, with the same batch, length and GPU as NCM. The paper has no such comparison.
 
-**Effort:** about 50 lines. **Status:** not run.
+**Effort:** about 50 lines. **Status:** run on 2026-11-22, batches 1 to 32 (batch 64 and above do not fit in 4 GB). Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** time of GPT-2 (124M, KV cache) against NCM LM1B small for 1,024 samples of 128 tokens. Speed only; the models differ in data and tokenizer.
+- **Result:** GPT-2 takes 8.15 to 8.81 times as long as NCM at batch 1, 4.72 at batch 4, 2.82 at batch 8, 1.47 at batch 16 and 1.33 at batch 32.
+- **Result:** at batch 16, NCM takes 61.69 s and GPT-2 90.59 s per 1,024 samples. The eval penalty loop adds 4.93 s to NCM.
+- **Unexpected:** NCM batch 64 does not fit in 4 GB. Repeated `generate()` calls need `gc.collect()` to free memory.
+- **Lesson:** NCM's lead over a KV-cache autoregressive model falls as the batch grows. The paper has no autoregressive timing to compare.
 
 ## Background
 

@@ -2,7 +2,16 @@
 
 **Goal:** Count the Sudoku rule violations of the full-length partial decode after each of the 12 levels. Find the level where the board becomes valid.
 
-**Effort:** about 40 lines. **Status:** run on 2026-11-21 on the first 128 Sudoku-hard puzzles.
+**Effort:** about 40 lines. **Status:** run on 2026-11-21 on all 2,000 puzzles of each difficulty. Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** rule violations, correct cells and changed clues after each level, and the solved rate.
+- **Result:** solved 99.40 / 96.45 / 86.25 % for easy / medium / hard (Table 3: 99.5 / 96.5 / 86.1). The differences are 1 to 3 boards of 2,000.
+- **Result:** no board is exact before level 12. On hard, mean violations fall from 34.29 at level 11 to 0.47 at level 12.
+- **Unexpected:** violations can rise between coarse levels (hard: 85.89 → 91.12 at level 6) while correct cells rise. 23 level-1 boards with zero violations contain no digits.
+- **Lesson:** the last level, with one code per cell, does almost all of the constraint repair.
 
 ## Background
 

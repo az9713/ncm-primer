@@ -2,7 +2,16 @@
 
 **Goal:** Train a multiscale residual VQ-VAE on Sudoku solutions with the existing training-mode forward. Compare its per-level reconstruction with the released Sudoku tokenizer.
 
-**Effort:** about 60 lines. **Status:** the loop below ran 5 steps on random data on CPU with the `sudoku-hard` config (2026-11-21). The saved file loaded again with `strict=True`. A full training run was not done.
+**Effort:** about 60 lines. **Status:** run on 2026-11-22: one 10,000-step run (Table 5 budget) and two 2,500-step runs. Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** whether the repository's training-mode forward, with a loss, optimizer and data loader added, trains a Sudoku tokenizer.
+- **Result:** 10,000 steps (batch 1,024 by accumulation): held-out accuracy 100.000 %, utilization 89.58 % (Table 1: 100 %, 80.73 %). Per-level accuracy beats the released tokenizer at levels 1 to 11.
+- **Result:** 2,500 steps: utilization 69.79 % (real boards) and 72.40 % (augmented boards).
+- **Unexpected:** level-12 accuracy is 100 % from step 500, while coarse levels still decode at about 19 %. Batch 1,024 in one pass does not fit in 4 GB.
+- **Lesson:** final accuracy does not test a Sudoku tokenizer. Use per-level accuracy and utilization. The paper's loss weights are not in the repository; 1:1 worked.
 
 ## What exists and what you must write
 

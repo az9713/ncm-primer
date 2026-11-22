@@ -34,7 +34,15 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <nav class="top"><a href="../index.html">Docs home</a></nav>
 <h1 id="project-10-train-a-tiny-tokenizer">Project 10: train a tiny tokenizer</h1>
 <p><strong>Goal:</strong> Train a multiscale residual VQ-VAE on Sudoku solutions with the existing training-mode forward. Compare its per-level reconstruction with the released Sudoku tokenizer.</p>
-<p><strong>Effort:</strong> about 60 lines. <strong>Status:</strong> the loop below ran 5 steps on random data on CPU with the <code>sudoku-hard</code> config (2026-11-21). The saved file loaded again with <code>strict=True</code>. A full training run was not done.</p>
+<p><strong>Effort:</strong> about 60 lines. <strong>Status:</strong> run on 2026-11-22: one 10,000-step run (Table 5 budget) and two 2,500-step runs. Full results: <a href="../../experiments/index.html">experiment report</a>.</p>
+<h2 id="result-run-2026-11-2122">Result (run 2026-11-21/22)</h2>
+<ul>
+<li><strong>What it measured:</strong> whether the repository's training-mode forward, with a loss, optimizer and data loader added, trains a Sudoku tokenizer.</li>
+<li><strong>Result:</strong> 10,000 steps (batch 1,024 by accumulation): held-out accuracy 100.000 %, utilization 89.58 % (Table 1: 100 %, 80.73 %). Per-level accuracy beats the released tokenizer at levels 1 to 11.</li>
+<li><strong>Result:</strong> 2,500 steps: utilization 69.79 % (real boards) and 72.40 % (augmented boards).</li>
+<li><strong>Unexpected:</strong> level-12 accuracy is 100 % from step 500, while coarse levels still decode at about 19 %. Batch 1,024 in one pass does not fit in 4 GB.</li>
+<li><strong>Lesson:</strong> final accuracy does not test a Sudoku tokenizer. Use per-level accuracy and utilization. The paper's loss weights are not in the repository; 1:1 worked.</li>
+</ul>
 <h2 id="what-exists-and-what-you-must-write">What exists and what you must write</h2>
 <table>
 <thead>

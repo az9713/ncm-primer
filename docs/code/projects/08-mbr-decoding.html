@@ -34,7 +34,15 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <nav class="top"><a href="../index.html">Docs home</a></nav>
 <h1 id="project-8-add-mbr-decoding-for-wmt14">Project 8: add MBR decoding for WMT14</h1>
 <p><strong>Goal:</strong> Generate M sampled translations per source and keep the one with the highest mean BLEU against the other candidates. The paper reports BLEU 22.6 without MBR and 25.2 with MBR over 12 candidates (132 NFE).</p>
-<p><strong>Effort:</strong> about 50 lines. <strong>Status:</strong> the selection function was run on three short strings. The WMT14 run was not done.</p>
+<p><strong>Effort:</strong> about 50 lines. <strong>Status:</strong> run on 2026-11-22 on all 3,003 WMT14 sources. Full results: <a href="../../experiments/index.html">experiment report</a>.</p>
+<h2 id="result-run-2026-11-2122">Result (run 2026-11-21/22)</h2>
+<ul>
+<li><strong>What it measured:</strong> BLEU of minimum-Bayes-risk selection over M sampled candidates (T 0.8, top-p 0.9).</li>
+<li><strong>Result:</strong> M = 12 (132 passes): lowercased BLEU 24.67, cased 23.81. Greedy: 22.62 / 21.72. M = 4: 22.11 / 21.29; M = 8: 24.04 / 23.19. Table 2: 25.2.</li>
+<li><strong>Result:</strong> the gain over greedy is +2.05 (lowercased), against +2.6 in the paper.</li>
+<li><strong>Unexpected:</strong> one sample at T 0.8 scores 18.19, below greedy, and M = 4 is still below greedy. The paper does not state its MBR sampler.</li>
+<li><strong>Lesson:</strong> MBR helps with more candidates, with smaller steps (+1.90 from 4 to 8, +0.62 from 8 to 12). The sampler choice limits the result.</li>
+</ul>
 <h2 id="background">Background</h2>
 <ul>
 <li>The WMT14 config is greedy (<code>top_k: 1</code>, <code>top_p: 0.0</code>). Greedy runs give M equal candidates, so you must enable sampling.</li>

@@ -34,7 +34,15 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <nav class="top"><a href="../index.html">Docs home</a></nav>
 <h1 id="project-6-measure-wall-clock-time-against-pass-count">Project 6: measure wall-clock time against pass count</h1>
 <p><strong>Goal:</strong> Measure the time of each generator pass and the quality after each level. The result is a curve of quality against time, without changes to <code>generate()</code>.</p>
-<p><strong>Effort:</strong> about 30 lines. <strong>Status:</strong> the timing code was run on Sudoku hard on 2026-11-21.</p>
+<p><strong>Effort:</strong> about 30 lines. <strong>Status:</strong> run on 2026-11-21/22 for all 5 tasks, batches 1, 16 and 128 (XSum 32). Full results: <a href="../../experiments/index.html">experiment report</a>.</p>
+<h2 id="result-run-2026-11-2122">Result (run 2026-11-21/22)</h2>
+<ul>
+<li><strong>What it measured:</strong> time per generator pass and per <code>generate()</code> call, and quality against cumulative time.</li>
+<li><strong>Result:</strong> LM1B batch 16: 0.891 s per call; the last pass costs 11.0 times the first. XSum: the 512-token prefix dominates; all 9 passes cost 591 to 645 ms at batch 16.</li>
+<li><strong>Result:</strong> KV cache on WMT14: 100 % code agreement and 2.35 times faster at batch 16 with unpadded prefixes; 25.5 to 37.4 % agreement with padded prefixes.</li>
+<li><strong>Unexpected:</strong> <code>generate()</code> leaves GPU tensors in reference cycles (about 78 MiB per call at batch 16). Without <code>gc.collect()</code> between calls, tight loops run out of memory.</li>
+<li><strong>Lesson:</strong> stopping early saves little: on Sudoku the last pass makes all solved boards. The paper's diffusion speed ratios cannot be tested without the baselines.</li>
+</ul>
 <h2 id="background">Background</h2>
 <p><code>generate()</code> always runs all levels. But the first k levels of a run do not depend on the later levels. So the output of a run stopped after level k equals <code>partial_decodes(...)[k-1]</code> of the full run. Its cost is the sum of the first k pass times.</p>
 <p>The KV cache (<code>use_kv_cache=True</code>) computes the prefix once (<code>models/next_concept.py:649-657</code>). It is allowed only for configs without <code>query_level0</code>: <code>tinystories</code> and <code>wmt14</code> of the released models (<code>:523-524</code>). It ignores the prefix pad mask (<code>:654</code>, <code>:683</code>).</p>

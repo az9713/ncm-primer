@@ -34,7 +34,15 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <nav class="top"><a href="../index.html">Docs home</a></nav>
 <h1 id="project-1-measure-the-effect-of-the-decode-time-penalties">Project 1: measure the effect of the decode-time penalties</h1>
 <p><strong>Goal:</strong> Find how much of the LM1B and XSum scores comes from the token penalties in <code>pick_tokens()</code>. Algorithm 2 of the paper does not have them.</p>
-<p><strong>Effort:</strong> flags only. <strong>Status:</strong> not run.</p>
+<p><strong>Effort:</strong> flags only. <strong>Status:</strong> run on 2026-11-21 (LM1B, all 1,280 samples) and 2026-11-22 (XSum, first 1,000 documents). Full results: <a href="../../experiments/index.html">experiment report</a>.</p>
+<h2 id="result-run-2026-11-2122">Result (run 2026-11-21/22)</h2>
+<ul>
+<li><strong>What it measured:</strong> the share of the LM1B and XSum scores that comes from the decode-time penalties of <code>pick_tokens()</code>.</li>
+<li><strong>Result:</strong> LM1B with the released penalties: genPPL 94.06 ± 1.42, entropy 4.3138 (Table 8: 93.05, 4.31). Without penalties (Algorithm 2): 78.53, entropy 4.1176.</li>
+<li><strong>Result:</strong> the frequency penalty causes almost all of the change (94.15 alone). The adjacency penalty alone adds 1.02. On XSum the penalties change ROUGE-L by at most 0.07 (27.78 against 27.71).</li>
+<li><strong>Unexpected:</strong> the paper's Algorithm 2 has no penalties, but its LM1B number needs them.</li>
+<li><strong>Lesson:</strong> the penalties trade genPPL for entropy. They move the unigram entropy to the data value (4.31) at a cost of +15.5 genPPL.</li>
+</ul>
 <h2 id="background">Background</h2>
 <p>After generation, <code>scripts/eval_shard.py:99-124</code> changes the token logits of the decoder. LM1B uses a frequency penalty of 11.5, a deficit bonus of 2.0 and an adjacency penalty <code>10,4,0.5</code>. XSum uses 2.0, 1.0 and <code>5,4,0.5</code>. With all three at zero, the script takes the argmax (<code>:100-101</code>), as Algorithm 2 does.</p>
 <h2 id="what-exists-and-what-you-write">What exists and what you write</h2>

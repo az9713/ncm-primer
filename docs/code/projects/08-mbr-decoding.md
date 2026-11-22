@@ -2,7 +2,16 @@
 
 **Goal:** Generate M sampled translations per source and keep the one with the highest mean BLEU against the other candidates. The paper reports BLEU 22.6 without MBR and 25.2 with MBR over 12 candidates (132 NFE).
 
-**Effort:** about 50 lines. **Status:** the selection function was run on three short strings. The WMT14 run was not done.
+**Effort:** about 50 lines. **Status:** run on 2026-11-22 on all 3,003 WMT14 sources. Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** BLEU of minimum-Bayes-risk selection over M sampled candidates (T 0.8, top-p 0.9).
+- **Result:** M = 12 (132 passes): lowercased BLEU 24.67, cased 23.81. Greedy: 22.62 / 21.72. M = 4: 22.11 / 21.29; M = 8: 24.04 / 23.19. Table 2: 25.2.
+- **Result:** the gain over greedy is +2.05 (lowercased), against +2.6 in the paper.
+- **Unexpected:** one sample at T 0.8 scores 18.19, below greedy, and M = 4 is still below greedy. The paper does not state its MBR sampler.
+- **Lesson:** MBR helps with more candidates, with smaller steps (+1.90 from 4 to 8, +0.62 from 8 to 12). The sampler choice limits the result.
 
 ## Background
 

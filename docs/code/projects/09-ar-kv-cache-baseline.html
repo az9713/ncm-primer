@@ -34,7 +34,15 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <nav class="top"><a href="../index.html">Docs home</a></nav>
 <h1 id="project-9-time-an-autoregressive-model-with-a-kv-cache">Project 9: time an autoregressive model with a KV cache</h1>
 <p><strong>Goal:</strong> Measure the wall-clock time of an autoregressive model with a KV cache, with the same batch, length and GPU as NCM. The paper has no such comparison.</p>
-<p><strong>Effort:</strong> about 50 lines. <strong>Status:</strong> not run.</p>
+<p><strong>Effort:</strong> about 50 lines. <strong>Status:</strong> run on 2026-11-22, batches 1 to 32 (batch 64 and above do not fit in 4 GB). Full results: <a href="../../experiments/index.html">experiment report</a>.</p>
+<h2 id="result-run-2026-11-2122">Result (run 2026-11-21/22)</h2>
+<ul>
+<li><strong>What it measured:</strong> time of GPT-2 (124M, KV cache) against NCM LM1B small for 1,024 samples of 128 tokens. Speed only; the models differ in data and tokenizer.</li>
+<li><strong>Result:</strong> GPT-2 takes 8.15 to 8.81 times as long as NCM at batch 1, 4.72 at batch 4, 2.82 at batch 8, 1.47 at batch 16 and 1.33 at batch 32.</li>
+<li><strong>Result:</strong> at batch 16, NCM takes 61.69 s and GPT-2 90.59 s per 1,024 samples. The eval penalty loop adds 4.93 s to NCM.</li>
+<li><strong>Unexpected:</strong> NCM batch 64 does not fit in 4 GB. Repeated <code>generate()</code> calls need <code>gc.collect()</code> to free memory.</li>
+<li><strong>Lesson:</strong> NCM's lead over a KV-cache autoregressive model falls as the batch grows. The paper has no autoregressive timing to compare.</li>
+</ul>
 <h2 id="background">Background</h2>
 <p>The paper compares NCM with diffusion models: on LM1B, 21× less wall-clock than DUO (1,024 sequences, batch 16, one H100). An autoregressive model with a KV cache makes 128 small passes for 128 tokens. Each pass processes one new token per row. NCM makes 11 passes over 1 + ℓ_k rows. The comparison shows which cost is lower on your GPU.</p>
 <p>The repository has no autoregressive model. The models below are not trained on the same data, and they use different tokenizers. This project compares speed only. A quality comparison needs a model trained on the same data.</p>

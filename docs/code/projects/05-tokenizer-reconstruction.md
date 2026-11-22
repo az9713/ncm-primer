@@ -2,7 +2,16 @@
 
 **Goal:** Measure how many tokens the frozen tokenizer gets right when the decoder sees only levels 1 to k. Use your own text.
 
-**Effort:** about 20 lines. **Status:** the code was run with random weights on the Sudoku config (2026-11-21). The released tokenizers were not tested.
+**Effort:** about 20 lines. **Status:** run on 2026-11-21/22 on all 7 released tokenizers with held-out data. Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** token accuracy after each level and codebook use, for all released tokenizers.
+- **Result:** final non-pad accuracy: LM1B 99.858, TinyStories 99.980, XSum 99.771, WMT14 98.507 %; Sudoku 100.000 / 99.999 / 100.000 % (Table 1: 99.86, 99.98, 99.79, 98.79, 100).
+- **Result:** Sudoku utilization equals Table 1 exactly (80.73 / 83.85 / 80.73 %). Text utilization differs by −9.79 to +3.64 points; it depends on the held-out set.
+- **Unexpected:** the decoder never outputs PAD at pad positions; it outputs EOS. Only the last level brings accuracy above 99 % for Sudoku, LM1B and XSum.
+- **Lesson:** exclude pad positions when you score. Sudoku 100 % is easy: the last level has one 16-way code per cell for 12 symbols.
 
 ## Background
 

@@ -35,7 +35,7 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <h1 id="use-ncm-from-python">Use NCM from Python</h1>
 <p>Use this guide to load a released model in your own script, generate codes, and decode them to text. The <a href="../projects/index.html">projects</a> use the functions on this page.</p>
 <p>Prerequisites: the packages in <a href="../getting-started/prerequisites.html">Prerequisites</a>, one downloaded model (see <a href="run-an-evaluation.html">Run an evaluation</a>).</p>
-<p>Status: <code>load()</code>, the <code>generate()</code> call, the decode in step 5 and <code>partial_decodes()</code> were run on 2026-11-21 with the <code>sudoku-hard</code> checkpoint on a GPU. The parts for text configs (unigram table, <code>to_text()</code> on text) were not run.</p>
+<p>Status: all steps were run on 2026-11-21/22 with the Sudoku, LM1B, TinyStories, XSum and WMT14 checkpoints (<code>experiments/common/ncm_helpers.py</code>). <code>partial_decodes()</code> equals the eval decode at the last level for all 7 tokenizers.</p>
 <blockquote>
 <p><strong>Warning:</strong> <code>torch.load(..., weights_only=False)</code> unpickles Python objects, and a pickle can run code. <code>scripts/eval_shard.py:52</code> uses the same call. Load only checkpoint files from a source that you trust.</p>
 </blockquote>

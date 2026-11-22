@@ -138,6 +138,31 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <li><strong>Cause:</strong> <code>evaluate.py:20</code> uses the GPU count. No file reads <code>n_shards</code>.</li>
 <li><strong>Fix:</strong> Use <code>--gpus</code>.</li>
 </ul>
+<h2 id="found-in-the-2026-11-2122-experiment-runs">Found in the 2026-11-21/22 experiment runs</h2>
+<h3 id="gpu-memory-grows-with-each-generate-call">GPU memory grows with each <code>generate()</code> call</h3>
+<ul>
+<li><strong>Symptom:</strong> a loop of <code>generate()</code> calls raises CUDA OOM at batch 4 or more, although one call fits. Checked.</li>
+<li><strong>Cause:</strong> <code>generate()</code> leaves GPU tensors in reference cycles: about 78 MiB per call at batch 16, freed only by Python's cyclic garbage collector.</li>
+<li><strong>Fix:</strong> call <code>gc.collect()</code> between calls (<code>experiments/p09_ar_baseline/leak_test2.log</code>).</li>
+</ul>
+<h3 id="runs-are-very-slow-on-a-4-gb-gpu">Runs are very slow on a 4 GB GPU</h3>
+<ul>
+<li><strong>Symptom:</strong> a run takes many times longer than expected, with no error. Checked.</li>
+<li><strong>Cause:</strong> on Windows an overflow spills to shared system memory instead of raising OOM. Examples: WMT14 at the config batch 64, XSum at batch 32, <code>gpt2-large</code> fp32 scoring.</li>
+<li><strong>Fix:</strong> use <code>--bs 16</code> (WMT14, XSum), score genPPL in fp16, or cap memory with <code>torch.cuda.set_per_process_memory_fraction</code>.</li>
+</ul>
+<h3 id="wmt14-bleu-is-09-lower-than-the-paper">WMT14 BLEU is 0.9 lower than the paper</h3>
+<ul>
+<li><strong>Symptom:</strong> <code>BLEU</code> column 21.72 against Table 2 22.6. Checked.</li>
+<li><strong>Cause:</strong> the paper does not state the casing. The <code>BLEU(lc)</code> column (22.62) matches Table 2.</li>
+<li><strong>Fix:</strong> report both columns and name the one you compare.</li>
+</ul>
+<h3 id="kv-cache-output-differs-from-the-eager-output-real-weights">KV-cache output differs from the eager output (real weights)</h3>
+<ul>
+<li><strong>Symptom:</strong> with real WMT14 weights, KV and eager codes agree on 25.5 to 37.4 % of positions. Checked.</li>
+<li><strong>Cause:</strong> the pad mask is dropped (<code>models/next_concept.py:654</code>, <code>:683</code>). With unpadded prefixes the agreement is 100 %.</li>
+<li><strong>Fix:</strong> use the eager path for padded prefixes. The eval uses the eager path.</li>
+</ul>
 <footer>Generated from <code>troubleshooting/common-issues.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
 </main>
 </body>

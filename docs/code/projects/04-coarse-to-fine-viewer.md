@@ -2,7 +2,16 @@
 
 **Goal:** Make an HTML page that shows one sample after each level, from level 1 to level K, as in `assets/coarse_to_fine.gif`.
 
-**Effort:** about 20 lines. **Status:** code run on Sudoku hard on 2026-11-21. Not run on text configs.
+**Effort:** about 20 lines. **Status:** run on 2026-11-21/22 (Sudoku hard puzzle 0 and WMT14 source 1218). Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** the output after each level, compared with paper Fig. 20 (Sudoku) and Table 12 (WMT14).
+- **Result:** WMT14 source 1218 reproduces Table 12 exactly: 11 of 11 per-level BLEU values and all texts. Only method B (`partial_decodes()`) gives this.
+- **Result:** Sudoku puzzle 0 reaches the Fig. 20 final board. Intermediate correct-cell counts match at 5 of 12 levels in the default precision and 9 of 12 in bf16.
+- **Unexpected:** numeric precision changes intermediate Sudoku boards. bf16 on all 2,000 hard puzzles gives 86.35 %, the default 86.25 % (Table 3: 86.1 %).
+- **Lesson:** the paper decodes intermediate levels with full-length partial sums. A viewer page is in `experiments/p04_coarse_to_fine/trajectory.html`.
 
 ## Background
 

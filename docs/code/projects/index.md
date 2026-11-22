@@ -28,18 +28,22 @@ This section gives 10 projects that use the released code and checkpoints. They 
 
 ## Projects in order of effort
 
-| # | Project | New code | Download | Status on 2026-11-21 |
+| # | Project | New code | Download | Status on 2026-11-22 |
 |---|---------|----------|----------|----------------------|
-| 1 | [Measure the effect of the decode-time penalties](01-decode-time-penalties.md) | None (flags) | 0.988 GB (LM1B small) or 0.674 GB (XSum) | Not run |
-| 2 | [Sweep the guidance weight and the sampler](02-guidance-and-sampler-sweep.md) | None (flags), a shell loop | 1.127 GB (WMT14) or 0.674 GB (XSum) | Not run |
-| 3 | [Probe what level-1 codes encode](03-level1-probe.md) | About 30 lines | 0.578 GB (TinyStories) | Not run |
-| 4 | [Show the coarse-to-fine trajectory](04-coarse-to-fine-viewer.md) | About 20 lines | any model | Code run on Sudoku |
-| 5 | [Measure tokenizer reconstruction per level](05-tokenizer-reconstruction.md) | About 20 lines | any tokenizer | Code run with random weights |
-| 6 | [Measure wall-clock time against pass count](06-wall-clock-vs-passes.md) | About 30 lines | any model | Run on Sudoku |
-| 7 | [Trace Sudoku rule violations per level](07-sudoku-constraint-trace.md) | About 40 lines | 0.163 GB | Run on Sudoku hard |
-| 8 | [Add MBR decoding for WMT14](08-mbr-decoding.md) | About 50 lines | 1.127 GB | Not run |
-| 9 | [Time an autoregressive model with a KV cache](09-ar-kv-cache-baseline.md) | About 50 lines | 0.988 GB + GPT-2 | Not run |
-| 10 | [Train a tiny tokenizer](10-train-a-tiny-tokenizer.md) | About 60 lines | 0.001 GB (Sudoku solutions) | Loop run 5 steps on random data |
+| 1 | [Measure the effect of the decode-time penalties](01-decode-time-penalties.md) | None (flags) | 0.988 GB (LM1B small) or 0.674 GB (XSum) | Run: LM1B genPPL 94.06 (paper 93.05) |
+| 2 | [Sweep the guidance weight and the sampler](02-guidance-and-sampler-sweep.md) | None (flags), a shell loop | 1.127 GB (WMT14) or 0.674 GB (XSum) | Run: WMT14 BLEU 22.62 / 23.86 lowercased (paper 22.6 / 23.9) |
+| 3 | [Probe what level-1 codes encode](03-level1-probe.md) | About 30 lines | 0.578 GB (TinyStories) | Run: level 1 sets the story opening |
+| 4 | [Show the coarse-to-fine trajectory](04-coarse-to-fine-viewer.md) | About 20 lines | any model | Run: Table 12 reproduced exactly |
+| 5 | [Measure tokenizer reconstruction per level](05-tokenizer-reconstruction.md) | About 20 lines | any tokenizer | Run: all 7 tokenizers within 0.3 points of Table 1 |
+| 6 | [Measure wall-clock time against pass count](06-wall-clock-vs-passes.md) | About 30 lines | any model | Run: 5 tasks; KV-cache pad defect isolated |
+| 7 | [Trace Sudoku rule violations per level](07-sudoku-constraint-trace.md) | About 40 lines | 0.163 GB | Run: 99.40 / 96.45 / 86.25 % (paper 99.5 / 96.5 / 86.1) |
+| 8 | [Add MBR decoding for WMT14](08-mbr-decoding.md) | About 50 lines | 1.127 GB | Run: BLEU 24.67 lowercased at M = 12 (paper 25.2) |
+| 9 | [Time an autoregressive model with a KV cache](09-ar-kv-cache-baseline.md) | About 50 lines | 0.988 GB + GPT-2 | Run: GPT-2 / NCM time 8.2–8.8 at batch 1, 1.33 at batch 32 |
+| 10 | [Train a tiny tokenizer](10-train-a-tiny-tokenizer.md) | About 60 lines | 0.001 GB (Sudoku solutions) | Run: 10,000 steps, 100 % accuracy, 89.58 % utilization |
+
+## Results of the 2026-11-21/22 runs
+
+All 10 projects were run on one RTX 3050 Laptop GPU (4 GB). Each project page has a "Result" section. The full report with tables, logs and command lines: [experiment report](../../experiments/index.html). Evidence: `experiments/` in the repository.
 
 ## Shared setup code
 

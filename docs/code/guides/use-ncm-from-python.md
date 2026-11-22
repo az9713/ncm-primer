@@ -4,7 +4,7 @@ Use this guide to load a released model in your own script, generate codes, and 
 
 Prerequisites: the packages in [Prerequisites](../getting-started/prerequisites.md), one downloaded model (see [Run an evaluation](run-an-evaluation.md)).
 
-Status: `load()`, the `generate()` call, the decode in step 5 and `partial_decodes()` were run on 2026-11-21 with the `sudoku-hard` checkpoint on a GPU. The parts for text configs (unigram table, `to_text()` on text) were not run.
+Status: all steps were run on 2026-11-21/22 with the Sudoku, LM1B, TinyStories, XSum and WMT14 checkpoints (`experiments/common/ncm_helpers.py`). `partial_decodes()` equals the eval decode at the last level for all 7 tokenizers.
 
 > **Warning:** `torch.load(..., weights_only=False)` unpickles Python objects, and a pickle can run code. `scripts/eval_shard.py:52` uses the same call. Load only checkpoint files from a source that you trust.
 

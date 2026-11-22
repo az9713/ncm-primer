@@ -34,7 +34,15 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <nav class="top"><a href="../index.html">Docs home</a></nav>
 <h1 id="project-3-probe-what-level-1-codes-encode">Project 3: probe what level-1 codes encode</h1>
 <p><strong>Goal:</strong> Find out what one level-1 code controls in TinyStories samples. TinyStories has ℓ_1 = 1, so one code out of 4,096 starts each story.</p>
-<p><strong>Effort:</strong> about 30 lines. <strong>Status:</strong> not run.</p>
+<p><strong>Effort:</strong> about 30 lines. <strong>Status:</strong> run on 2026-11-21/22. Full results: <a href="../../experiments/index.html">experiment report</a>.</p>
+<h2 id="result-run-2026-11-2122">Result (run 2026-11-21/22)</h2>
+<ul>
+<li><strong>What it measured:</strong> what the single level-1 code (1 of 4,096) controls in TinyStories samples.</li>
+<li><strong>Result:</strong> default genPPL 16.29 ± 0.22, entropy 3.9712 (Table 8: 15.41, 3.98). A uniform level-1 draw gives 18.29; <code>smooth:0.1</code> gives 16.19.</li>
+<li><strong>Result:</strong> the code sets the opening: "Once upon a time" against "One day". It does not change the length (103 to 106 words for all 20 codes).</li>
+<li><strong>Unexpected:</strong> with the same random seed, different level-1 codes give the same story. The seed moves the content 5.65 times as much as the code (+0.101 against +0.018 word-count cosine).</li>
+<li><strong>Lesson:</strong> on TinyStories, level 1 fixes a coarse property, not the story topic. The sampled later levels decide characters and plot.</li>
+</ul>
 <h2 id="background">Background</h2>
 <p>For TinyStories, the eval draws the level-1 code from a stored unigram table (<code>scripts/eval_shard.py:71</code>, <code>:156</code>). The generator then makes levels 2 to 12 from that code and one EOS prefix. If you fix the code, you fix the start of the coarse-to-fine path.</p>
 <h2 id="what-exists-and-what-you-write">What exists and what you write</h2>

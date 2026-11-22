@@ -2,7 +2,16 @@
 
 **Goal:** Find out what one level-1 code controls in TinyStories samples. TinyStories has ℓ_1 = 1, so one code out of 4,096 starts each story.
 
-**Effort:** about 30 lines. **Status:** not run.
+**Effort:** about 30 lines. **Status:** run on 2026-11-21/22. Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** what the single level-1 code (1 of 4,096) controls in TinyStories samples.
+- **Result:** default genPPL 16.29 ± 0.22, entropy 3.9712 (Table 8: 15.41, 3.98). A uniform level-1 draw gives 18.29; `smooth:0.1` gives 16.19.
+- **Result:** the code sets the opening: "Once upon a time" against "One day". It does not change the length (103 to 106 words for all 20 codes).
+- **Unexpected:** with the same random seed, different level-1 codes give the same story. The seed moves the content 5.65 times as much as the code (+0.101 against +0.018 word-count cosine).
+- **Lesson:** on TinyStories, level 1 fixes a coarse property, not the story topic. The sampled later levels decide characters and plot.
 
 ## Background
 

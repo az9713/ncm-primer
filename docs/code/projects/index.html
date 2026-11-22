@@ -133,7 +133,7 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <th>Project</th>
 <th>New code</th>
 <th>Download</th>
-<th>Status on 2026-11-21</th>
+<th>Status on 2026-11-22</th>
 </tr>
 </thead>
 <tbody>
@@ -142,73 +142,75 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <td><a href="01-decode-time-penalties.html">Measure the effect of the decode-time penalties</a></td>
 <td>None (flags)</td>
 <td>0.988 GB (LM1B small) or 0.674 GB (XSum)</td>
-<td>Not run</td>
+<td>Run: LM1B genPPL 94.06 (paper 93.05)</td>
 </tr>
 <tr>
 <td>2</td>
 <td><a href="02-guidance-and-sampler-sweep.html">Sweep the guidance weight and the sampler</a></td>
 <td>None (flags), a shell loop</td>
 <td>1.127 GB (WMT14) or 0.674 GB (XSum)</td>
-<td>Not run</td>
+<td>Run: WMT14 BLEU 22.62 / 23.86 lowercased (paper 22.6 / 23.9)</td>
 </tr>
 <tr>
 <td>3</td>
 <td><a href="03-level1-probe.html">Probe what level-1 codes encode</a></td>
 <td>About 30 lines</td>
 <td>0.578 GB (TinyStories)</td>
-<td>Not run</td>
+<td>Run: level 1 sets the story opening</td>
 </tr>
 <tr>
 <td>4</td>
 <td><a href="04-coarse-to-fine-viewer.html">Show the coarse-to-fine trajectory</a></td>
 <td>About 20 lines</td>
 <td>any model</td>
-<td>Code run on Sudoku</td>
+<td>Run: Table 12 reproduced exactly</td>
 </tr>
 <tr>
 <td>5</td>
 <td><a href="05-tokenizer-reconstruction.html">Measure tokenizer reconstruction per level</a></td>
 <td>About 20 lines</td>
 <td>any tokenizer</td>
-<td>Code run with random weights</td>
+<td>Run: all 7 tokenizers within 0.3 points of Table 1</td>
 </tr>
 <tr>
 <td>6</td>
 <td><a href="06-wall-clock-vs-passes.html">Measure wall-clock time against pass count</a></td>
 <td>About 30 lines</td>
 <td>any model</td>
-<td>Run on Sudoku</td>
+<td>Run: 5 tasks; KV-cache pad defect isolated</td>
 </tr>
 <tr>
 <td>7</td>
 <td><a href="07-sudoku-constraint-trace.html">Trace Sudoku rule violations per level</a></td>
 <td>About 40 lines</td>
 <td>0.163 GB</td>
-<td>Run on Sudoku hard</td>
+<td>Run: 99.40 / 96.45 / 86.25 % (paper 99.5 / 96.5 / 86.1)</td>
 </tr>
 <tr>
 <td>8</td>
 <td><a href="08-mbr-decoding.html">Add MBR decoding for WMT14</a></td>
 <td>About 50 lines</td>
 <td>1.127 GB</td>
-<td>Not run</td>
+<td>Run: BLEU 24.67 lowercased at M = 12 (paper 25.2)</td>
 </tr>
 <tr>
 <td>9</td>
 <td><a href="09-ar-kv-cache-baseline.html">Time an autoregressive model with a KV cache</a></td>
 <td>About 50 lines</td>
 <td>0.988 GB + GPT-2</td>
-<td>Not run</td>
+<td>Run: GPT-2 / NCM time 8.2–8.8 at batch 1, 1.33 at batch 32</td>
 </tr>
 <tr>
 <td>10</td>
 <td><a href="10-train-a-tiny-tokenizer.html">Train a tiny tokenizer</a></td>
 <td>About 60 lines</td>
 <td>0.001 GB (Sudoku solutions)</td>
-<td>Loop run 5 steps on random data</td>
+<td>Run: 10,000 steps, 100 % accuracy, 89.58 % utilization</td>
 </tr>
 </tbody>
 </table>
+<h2 id="results-of-the-2026-11-2122-runs">Results of the 2026-11-21/22 runs</h2>
+<p>All 10 projects were run on one RTX 3050 Laptop GPU (4 GB). Each project page has a "Result" section. The full report with tables, logs and command lines: <a href="../../experiments/index.html">experiment report</a>. Evidence: <code>experiments/</code> in the repository.</p>
 <h2 id="shared-setup-code">Shared setup code</h2>
 <p>Projects 3 to 9 use the <code>load()</code> function and the <code>partial_decodes()</code> function. Both are in <a href="../guides/use-ncm-from-python.html">Use NCM from Python</a>, steps 2 and 6. Copy them into a file <code>ncm_helpers.py</code> outside the repository, and import them:</p>
 <pre><code class="language-python">from ncm_helpers import load, partial_decodes

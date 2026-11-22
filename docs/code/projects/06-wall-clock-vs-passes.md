@@ -2,7 +2,16 @@
 
 **Goal:** Measure the time of each generator pass and the quality after each level. The result is a curve of quality against time, without changes to `generate()`.
 
-**Effort:** about 30 lines. **Status:** the timing code was run on Sudoku hard on 2026-11-21.
+**Effort:** about 30 lines. **Status:** run on 2026-11-21/22 for all 5 tasks, batches 1, 16 and 128 (XSum 32). Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** time per generator pass and per `generate()` call, and quality against cumulative time.
+- **Result:** LM1B batch 16: 0.891 s per call; the last pass costs 11.0 times the first. XSum: the 512-token prefix dominates; all 9 passes cost 591 to 645 ms at batch 16.
+- **Result:** KV cache on WMT14: 100 % code agreement and 2.35 times faster at batch 16 with unpadded prefixes; 25.5 to 37.4 % agreement with padded prefixes.
+- **Unexpected:** `generate()` leaves GPU tensors in reference cycles (about 78 MiB per call at batch 16). Without `gc.collect()` between calls, tight loops run out of memory.
+- **Lesson:** stopping early saves little: on Sudoku the last pass makes all solved boards. The paper's diffusion speed ratios cannot be tested without the baselines.
 
 ## Background
 

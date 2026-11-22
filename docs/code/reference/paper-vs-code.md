@@ -16,8 +16,17 @@ The code does not give a reason for any item below. Do not assume which version 
 
 ## Results that the code reproduced
 
-| Task | Paper | This repository, 2026-11-21 |
-|------|-------|-----------------------------|
-| Sudoku hard | 86.1% solved | 86.25% (1725/2000), RTX 3050 Laptop GPU, config defaults |
+Runs of 2026-11-21/22 on an RTX 3050 Laptop GPU (4 GB), config defaults unless stated. Details: [experiment report](../../experiments/index.html).
 
-The other tasks were not run.
+| Task | Paper | This repository |
+|------|-------|-----------------|
+| Sudoku easy / medium / hard | 99.5 / 96.5 / 86.1 % solved (Table 3) | 99.40 / 96.45 / 86.25 % |
+| LM1B small | genPPL 93.05, entropy 4.31 (Table 8) | 94.06 ± 1.42, entropy 4.3138 (with the released penalties); 78.53 without |
+| TinyStories | genPPL 15.41, entropy 3.98 (Table 8) | 16.29 ± 0.22, entropy 3.9712 |
+| WMT14 | BLEU 22.6; with guidance 23.9 (Table 2) | lowercased 22.62 / 23.86; cased 21.72 / 22.97 |
+| WMT14 MBR, M = 12 | BLEU 25.2 (Table 2) | lowercased 24.67; cased 23.81 |
+| XSum (first 1,000 documents) | ROUGE-1/2/L 35.0 / 12.8 / 28.0 (Table 2) | 34.63 / 12.84 / 27.78 |
+| WMT14 trajectory, source 1218 | Table 12 | equal at all 11 levels |
+| Tokenizer accuracy | Table 1 | within 0.02 points for 6 of 7 tokenizers; WMT14 98.507 against 98.79 |
+
+The paper does not state the BLEU casing. The lowercased sacreBLEU column of `scripts/eval_merge.py:27` matches Table 2.

@@ -2,7 +2,16 @@
 
 **Goal:** Plot the BLEU (WMT14) or ROUGE-L (XSum) score as a function of the guidance weight and of the sampler settings.
 
-**Effort:** flags and a shell loop. **Status:** not run.
+**Effort:** flags and a shell loop. **Status:** run on 2026-11-21/22 (WMT14 full test set for w ≤ 1.0; other parts on stated subsets). Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** BLEU and ROUGE as a function of the guidance weight and of the sampler.
+- **Result:** WMT14, all 3,003 sources, lowercased BLEU: 22.62 (w 0), 23.61 (w 0.5), 23.86 (w 1.0). Cased BLEU: 21.72, 22.70, 22.97. Table 2: 22.6 and 23.9.
+- **Result:** BLEU peaks at w = 1.0 and XSum ROUGE at w = 0.5 (ROUGE-L 27.78 → 28.02), as Fig. 14 shows. Sampling at T 0.6 to 1.0 lowers BLEU by 1.5 to 4.0.
+- **Unexpected:** the paper does not state the BLEU casing. The lowercased column of `eval_merge.py` matches Table 2 within 0.04; the cased column is 0.9 lower.
+- **Lesson:** state the casing when you report WMT14 BLEU from this code. The config batch 64 does not fit in 4 GB; batch 16 changes BLEU by 0.01.
 
 ## Background
 

@@ -6,7 +6,7 @@ Prerequisites: [Prerequisites](../getting-started/prerequisites.md). Run all com
 
 ## Status of each command
 
-Only the Sudoku-hard command was run (2026-11-21, result 86.25% solved). The other commands were not run. They use the Hugging Face folder layout that was listed on 2026-11-21.
+All commands were run on 2026-11-21/22 (results: [experiment report](../../experiments/index.html)). On a 4 GB GPU, use `--bs 16` for WMT14 and XSum: the config batches spill to shared memory. They use the Hugging Face folder layout that was listed on 2026-11-21.
 
 ## Steps
 
@@ -39,13 +39,13 @@ Only the Sudoku-hard command was run (2026-11-21, result 86.25% solved). The oth
    hf download hazyresearch/ncm-datasets --repo-type dataset --include "xsum/*" --local-dir data
    ```
 
-4. Run the evaluation. Status: not run.
+4. Run the evaluation. Status: run on 2026-11-22.
 
    ```bash
    python evaluate.py --config config/eval/xsum.yaml --checkpoint-dir artifacts/xsum --data-dir data/xsum
    ```
 
-   For an unconditional config, omit `--data-dir`. Status: not run.
+   For an unconditional config, omit `--data-dir`. Status: run on 2026-11-21.
 
    ```bash
    python evaluate.py --config config/eval/lm1b-small.yaml --checkpoint-dir artifacts/lm1b/small
@@ -69,7 +69,7 @@ Only the Sudoku-hard command was run (2026-11-21, result 86.25% solved). The oth
 | Uniform level-1 codes in place of the unigram table | `--l0 uniform` |
 | Write to a different folder | `--out eval/xsum-cfg1` |
 
-Example (not run):
+Example (run on 2026-11-22 with `--bs 16`):
 
 ```bash
 python evaluate.py --config config/eval/wmt14.yaml --checkpoint-dir artifacts/wmt14 --data-dir data/wmt14 --cfg 1.0 --out eval/wmt14-cfg1

@@ -90,23 +90,59 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 </tbody>
 </table>
 <h2 id="results-that-the-code-reproduced">Results that the code reproduced</h2>
+<p>Runs of 2026-11-21/22 on an RTX 3050 Laptop GPU (4 GB), config defaults unless stated. Details: <a href="../../experiments/index.html">experiment report</a>.</p>
 <table>
 <thead>
 <tr>
 <th>Task</th>
 <th>Paper</th>
-<th>This repository, 2026-11-21</th>
+<th>This repository</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Sudoku hard</td>
-<td>86.1% solved</td>
-<td>86.25% (1725/2000), RTX 3050 Laptop GPU, config defaults</td>
+<td>Sudoku easy / medium / hard</td>
+<td>99.5 / 96.5 / 86.1 % solved (Table 3)</td>
+<td>99.40 / 96.45 / 86.25 %</td>
+</tr>
+<tr>
+<td>LM1B small</td>
+<td>genPPL 93.05, entropy 4.31 (Table 8)</td>
+<td>94.06 ± 1.42, entropy 4.3138 (with the released penalties); 78.53 without</td>
+</tr>
+<tr>
+<td>TinyStories</td>
+<td>genPPL 15.41, entropy 3.98 (Table 8)</td>
+<td>16.29 ± 0.22, entropy 3.9712</td>
+</tr>
+<tr>
+<td>WMT14</td>
+<td>BLEU 22.6; with guidance 23.9 (Table 2)</td>
+<td>lowercased 22.62 / 23.86; cased 21.72 / 22.97</td>
+</tr>
+<tr>
+<td>WMT14 MBR, M = 12</td>
+<td>BLEU 25.2 (Table 2)</td>
+<td>lowercased 24.67; cased 23.81</td>
+</tr>
+<tr>
+<td>XSum (first 1,000 documents)</td>
+<td>ROUGE-1/2/L 35.0 / 12.8 / 28.0 (Table 2)</td>
+<td>34.63 / 12.84 / 27.78</td>
+</tr>
+<tr>
+<td>WMT14 trajectory, source 1218</td>
+<td>Table 12</td>
+<td>equal at all 11 levels</td>
+</tr>
+<tr>
+<td>Tokenizer accuracy</td>
+<td>Table 1</td>
+<td>within 0.02 points for 6 of 7 tokenizers; WMT14 98.507 against 98.79</td>
 </tr>
 </tbody>
 </table>
-<p>The other tasks were not run.</p>
+<p>The paper does not state the BLEU casing. The lowercased sacreBLEU column of <code>scripts/eval_merge.py:27</code> matches Table 2.</p>
 <footer>Generated from <code>reference/paper-vs-code.md</code>. Edit the Markdown file, then run <code>md_to_html.py</code> again.</footer>
 </main>
 </body>

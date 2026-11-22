@@ -109,3 +109,29 @@ This page tracks `evaluate.py`, `scripts/*.py` and `models/*.py`.
 
 - **Cause:** `evaluate.py:20` uses the GPU count. No file reads `n_shards`.
 - **Fix:** Use `--gpus`.
+
+## Found in the 2026-11-21/22 experiment runs
+
+### GPU memory grows with each `generate()` call
+
+- **Symptom:** a loop of `generate()` calls raises CUDA OOM at batch 4 or more, although one call fits. Checked.
+- **Cause:** `generate()` leaves GPU tensors in reference cycles: about 78 MiB per call at batch 16, freed only by Python's cyclic garbage collector.
+- **Fix:** call `gc.collect()` between calls (`experiments/p09_ar_baseline/leak_test2.log`).
+
+### Runs are very slow on a 4 GB GPU
+
+- **Symptom:** a run takes many times longer than expected, with no error. Checked.
+- **Cause:** on Windows an overflow spills to shared system memory instead of raising OOM. Examples: WMT14 at the config batch 64, XSum at batch 32, `gpt2-large` fp32 scoring.
+- **Fix:** use `--bs 16` (WMT14, XSum), score genPPL in fp16, or cap memory with `torch.cuda.set_per_process_memory_fraction`.
+
+### WMT14 BLEU is 0.9 lower than the paper
+
+- **Symptom:** `BLEU` column 21.72 against Table 2 22.6. Checked.
+- **Cause:** the paper does not state the casing. The `BLEU(lc)` column (22.62) matches Table 2.
+- **Fix:** report both columns and name the one you compare.
+
+### KV-cache output differs from the eager output (real weights)
+
+- **Symptom:** with real WMT14 weights, KV and eager codes agree on 25.5 to 37.4 % of positions. Checked.
+- **Cause:** the pad mask is dropped (`models/next_concept.py:654`, `:683`). With unpadded prefixes the agreement is 100 %.
+- **Fix:** use the eager path for padded prefixes. The eval uses the eager path.

@@ -36,7 +36,7 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 <p>Use this guide to evaluate any released config and to change generation settings from the command line.</p>
 <p>Prerequisites: <a href="../getting-started/prerequisites.html">Prerequisites</a>. Run all commands from the repository root.</p>
 <h2 id="status-of-each-command">Status of each command</h2>
-<p>Only the Sudoku-hard command was run (2026-11-21, result 86.25% solved). The other commands were not run. They use the Hugging Face folder layout that was listed on 2026-11-21.</p>
+<p>All commands were run on 2026-11-21/22 (results: <a href="../../experiments/index.html">experiment report</a>). On a 4 GB GPU, use <code>--bs 16</code> for WMT14 and XSum: the config batches spill to shared memory. They use the Hugging Face folder layout that was listed on 2026-11-21.</p>
 <h2 id="steps">Steps</h2>
 <ol>
 <li>
@@ -126,10 +126,10 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 </code></pre>
 </li>
 <li>
-<p>Run the evaluation. Status: not run.</p>
+<p>Run the evaluation. Status: run on 2026-11-22.</p>
 <pre><code>  python evaluate.py --config config/eval/xsum.yaml --checkpoint-dir artifacts/xsum --data-dir data/xsum
 </code></pre>
-<p>For an unconditional config, omit <code>--data-dir</code>. Status: not run.</p>
+<p>For an unconditional config, omit <code>--data-dir</code>. Status: run on 2026-11-21.</p>
 <pre><code>  python evaluate.py --config config/eval/lm1b-small.yaml --checkpoint-dir artifacts/lm1b/small
 </code></pre>
 </li>
@@ -185,7 +185,7 @@ footer { margin-top: 48px; font-size: 13px; color: #94a3b8; }
 </tr>
 </tbody>
 </table>
-<p>Example (not run):</p>
+<p>Example (run on 2026-11-22 with <code>--bs 16</code>):</p>
 <pre><code class="language-bash">python evaluate.py --config config/eval/wmt14.yaml --checkpoint-dir artifacts/wmt14 --data-dir data/wmt14 --cfg 1.0 --out eval/wmt14-cfg1
 </code></pre>
 <blockquote>

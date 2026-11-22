@@ -2,7 +2,16 @@
 
 **Goal:** Find how much of the LM1B and XSum scores comes from the token penalties in `pick_tokens()`. Algorithm 2 of the paper does not have them.
 
-**Effort:** flags only. **Status:** not run.
+**Effort:** flags only. **Status:** run on 2026-11-21 (LM1B, all 1,280 samples) and 2026-11-22 (XSum, first 1,000 documents). Full results: [experiment report](../../experiments/index.html).
+
+
+## Result (run 2026-11-21/22)
+
+- **What it measured:** the share of the LM1B and XSum scores that comes from the decode-time penalties of `pick_tokens()`.
+- **Result:** LM1B with the released penalties: genPPL 94.06 ± 1.42, entropy 4.3138 (Table 8: 93.05, 4.31). Without penalties (Algorithm 2): 78.53, entropy 4.1176.
+- **Result:** the frequency penalty causes almost all of the change (94.15 alone). The adjacency penalty alone adds 1.02. On XSum the penalties change ROUGE-L by at most 0.07 (27.78 against 27.71).
+- **Unexpected:** the paper's Algorithm 2 has no penalties, but its LM1B number needs them.
+- **Lesson:** the penalties trade genPPL for entropy. They move the unigram entropy to the data value (4.31) at a cost of +15.5 genPPL.
 
 ## Background
 
