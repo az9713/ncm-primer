@@ -7,7 +7,7 @@ Date of runs: 21–22 November 2026. Machine: Windows 11, NVIDIA GeForce RTX 305
 | # | Project | Status | Key result (this work) | Paper value | Consistent with NCM? | Evidence |
 |---|---|---|---|---|---|---|
 | 1 | Decode-time penalties | Completed | LM1B default genPPL 94.06 ± 1.42, H 4.3138; penalties off 78.53, H 4.1176. XSum (1,000 docs) R-L 27.78 default, 27.71 off | Table 8: LM1B 93.05, H 4.31. Table 2: XSum R-L 28.0 | Yes | `p01_penalties/results.json` |
-| 2 | Guidance and sampler sweep | Completed (subsets stated) | WMT14 full test set, lowercased BLEU 22.62 (w 0) and 23.86 (w 1.0); cased 21.72 and 22.97; best w = 1.0. XSum (1,000 docs) R-L 27.78 → 28.02 at w 0.5. Sampling (T 0.6–1.0) lowers BLEU by 1.5–4.0 | Table 2: 22.6, 23.9 (casing not stated); XSum 28.0 → 28.2. Fig. 14: BLEU best at w 1.0, ROUGE at 0.5 | Yes | `p02_guidance_sweep/results.json` |
+| 2 | Guidance and sampler sweep | Completed (WMT14 full test set; XSum 1,000 docs) | WMT14 full test set, lowercased BLEU 22.62 (w 0) and 23.86 (w 1.0); cased 21.72 and 22.97; best w = 1.0 of 0 to 3.0. XSum (1,000 docs) R-L 27.78 → 28.02 at w 0.5. Sampling (T 0.6–1.0, full test set) lowers BLEU by 1.35–3.95 | Table 2: 22.6, 23.9 (casing not stated); XSum 28.0 → 28.2. Fig. 14: BLEU best at w 1.0, ROUGE at 0.5 | Yes | `p02_guidance_sweep/results.json` |
 | 3 | Level-1 probe | Completed | TinyStories genPPL 16.29 ± 0.22, H 3.9712. The level-1 code sets the opening ("Once" vs "One"); content effect +0.018 word-count cosine, 1/5.65 of the effect of the random seed (+0.101) | Table 8: 15.41, H 3.98. Probe: no paper value | Partly | `p03_level1_probe/results.json` |
 | 4 | Coarse-to-fine viewer | Completed | WMT14 Table 12 trajectory reproduced exactly (11/11 per-level BLEU). Sudoku puzzle 0: final board equal; bf16 equals Fig. 20 at levels 1–8 | Table 12 (p.36), Fig. 20 (p.40) | Yes (Table 12); Partly (Fig. 20) | `p04_coarse_to_fine/results.json`, `trajectory.html` |
 | 5 | Tokenizer reconstruction | Completed | Final non-pad accuracy: Sudoku 100.000/99.999/100.000, LM1B 99.858, TinyStories 99.980, XSum 99.771, WMT14 98.507 %. Sudoku utilization 80.73/83.85/80.73 % | Table 1 (p.8): 100/100/100, 99.86, 99.98, 99.79, 98.79; util 80.73/83.85/80.73 | Yes (accuracy); Partly (text utilization) | `p05_tokenizer_recon/results.json` |
@@ -19,7 +19,7 @@ Date of runs: 21–22 November 2026. Machine: Windows 11, NVIDIA GeForce RTX 305
 
 Command lines in the project sections use shortened paths ("…" or repository-relative). Section 5 lists every exact command line with its log, start time, exit code and duration.
 
-Main limits: OWT is not released. The repository has no diffusion baselines. The repository has no generator training code. A 4 GB GPU forced fp16 genPPL scoring (validated) and smaller batches (validated). It also forced subsets for XSum and for parts of the WMT14 sweep (stated in each section).
+Main limits: OWT is not released. The repository has no diffusion baselines. The repository has no generator training code. A 4 GB GPU forced fp16 genPPL scoring (validated) and smaller batches (validated). It also forced a 1,000-document subset for XSum (stated in projects 1 and 2).
 
 ## 2. Environment and setup
 
@@ -165,10 +165,10 @@ On XSum the penalties change ROUGE-L by at most 0.07 (27.71 to 27.78) and ROUGE-
 - Guidance in the code: `t = cfg_scale × level / (K − 1)` (`models/next_concept.py:481-482`); level 1 gets weight 0. Each guided pass doubles the batch (null prefix = EOS + pad, `:528-536`).
 - WMT14: config `wmt14`, greedy (`top_k=1`). Eager path (the eval passes no `use_kv_cache`; the default is `False`), so the KV-cache pad-mask defect does not affect these numbers.
 - Batch size. The config batch is 64. At batch 64 the WMT14 run spilled 2,652 MB to shared GPU memory (session reading, not logged) and took 1,978 s (logged). I used `--bs 16` for all other WMT14 runs. Check: `--cfg 0` gives BLEU 21.73 at batch 64 and 21.72 at batch 16.
-- Sample sizes: `--cfg 0`, `0.5` and `1.0` on all 3,003 sources. All six weights on the first 1,000 sources (a full guided run took about 30 min on this GPU). Sampler sweep on the first 500 sources.
+- Sample sizes: all six weights on all 3,003 sources. The sampler sweep ran on all 3,003 sources and, earlier, on the first 500 sources. An earlier run of all six weights used the first 1,000 sources.
 - Guided passes: 11 per output with 2 rows each, which the paper counts as NFE 22.
 
-**How it was run.** `python ncm-main/evaluate.py --config ncm-main/config/eval/wmt14.yaml --checkpoint-dir experiments/artifacts/wmt14 --data-dir experiments/data/wmt14 --cfg <w> --bs 16 [--n 1000] --out …` (scripts `run_wmt_cfg.sh`, `run_wmt_cfg_rest.sh`, `run_wmt_sampler.sh`).
+**How it was run.** `python ncm-main/evaluate.py --config ncm-main/config/eval/wmt14.yaml --checkpoint-dir experiments/artifacts/wmt14 --data-dir experiments/data/wmt14 --cfg <w> --bs 16 [--n 1000] --out …` (scripts `run_wmt_cfg.sh`, `run_wmt_cfg_rest.sh`, `run_wmt_sampler.sh`, `run_wmt_full.sh`). The sampler runs add `--temp <T> --top_k 0 --top_p 0.9`.
 
 **Results: WMT14, all 3,003 sources.**
 
@@ -178,10 +178,13 @@ On XSum the penalties change ROUGE-L by at most 0.07 (27.71 to 27.78) and ROUGE-
 | 0 (batch 16) | 21.72 | 22.62 | 49.57 | 0.938 |
 | 0.5 | 22.70 | 23.61 | 51.07 | 0.951 |
 | 1.0 | 22.97 | 23.86 | 51.53 | 0.959 |
+| 1.5 | 22.81 | 23.73 | 51.63 | 0.965 |
+| 2.0 | 22.55 | 23.45 | 51.47 | 0.969 |
+| 3.0 | 21.52 | 22.46 | 50.64 | 0.977 |
 | Paper NCM (Table 2) | 22.6 | – | – | – |
 | Paper NCM + CFG (Table 2) | 23.9 | – | – | – |
 
-**Results: WMT14, first 1,000 sources.**
+**Results: WMT14, first 1,000 sources (earlier run).**
 
 | Guidance w | 0 | 0.5 | 1.0 | 1.5 | 2.0 | 3.0 |
 |---|---|---|---|---|---|---|
@@ -190,7 +193,18 @@ On XSum the penalties change ROUGE-L by at most 0.07 (27.71 to 27.78) and ROUGE-
 | chrF | 48.03 | 49.44 | 50.03 | 50.30 | 50.29 | 49.53 |
 | Length ratio | 0.900 | 0.917 | 0.923 | 0.930 | 0.934 | 0.943 |
 
-**Results: WMT14 sampler sweep, first 500 sources, w = 1.0, `top_k=0, top_p=0.9`, 3 runs per temperature.** The conditional eval path sets no seed (`scripts/eval_shard.py:164-169`), so the three runs differ.
+**Results: WMT14 sampler sweep, all 3,003 sources, w = 1.0, `top_k=0, top_p=0.9`, 3 runs per temperature.**
+
+| Sampler | BLEU runs | BLEU mean | BLEU (lowercase) mean | chrF mean | Length ratio range |
+|---|---|---|---|---|---|
+| greedy (config, `top_k=1`) | 22.97 | 22.97 | 23.86 | 51.53 | 0.959 |
+| T = 0.6 | 21.65, 21.61, 21.60 | 21.62 (range 0.05) | 22.51 | 50.58 | 0.971–0.975 |
+| T = 0.8 | 20.84, 20.68, 20.39 | 20.64 (range 0.45) | 21.48 | 49.50 | 0.981–0.988 |
+| T = 1.0 | 19.14, 18.94, 18.98 | 19.02 (range 0.20) | 19.87 | 47.89 | 1.003–1.008 |
+
+The greedy run repeats the w = 1.0 run of the first full-set table and gives the same scores (22.97 / 23.86 / 51.53). On the full set, sampling lowers BLEU by 1.35, 2.33 and 3.95 (T = 0.6, 0.8, 1.0). The run-to-run range is 0.05 to 0.45 BLEU, against 0.61 to 0.95 on 500 sources.
+
+**Results: WMT14 sampler sweep, first 500 sources (earlier run), w = 1.0, `top_k=0, top_p=0.9`, 3 runs per temperature.** The conditional eval path sets no seed (`scripts/eval_shard.py:164-169`), so the three runs differ.
 
 | Sampler | BLEU runs | BLEU mean | chrF mean | Length ratio range |
 |---|---|---|---|---|
@@ -221,14 +235,14 @@ The batch-8 unguided run gives the same scores as the batch-16 run of project 1 
 
 - **BLEU casing.** `eval_merge.py:26-31` prints cased and lowercased sacreBLEU. The paper cites sacreBLEU [43] but does not state the casing. The lowercased scores match Table 2 to within 0.04: 22.62 against 22.6 (unguided) and 23.86 against 23.9 (w = 1.0). The lowercased score at w = 0.5 (23.61) also matches the Fig. 14 point (about 23.6, read from the plot). The cased scores are 0.88 and 0.93 lower (21.72, 22.97). This match suggests that Table 2 reports lowercased BLEU; the paper does not confirm it.
 - **Guidance gain.** +1.25 cased and +1.24 lowercased (w = 1.0 against w = 0) here, against +1.3 in the paper.
-- **Shape.** BLEU peaks at w = 1.0 on 1,000 sources, then falls (21.82, 21.58, 20.53). This is the shape of Fig. 14 (p.30), where BLEU peaks at w = 1.0. The chrF score peaks later (50.30 at w = 1.5). The length ratio rises with w at each step. The brevity penalty at w = 0 is 0.928 (hypothesis length 62,668 against reference length 67,337).
+- **Shape.** On the full test set, BLEU peaks at w = 1.0, then falls (22.81, 22.55, 21.52 at w = 1.5, 2.0, 3.0). The 1,000-source run has the same peak (21.82, 21.58, 20.53 after it). This is the shape of Fig. 14 (p.30), where BLEU peaks at w = 1.0. The chrF score peaks later (51.63 at w = 1.5 on the full set; 50.30 on 1,000 sources). The length ratio rises with w at each step. The brevity penalty at w = 0 is 0.928 (hypothesis length 62,668 against reference length 67,337).
 
-**Verdict.** Completed (WMT14 w ≤ 1.0 on the full test set; larger weights, the sampler sweep and XSum on stated subsets). Consistent with NCM: Yes for WMT14 under lowercased BLEU (22.62 and 23.86 against 22.6 and 23.9). The guidance gains also agree (WMT14 +1.25 BLEU against +1.3; XSum +0.24 ROUGE-L against +0.2). The optimum weights also agree (BLEU at w = 1.0, ROUGE at w = 0.5, as in Fig. 14). Cased BLEU is 0.88 to 0.93 below Table 2; the paper does not state which casing it uses. XSum absolute scores are within 0.4 points of Table 2 on a 1,000-document subset.
+**Verdict.** Completed (WMT14: all six weights and the sampler sweep on the full test set; XSum on 1,000 documents). Consistent with NCM: Yes for WMT14 under lowercased BLEU (22.62 and 23.86 against 22.6 and 23.9). The guidance gains also agree (WMT14 +1.25 BLEU against +1.3; XSum +0.24 ROUGE-L against +0.2). The optimum weights also agree (BLEU at w = 1.0, ROUGE at w = 0.5, as in Fig. 14). Cased BLEU is 0.88 to 0.93 below Table 2; the paper does not state which casing it uses. XSum absolute scores are within 0.4 points of Table 2 on a 1,000-document subset.
 
 **Receipt.**
 
-- Scripts: `experiments/p02_guidance_sweep/run_wmt_cfg.sh`, `run_wmt_cfg_rest.sh`, `run_wmt_sampler.sh`, `experiments/p01_penalties/run_xsum.sh` (XSum guidance lines). Logs: `run_wmt_cfg.log` (full set), `run_wmt_cfg1k.log`, `run_wmt_sampler.log`, `run_xsum_cfg.log`. Numbers: `results.json` (parsed from the logs by `experiments/common/build_results.py`).
-- Durations (from the logs): `--cfg 0` batch 64: 1,978 s (20:51:37–21:25:00, with memory spill). Batch 16: 475 s. Full run at w = 0.5: 1,597 s. Full run at w = 1.0: 638 s (the machine had less background load then). Each 1,000-source guided run: 229–230 s. XSum guided runs: 1,934 s and 1,927 s.
+- Scripts: `experiments/p02_guidance_sweep/run_wmt_cfg.sh`, `run_wmt_cfg_rest.sh`, `run_wmt_sampler.sh`, `run_wmt_full.sh`, `experiments/p01_penalties/run_xsum.sh` (XSum guidance lines). Logs: `run_wmt_cfg.log` (full set), `run_wmt_full.log` (full set: w 1.5 to 3.0 and the sampler sweep), `run_wmt_cfg1k.log`, `run_wmt_sampler.log`, `run_xsum_cfg.log`. Numbers: `results.json` (parsed from the logs by `experiments/common/build_results.py`).
+- Durations (from the logs): `--cfg 0` batch 64: 1,978 s (20:51:37–21:25:00, with memory spill). Batch 16: 475 s. Full run at w = 0.5: 1,597 s. Full run at w = 1.0: 638 s (the machine had less background load then). Each 1,000-source guided run: 229–230 s. Full runs at w = 1.5, 2.0, 3.0: 1,116 s, 1,181 s, 599 s. Full sampler runs: 579–1,356 s each; the 13 jobs of `run_wmt_full.log` ran from 12:42:25 to 15:57:38 on 22 November. XSum guided runs: 1,934 s and 1,927 s.
 - Log excerpt (`run_wmt_cfg.log`):
 
 ```text
@@ -913,6 +927,32 @@ Every job was started by `experiments/common/run.sh`, which wrote these lines in
   `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 1.0 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t1.0_p0.9_r2`
 - `run_wmt_sampler.log` 2026-11-22T04:58:46-08:00 rc=0 126 s:
   `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --n 500 --bs 16 --cfg 1.0 --temp 1.0 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt500_cfg1.0_t1.0_p0.9_r3`
+- `run_wmt_full.log` 2026-11-22T12:42:25-08:00 rc=0 1116 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.5 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt_bs16_cfg1.5`
+- `run_wmt_full.log` 2026-11-22T13:01:02-08:00 rc=0 1181 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 2.0 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt_bs16_cfg2.0`
+- `run_wmt_full.log` 2026-11-22T13:20:48-08:00 rc=0 599 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 3.0 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmt_bs16_cfg3.0`
+- `run_wmt_full.log` 2026-11-22T13:30:49-08:00 rc=0 882 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_greedy`
+- `run_wmt_full.log` 2026-11-22T13:45:33-08:00 rc=0 592 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --temp 0.6 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_t0.6_p0.9_r1`
+- `run_wmt_full.log` 2026-11-22T13:55:27-08:00 rc=0 627 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --temp 0.6 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_t0.6_p0.9_r2`
+- `run_wmt_full.log` 2026-11-22T14:05:55-08:00 rc=0 579 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --temp 0.6 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_t0.6_p0.9_r3`
+- `run_wmt_full.log` 2026-11-22T14:15:35-08:00 rc=0 1356 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --temp 0.8 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_t0.8_p0.9_r1`
+- `run_wmt_full.log` 2026-11-22T14:38:13-08:00 rc=0 597 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --temp 0.8 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_t0.8_p0.9_r2`
+- `run_wmt_full.log` 2026-11-22T14:48:11-08:00 rc=0 1048 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --temp 0.8 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_t0.8_p0.9_r3`
+- `run_wmt_full.log` 2026-11-22T15:05:41-08:00 rc=0 1055 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --temp 1.0 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_t1.0_p0.9_r1`
+- `run_wmt_full.log` 2026-11-22T15:23:18-08:00 rc=0 927 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --temp 1.0 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_t1.0_p0.9_r2`
+- `run_wmt_full.log` 2026-11-22T15:38:46-08:00 rc=0 1132 s:
+  `~/Downloads/stanford_ncm_turing/experiments/.venv/Scripts/python ~/Downloads/stanford_ncm_turing/ncm-main/evaluate.py --config ~/Downloads/stanford_ncm_turing/ncm-main/config/eval/wmt14.yaml --checkpoint-dir ~/Downloads/stanford_ncm_turing/experiments/artifacts/wmt14 --data-dir ~/Downloads/stanford_ncm_turing/experiments/data/wmt14 --bs 16 --cfg 1.0 --temp 1.0 --top_k 0 --top_p 0.9 --out ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_t1.0_p0.9_r3`
 
 ### p03_level1_probe
 

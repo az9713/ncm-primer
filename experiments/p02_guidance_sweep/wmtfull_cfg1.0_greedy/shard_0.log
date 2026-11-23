@@ -1,0 +1,27 @@
+~\AppData\Local\Programs\Python\Python313\Lib\site-packages\triton\windows_utils.py:465: UserWarning: Failed to find CUDA. Install CUDA Toolkit (https://developer.nvidia.com/cuda-downloads) or set CUDA_HOME / CUDA_PATH environment variable.
+  warnings.warn("Failed to find CUDA."
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+VQVAE, Total parameter count: 144.00M
+VQVAE, Non embedding parameter count: 85.73M
+NCP Transformer, Total parameter count: 119.96M
+NCP Transformer, Non embedding parameter count: 119.66M
+  shard0 0/3003
+  shard0 160/3003
+  shard0 320/3003
+  shard0 480/3003
+  shard0 640/3003
+  shard0 800/3003
+  shard0 960/3003
+  shard0 1120/3003
+  shard0 1280/3003
+  shard0 1440/3003
+  shard0 1600/3003
+  shard0 1760/3003
+  shard0 1920/3003
+  shard0 2080/3003
+  shard0 2240/3003
+  shard0 2400/3003
+  shard0 2560/3003
+  shard0 2720/3003
+  shard0 2880/3003
+shard 0: 3003 -> ~/Downloads/stanford_ncm_turing/experiments/p02_guidance_sweep/wmtfull_cfg1.0_greedy\shard_0.pkl

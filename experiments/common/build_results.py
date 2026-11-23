@@ -42,8 +42,8 @@ json.dump(p1, open(os.path.join(E, "p01_penalties", "results.json"), "w"), inden
 # Project 2
 p2 = {"paper": {"table2_p10": {"wmt14_ncm": 22.6, "wmt14_cfg": 23.9, "wmt14_cfg_nfe": 22, "xsum_ncm": [35.0, 12.8, 28.0], "xsum_cfg": [35.3, 13.0, 28.2]},
                 "fig14_p30": "ROUGE peaks at w=0.5 (Table 2 setting); BLEU peaks at w=1.0"},
-      "runs": scored(runs("p02_guidance_sweep/run_wmt_cfg.log", "p02_guidance_sweep/run_wmt_cfg1k.log", "p02_guidance_sweep/run_wmt_sampler.log", "p02_guidance_sweep/run_xsum_cfg.log", "p01_penalties/run_xsum.log")),
-      "all_blocks": runs("p02_guidance_sweep/run_wmt_cfg.log", "p02_guidance_sweep/run_wmt_cfg1k.log", "p02_guidance_sweep/run_wmt_sampler.log", "p02_guidance_sweep/run_xsum_cfg.log")}
+      "runs": scored(runs("p02_guidance_sweep/run_wmt_cfg.log", "p02_guidance_sweep/run_wmt_cfg1k.log", "p02_guidance_sweep/run_wmt_sampler.log", "p02_guidance_sweep/run_wmt_full.log", "p02_guidance_sweep/run_xsum_cfg.log", "p01_penalties/run_xsum.log")),
+      "all_blocks": runs("p02_guidance_sweep/run_wmt_cfg.log", "p02_guidance_sweep/run_wmt_cfg1k.log", "p02_guidance_sweep/run_wmt_sampler.log", "p02_guidance_sweep/run_wmt_full.log", "p02_guidance_sweep/run_xsum_cfg.log")}
 json.dump(p2, open(os.path.join(E, "p02_guidance_sweep", "results.json"), "w"), indent=2)
 # Project 3
 pr = os.path.join(E, "p03_level1_probe", "probe_results.json")
